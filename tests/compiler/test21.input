@@ -1,0 +1,27 @@
+
+// Combinando suma y resta, agotando los registros
+
+fun f(a : Int) {
+  a := a - 1
+  putNum(
+    a + ( a + ( a + ( a - ( a + ( a + ( a + ( a - ( a + ( a - (
+    a + ( a - ( a + ( a + ( a + ( a - ( a + ( a - ( a - ( a + (
+    a + ( a - ( a - ( a - ( a + ( a - ( a + ( a - ( a + ( a - (
+    a - ( a + ( a - ( a + ( a + ( a - ( a + ( a + ( a - ( a - (
+    a - a))))))))))))))))))))))))))))))))))))))))
+  )
+  putChar(10)
+}
+
+fun main() {
+  f(1)
+  f(2)
+  f(3)
+  f(4)
+  f(5)
+  f(6)
+  f(7)
+  f(8)
+  f(9)
+  f(10)
+}

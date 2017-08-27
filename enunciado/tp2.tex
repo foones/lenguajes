@@ -1,0 +1,1381 @@
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{listings}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage[margin=2cm]{geometry}
+\usepackage{mathpazo}
+
+\usepackage{tikz}
+\usetikzlibrary{svg.path}
+
+\lstset{
+  escapeinside={(*@}{@*)},
+  basicstyle={\small\tt},
+  literate={\\'A}{{\'A}}1
+           {\\'E}{{\'E}}1
+           {\\'I}{{\'I}}1
+           {\\'O}{{\'O}}1
+           {\\'U}{{\'U}}1
+           {\\'a}{{\'a}}1
+           {\\'e}{{\'e}}1
+           {\\'i}{{\'i}}1
+           {\\'o}{{\'o}}1
+           {\\'u}{{\'u}}1
+           {.entrada}{\em Entrada:}8
+           {.salida}{\em Salida:}7
+           {.if}{\bf if}2
+           {.to.}{\bf to}2
+           {.then}{\bf then}4
+           {.else}{\bf else}4
+           {.elseif}{\bf elseif}6
+           {.end}{\bf end}3
+           {.while}{\bf while}5
+           {.end}{\bf end}3
+           {.foreach}{\bf foreach}7
+           {.to.}{\bf to}2
+           {.downto}{\bf downto}6
+           {.function}{\bf function}8
+           {.case}{\bf case}4
+           {.return}{\bf return}6
+           {.for.}{\bf for}3
+           {.and.}{\bf and}3
+           {.repeat}{\bf repeat}6
+           {.forever}{\bf forever}7
+}
+
+\newcommand{\cmd}[1]{\textcolor{blue}{\texttt{#1}}}
+\newcommand{\Cucaracha}[1][]{%
+    \tikz \fill [scale=1ex/45,yscale=-1,#1] svg "M44.6,33.589c-0.007-1.036-0.224-1.73-0.451-1.957c-0.752-0.75-1.821-1.15-3.089-1.15c-0.983,0-2.021,0.246-3.051,0.68  c-0.102-0.242-0.233-0.469-0.423-0.656c-0.646-0.646-2.137-0.841-3.541-0.978C27.914,26.529,23.633,15,23.633,5h-0.924  c0,10,3.872,20.841,9.576,24.614c-0.733,0.153-1.357,0.282-1.824,0.746c-0.603,0.605-0.861,1.394-0.937,2.428  C25.805,26.893,15,22.797,4,22.797v0.931c14,0,22.637,4.381,25.52,10.655c0,0,0.753,2.385,1.297,2.93  c0.235,0.237,0.521,0.384,0.853,0.483c-0.16,0.442-0.3,0.888-0.383,1.331c-0.337,1.804,0.024,3.347,1.024,4.348  c0.101,0.1,0.54,0.284,1.507,0.284c0.253,0,0.528-0.018,0.808-0.043c2.248-0.204,5.212-1.209,6.987-2.918  c2.181-2.097,2.976-5.134,2.995-7.096C44.606,33.662,44.6,33.627,44.6,33.589z M69.408,94.271l-5.449-7.195l0.453-0.219l5.215,7.139c0,0,0.129,0.443,0,0.486C69.551,94.51,69.408,94.271,69.408,94.271z M35.442,71.332l-0.049,0.07C35.454,71.385,35.5,71.361,35.442,71.332z M83.092,81.541c0.229-0.23-40.726-39.226-40.726-39.226c-1.699,1.417-8.172,2.952-7.995,3.547   c0.304,1.032,0.755,2.136,1.266,3.263l-16.512,1.958l0.803,0.496l-0.604,0.486l16.729-2.051c1.17,2.393,2.761,4.95,4.646,7.549   l-9.047,2.975l2.718,10.301c0,0,0.638,0.082,0.775,0.182L32,76.264v0.744l3.604-5.605c-0.101,0.031-0.363,0.049-0.307,0.033   c0.297-0.08,0.607-1.043,0.607-1.043l-2.158-8.631l8.117-2.646c2.166,2.83,4.659,5.684,7.393,8.418   c0.525,0.525,1.053,1.037,1.585,1.541l-2.474,8.707l2.497,1.541l-0.658,0.816l0.717,0.135l0.5-0.605l1.029,0.633l-0.545,0.688   l0.199,0.156l0.148,0.504l0.744-1.008l1.115,0.688l-0.549,0.754l0.211,0.164l0.242,0.369l0.668-0.936l1.309,0.809l-0.648,0.834   l0.166,0.127l0.197,0.158l0.672-0.881l1.773,1.092l-0.961,1.252l0.371-0.158l0.197,0.158l0.795-1.002l1.863,1.148l-0.721,0.912   l0.197,0.158l-0.197,0.428l1.072-1.281l3.293,2.033c0,0,0.811,0.191,0.953,0c0.113-0.156-0.223-0.736-0.223-0.736l-3.125-2.375   l0.623-0.748l-0.18-0.143l-0.041-0.33l-0.754,0.953l-1.736-1.32l0.635-0.807L60,81.789l-0.18-0.141l-0.631,0.82l-1.656-1.258   l0.814-1.072l-0.355,0.129l-0.166-0.129l-0.633,0.812l-1.291-0.98l0.561-0.785L56.25,79.02l-0.125-0.447l-0.736,1.008l-1.031-0.783   l0.656-0.889l-0.389-0.102l0.055-0.33l-0.771,0.979l-0.912-0.695l0.877-1.064l-0.787-0.143l-0.639,0.793l-0.986-0.752l2.221-4.941   c6.229,5.408,12.623,9.314,18.014,11.057l0.32,1.641l1.215,2.381l0.209-2.797l-0.15-0.764c1.436,0.361,2.789,0.557,4.027,0.557   C79.641,83.727,81.793,82.84,83.092,81.541z M95.609,68.072l-6.764-5.123c-0.021-0.123-0.043-0.221-0.043-0.221l-2.031-3.295l1.281-1.072l-0.428,0.197l-0.158-0.197  l-0.912,0.723l-1.148-1.865l1.002-0.791l-0.158-0.199l0.158-0.371l-1.25,0.959l-1.094-1.771l0.881-0.672l-0.156-0.199L84.66,54.01  l-0.834,0.65l-0.807-1.312l0.934-0.668l-0.369-0.24l-0.164-0.211l-0.754,0.551l-0.688-1.117l1.008-0.743l-0.504-0.149l-0.154-0.198  l-0.689,0.543l-0.633-1.03l0.607-0.5l-0.137-0.718l-0.816,0.657l-1.541-2.497l-8.936,2.747c-0.486-0.511-0.963-1.024-1.471-1.53  c-2.393-2.396-4.676-4.521-6.887-6.385l2.699-8.282l8.635,2.143c0,0,0.961-0.355,1.041-0.651c0.025-0.097-0.029,0.173-0.104,0.019  L79.773,31h-0.744l-5.244,3.582c-0.1-0.134-0.182-0.449-0.182-0.449l-10.301-2.659l-3.01,9.179  c-2.934-2.339-5.754-4.227-8.545-5.572l-2.062-17.516l-0.496,0.8l-0.486-0.613l2.054,16.858c-1.164-0.51-2.329-0.965-3.493-1.29  c-1.098-0.307-1.223,0.614-1.178,1.285c-0.326,2.183-1.019,4.618-2.587,6.551l39.903,39.957c1.102-1.865,1.314-4.479,0.756-7.549  l0.877,0.119l2.32-0.43l-2.146-0.898l-1.34-0.162c-1.406-5.717-5.285-12.791-11.221-19.695l5.285-2.373l0.75,0.988l-0.793,0.637  l0.143,0.785L79.1,51.66l0.693,0.912l-0.98,0.771l0.332-0.055l0.102,0.387l0.889-0.654l0.783,1.031l-1.008,0.736l0.447,0.125  l0.166,0.211l0.785-0.559l0.98,1.291l-0.812,0.633l0.129,0.166l-0.129,0.355l1.072-0.814l1.258,1.656l-0.82,0.631l0.141,0.18  l0.172,0.217l0.807-0.637l1.318,1.736l-0.951,0.756l0.33,0.041l0.145,0.18l0.746-0.623l2.373,3.123c0,0,0.582,0.338,0.736,0.227  c0.031-0.023,0.037-0.082,0.049-0.127l6.484,4.734c0,0,0.441,0.129,0.484,0C95.848,68.215,95.609,68.072,95.609,68.072z";%
+}
+
+\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
+
+\newcommand{\IGNORE}[1]{}
+\newcommand{\TODO}[1]{\textcolor{red}{#1}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\len}[1]{|#1|}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\ST}{\ |\ }
+\newcommand{\pal}{\alpha}
+\newcommand{\paltwo}{\beta}
+\newcommand{\palthree}{\gamma}
+\newcommand{\palfour}{\delta}
+\newcommand{\setunion}{\cup}
+\newcommand{\deriv}{\mathrel{\Rightarrow}}
+%\newcommand{\cucapalabra}{\textsf{Cucaracha}\xspace}
+\newcommand{\cucaconcuca}{\textsf{Cucaracha}\!\!\raisebox{.05em}{\Cucaracha}\xspace}
+\newcommand{\cuca}{\cucaconcuca}
+\renewcommand{\ast}[1]{\textcolor{darkgreen}{\texttt{\underline{#1}}}}
+\newcommand{\type}[1]{\textcolor{blue}{\texttt{#1}}}
+\newcommand{\tok}[1]{\textcolor{red}{\texttt{#1}}}
+\newcommand{\s}[1]{\textcolor{blue}{{\it$\langle$#1$\rangle$}}}
+\newcommand{\produccion}[2]{
+  \noindent
+  \begin{tabularx}{\textwidth}{lrlr}
+  #1 & $\xrightarrow{\hspace{.5cm}}$ & #2
+  \end{tabularx}\\
+}
+\newcommand{\EMPTY}{$\epsilon$}
+\newcommand{\ALT}{
+  \\ & $\mid$ &
+}
+\newcommand{\symbolentry}[3]{#1 & #2 && #3 \\}
+\newcommand{\nb}[1]{\footnotesize{#1}}
+\newcommand{\NB}[1]{
+  & {\footnotesize {#1}}
+}
+\newcommand{\typedecl}[2]{\noindent
+  \begin{tabularx}{\textwidth}{lrlr}
+  {\bf type} #1 & $::=$ & #2
+  \end{tabularx}\\
+}
+\newcommand{\datadecl}[2]{\noindent
+  \begin{tabularx}{\textwidth}{lrlr}
+  {\bf data} #1 & $::=$ & #2
+  \end{tabularx}\\
+}
+
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+\newcounter{ejercicio}
+\newenvironment{ejercicio}{\addtocounter{ejercicio}{1}{\bf Ejercicio \theejercicio.}}{\bigskip}
+
+\usepackage{amsmath}
+\begin{document}
+\begin{center}
+\textsc{{\small Parseo y Generaci\'on de C\'odigo -- $2^{\text{do}}$ semestre 2016}} \\ 
+\textsc{{\small Licenciatura en Inform\'atica con Orientaci\'on en Desarrollo de Software}} \\
+\textsc{{\small Universidad Nacional de Quilmes}} \\
+\bigskip
+{\Large Trabajo pr\'actico 2} \\
+{\large {\bf Generador de c\'odigo para \cucaconcuca}}\footnote{La cucaracha de \cucaconcuca es un dibujo de Michael Thompson licenciado bajo Creative Commons Attribution 3.0 United States License -- \url{https://creativecommons.org/licenses/by/3.0/us/}}\\
+\bigskip
+Fecha de entrega: 30 de noviembre
+\end{center}
+
+\tableofcontents
+
+\section{Introducci\'on}
+
+Este trabajo consiste en programar el {\em back-end} para un compilador del lenguaje \cuca.
+Concretamente, dado el AST de un programa como el construido
+en el TP1, acompa\~nado de la informaci\'on de los tipos de
+todas las funciones, par\'ametros y variables locales,
+se debe generar c\'odigo en {\em assembler} para la arquitectura x86-64.
+
+Se recomienda utilizar el ensamblador \texttt{nasm}\footnote{\url{http://www.nasm.us/}}. Tambi\'en usaremos algunas funciones de la biblioteca est\'andar de C, por lo que se recomienda {\em linkear} la salida con un compilador de C como \texttt{gcc}.
+
+\subsection{Ejemplo de programa en assembler}
+Vamos a trabajar siempre bajo una arquitectura de 64 bits.
+A continuaci\'on sigue un ejemplo de programa en assembler
+para comprobar que el entorno de desarrollo est\'e
+correctamente establecido.
+El siguiente ejemplo funciona en Linux. Deber\'ia
+funcionar en otros sistemas operativos POSIX
+con m\'inimas modificaciones.
+\begin{lstlisting}
+  section .text
+  global main
+  extern exit, putchar
+
+  main:
+
+      mov rdi, 72
+      call putchar
+
+      mov rdi, 79
+      call putchar
+
+      mov rdi, 76
+      call putchar
+
+      mov rdi, 65
+      call putchar
+
+      mov rdi, 10    ; nueva l\'inea (enter)
+      call putchar
+
+      mov rdi, 0
+      call exit
+\end{lstlisting}
+
+\begin{itemize}
+\item Guardar el archivo como \cmd{prueba.asm}.
+\item Ensamblarlo con \cmd{nasm -felf64 prueba.asm}
+      para obtener un archivo objeto \cmd{prueba.o}.
+\item Linkear el archivo objeto con \cmd{gcc -o prueba prueba.o} para obtener un ejecutable \cmd{prueba}.
+\item Ejecutarlo con \cmd{./prueba}. Deber\'ia imprimir ``HOLA'' en pantalla.
+\end{itemize}
+
+\section{Gu\'ia de compilaci\'on}
+
+Describiremos c\'omo implementar el compilador de
+manera incremental, empezando por la implementaci\'on
+de la funcionalidad b\'asica. Iremos agregando
+complejidad a medida que la necesitemos.
+
+En t\'erminos generales, el compilador se estructura
+como un recorrido recursivo sobre el AST que genera
+c\'odigo en assembler.
+La generaci\'on de c\'odigo se puede hacer de distintas
+maneras:
+\begin{itemize}
+\item
+  {\bf Manera ``funcional'':}
+  generando recursivamente alguna representaci\'on
+  del programa en assembler
+  y escribiendo la salida al final del proceso.
+  \begin{itemize}
+  \item El c\'odigo se puede representar directamente con un
+        string:
+        \begin{lstlisting}
+            "mov rdi, 0\n" ++
+            "add rax, rcx\n"
+        \end{lstlisting}
+  \item De manera m\'as abstracta, se puede representar
+        como un \'arbol o una lista de instrucciones:
+        \begin{lstlisting}
+            [InstruccionMov RegistroRdi (ValorInmediato 0),
+             InstruccionAdd RegistroRax RegistroRcx]
+        \end{lstlisting}
+  \end{itemize}
+\item
+  {\bf Manera ``objetosa'':}
+  emitiendo c\'odigo assembler a medida que se visita
+  el \'arbol.
+  \begin{itemize}
+  \item El c\'odigo se puede escribir directamente a un
+        archivo de salida:\\
+        \begin{lstlisting}
+            salida.write('mov rdi, 0\n');
+            salida.write('add rax, rcx\n');
+        \end{lstlisting}
+  \item De manera m\'as abstracta,
+        se puede contar con
+        un objeto encargado indirectamente de
+        construir la salida y generar
+        el c\'odigo assembler:
+        \begin{lstlisting}
+            salida.emitir_mov(RDI, 0);
+            salida.emitir_add(RAX, RCX);
+        \end{lstlisting}
+  \end{itemize}
+\end{itemize}
+Se puede aplicar cualquiera las t\'ecnicas de arriba.
+Para un compilador de peque\~na escala como el de este TP
+es razonable limitarse a una representaci\'on
+sencilla basada en strings.\bigskip
+
+Para los que programen en Haskell:
+tengan en cuenta que el recorrido sobre el AST
+puede requerir mantener estado para generar
+nombres de variables temporales,
+de modo que la funci\'on recursiva deber\'ia estar
+definida en una m\'onada.
+
+\subsection{Compilaci\'on de funciones y rutina principal}
+
+Cada funci\'on \texttt{fun f(...)} en el c\'odigo fuente
+va a corresponderse con una rutina en assembler, que
+llamaremos \texttt{cuca\_f}.
+La rutina principal \texttt{main} invoca a la rutina
+\texttt{cuca\_main}, y luego invoca a la funci\'on
+\texttt{exit(0)} de la biblioteca est\'andar de C.
+Cada rutina tiene un \texttt{ret} al final para
+retornar.
+
+{\em Nota:} llamamos \texttt{cuca\_f}
+a la rutina para evitar conflictos con palabras
+clave y nombres de rutinas ya existentes;
+por ejemplo podr\'iamos tener una funci\'on en
+\cuca que se llame \texttt{global} o \texttt{exit},
+pero no podemos tener una rutina en assembler con
+esos nombres.
+
+Por ejemplo:
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+    fun hola() {
+    }
+
+    fun chau() {
+    }
+
+    fun main() {
+    }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+    section .text
+    global main
+    extern exit
+
+    cuca_hola:
+        ret
+
+    cuca_chau:
+        ret
+
+    cuca_main:
+        ret
+
+    main:
+        call cuca_main
+        mov rdi, 0
+        call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+\subsection{Compilaci\'on de constantes num\'ericas y primitivas putChar/putNum}
+
+Como primer paso para implementar todas las
+funcionalidades del lenguaje, veremos
+c\'omo compilar instrucciones del estilo
+``\texttt{putChar(65)}'' y ``\texttt{putNum(65)}'',
+donde se invoca a alguna de las dos funciones
+primitivas con un par\'ametro num\'erico.
+
+La funcionalidad para compilar una expresi\'on
+(\type{ExprT})
+tal como \texttt{65 + 2 * x}
+deber\'ia recibir dos par\'ametros:
+\begin{enumerate}
+\item
+  La lista de registros del procesador que
+  se encuentran disponibles
+  para almacenar valores temporales.
+\item
+  El registro del procesador en el que se debe
+  almacenar el resultado final del c\'omputo.
+\end{enumerate}
+Para compilar una expresi\'on que representa una
+constante num\'erica como \texttt{65} (\ast{ExprConstNum}),
+lo \'unico que se debe hacer es emitir una
+instrucci\'on:
+\begin{lstlisting}
+    mov registro, 65
+\end{lstlisting}
+donde \texttt{registro} es el registro del procesador
+en el que se desea almacenar el resultado del c\'omputo
+de la expresi\'on.
+
+Al momento de compilar una instrucci\'on que corresponde
+a una invocaci\'on a una funci\'on (\type{StmtCall}),
+si se trata de una funci\'on primitiva como
+\texttt{putChar} o \texttt{putNum},
+el compilador no debe tratarlas igual que las
+invocaciones al resto de las funciones,
+sino que debe emitir c\'odigo dedicado (espec\'ifico).
+\begin{itemize}
+\item La funci\'on \texttt{putChar} de \cuca
+que imprime el caracter ASCII asociado a un n\'umero
+se compila a una
+invocaci\'on a la funci\'on \texttt{putchar} de la
+biblioteca est\'andar de C.
+El primer par\'ametro se recibe en el registro \texttt{rdi}. 
+Por ejemplo:
+
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+    fun main() {
+        putChar(72)
+        putChar(79)
+        putChar(76)
+        putChar(65)
+        putChar(10)
+    }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+    section .text
+    global main
+    extern exit, putchar
+    cuca_main:
+        mov rdi, 72
+        call putchar
+        mov rdi, 79
+        call putchar
+        mov rdi, 76
+        call putchar
+        mov rdi, 65
+        call putchar
+        mov rdi, 10
+        call putchar
+        ret
+    main:
+        call cuca_main
+        mov rdi, 0
+        call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+Observar que se debe agregar \texttt{putchar}
+a la lista de rutinas declaradas como \texttt{extern}.
+\item
+La funci\'on \texttt{putNum} de \cuca
+que imprime un n\'umero en notaci\'on decimal
+se compila a una
+invocaci\'on a la funci\'on \texttt{printf} de la
+biblioteca est\'andar de C.
+Por ejemplo,
+\texttt{putNum(65)}
+se compila a
+\texttt{printf("\%lli", 65)}.
+Se debe dar valor a los siguientes tres registros
+para invocar a la
+funci\'on \texttt{printf}:
+\begin{itemize}
+\item
+  \texttt{rdi}:
+  la constante de texto \texttt{"\%lli"} que se ubica
+  en la secci\'on de datos.
+\item
+  \texttt{rsi}:
+  el n\'umero a imprimir.
+\item
+  \texttt{rax}:
+  la constante 0, indicando que no se proveen m\'as
+  par\'ametros que esos.
+\end{itemize}
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+    fun main() {
+        putNum(12345)
+    }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+    section .data
+    lli_format_string db "%lli"
+    section .text
+    global main
+    extern exit, printf
+    cuca_main:
+        mov rsi, 12345
+        mov rdi, lli_format_string
+        mov rax, 0
+        call printf
+        ret
+    main:
+        call cuca_main
+        mov rdi, 0
+        call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+Observar que se define una constante
+\texttt{lli\_format\_string} en la secci\'on de datos
+donde se guarda la cadena \texttt{"\%lli"}.
+Esta constante se pasa en el registro \texttt{rdi}
+a \texttt{printf}.
+Adem\'as, se agrega \texttt{printf}
+a la lista de rutinas declaradas como \texttt{extern}.
+\end{itemize}
+
+\subsection{Pasaje de par\'ametros y variables locales}
+
+El pasaje de par\'ametros en \cuca hara uso de la
+siguiente convenci\'on:
+\begin{itemize}
+\item
+  Cada par\'ametro y cada variable local
+  tendr\'a asignado un espacio de 64 bits (8 bytes)
+  en la pila del sistema.
+\item
+  El registro \texttt{rsp} se utilizar\'a
+  (como es usual)
+  como puntero al tope de la pila.
+  El registro \texttt{rsp} apunta al elemento en el
+  tope que est\'a {\em presente} en la pila (es decir,
+  no al primer espacio {\em libre}).
+\item
+  El registro \texttt{rbp} se utilizar\'a
+  como puntero a la posici\'on de la pila
+  al inicio de la invocaci\'on a cada funci\'on.
+\item
+  Tener en cuenta que en la arquitectura x86-64
+  la pila crece {\em hacia las direcciones de memoria
+  m\'as bajas}.
+\item
+  Tener en cuenta que las instrucciones \texttt{call} y
+  \texttt{ret} hacen push/pop de valores en la pila. 
+\item
+  La funci\'on invocadora mete
+  los par\'ametros en la pila antes
+  de hacer el \texttt{call}.
+  %Si la cantidad de par\'ametros es impar,
+  %mete un hueco en la pila, para asegurarse
+  %de que la pila quede alineada.
+\item
+  La funci\'on invocada mete
+  los par\'ametros en la pila antes
+  de hacer el \texttt{call}.
+\item
+  Por simplicidad ignoraremos todas las cuestiones de
+  alineamiento.
+\end{itemize}
+
+Un esquema de la pila si
+se invoca a la funci\'on \texttt{f}
+que recibe dos par\'ametros \texttt{x} e \texttt{y}
+y tiene tres variables locales \texttt{a}, \texttt{b}
+y \texttt{c}:
+
+\begin{center}
+\begin{tabular}{ll}
+  \begin{tabular}{|c|l}
+  {\em direcciones de memoria bajas} & 0x00..0 \\
+  $\vdots$ \\
+  %\cline{1-1}
+  %hueco para alinear a 128 bits
+  %& $\leftarrow$ \texttt{rsp} -- tope de la pila
+  %\\
+  \cline{1-1}
+  variable local \texttt{c}
+  & $\leftarrow$ \texttt{rbp - 24}
+                 = \texttt{rsp} : tope de la pila
+  \\
+  \cline{1-1}
+  variable local \texttt{b}
+  & $\leftarrow$ \texttt{rbp - 16}
+  \\
+  \cline{1-1}
+  variable local \texttt{a}
+  & $\leftarrow$ \texttt{rbp - 8}
+  \\
+  \cline{1-1}
+  viejo valor del registro \texttt{rbp}
+  & $\leftarrow$ \texttt{rbp}
+  \\
+  \cline{1-1}
+  direcci\'on de retorno
+  & $\leftarrow$ \texttt{rbp + 8}
+  \\
+  \cline{1-1}
+  par\'ametro \texttt{x}
+  & $\leftarrow$ \texttt{rbp + 16}
+  \\
+  \cline{1-1}
+  par\'ametro \texttt{y}
+  & $\leftarrow$ \texttt{rbp + 24}
+  \\
+  \cline{1-1}
+  $\vdots$ \\
+  {\em direcciones de memoria altas} & 0xff..f \\
+  \end{tabular}
+&
+  \begin{tabular}{ll}
+    \texttt{[rbp + 8]}  & direcci\'on de retorno \\
+    \texttt{[rbp + 16]} & valor del par\'ametro \texttt{x} \\
+    \texttt{[rbp + 24]} & valor del par\'ametro \texttt{y} \\
+    \texttt{[rbp - 8]}  & valor de la variable local \texttt{a} \\
+    \texttt{[rbp - 16]}  & valor de la variable local \texttt{b} \\
+    \texttt{[rbp - 24]}  & valor de la variable local \texttt{c} \\
+  \end{tabular}
+\end{tabular}
+\end{center}
+Siguiendo con esta convenci\'on, todas las rutinas deben
+ser de la siguiente forma:
+\begin{lstlisting}
+cuca_f:
+  push rbp           ; guardar el viejo valor de rbp en la pila
+  mov rbp, rsp       ; actualizar el valor de rbp al tope actual de la pila
+  sub rsp, 8 * N     ; reservar espacio en la pila para N variables locales
+  .
+  .
+  mov rsp, rbp       ; recuperar el viejo tope de la pila
+  pop rbp            ; recuperar el viejo valor de rbp
+  ret
+\end{lstlisting}
+Adem\'as, el c\'odigo para invocar a una funci\'on
+\texttt{f} con $N$ argumentos
+\texttt{e$_0$}, \texttt{e$_2$}, $\hdots$, \texttt{e$_{N-1}$}
+que no devuelve ning\'un resultado
+ser\'a de la forma:
+\begin{lstlisting}
+  sub rsp, 8 * N     ; reservar espacio en la pila para N argumentos
+  ...; evaluar el argumento 0 y guardarlo en [rsp]
+  ...; evaluar el argumento 1 y guardarlo en [rsp + 8]
+  .
+  .
+  ...; evaluar el argumento N-1 y guardarlo en [rsp + 8 * (N - 1)]
+  call cuca_f
+  add rsp, 8 * N     ; "devolver" el espacio de los N argumentos
+\end{lstlisting}
+
+Por ejemplo:
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+    fun f(a : Int, b : Int) {
+        putChar(b)
+        putChar(a)
+    }
+
+    fun main() {
+      f(65, 66)
+    }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+section .text
+global main
+extern exit, putchar
+cuca_f:
+    push rbp
+    mov rbp, rsp
+    mov rdi, [rbp + 24]  ; segundo par\'ametro (b)
+    call putchar
+    mov rdi, [rbp + 16]  ; primer par\'ametro (a)
+    call putchar
+    pop rbp
+    ret
+cuca_main:
+    push rbp
+    mov rbp, rsp
+    sub rsp, 16         ; reservar espacio (2 argumentos)
+    mov rdi, 65
+    mov [rsp + 0], rdi  ; primer argumento (65)
+    mov rdi, 66
+    mov [rsp + 8], rdi  ; segundo argumento (66)
+    call cuca_f
+    add rsp, 16         ; liberar espacio (2 argumentos)
+    pop rbp
+    ret
+main:
+    call cuca_main
+    mov rdi, 0
+    call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+\subsection{Accesos a par\'ametros y variables locales}
+
+Para compilar una expresi\'on \texttt{x} y guardarla
+en un registro, basta con hacer un \texttt{mov}:
+\begin{itemize}
+\item
+  Si \texttt{x} es el $i$-\'esimo par\'ametro,
+  se lo encuentra en la posici\'on de memoria
+  \texttt{[rbp + 8 * (i + 1)]} (por ejemplo, el segundo
+  par\'ametro est\'a en \texttt{[rbp + 24]}).
+\item
+  Si \texttt{x} es la $i$-\'esima variable local,
+  se la encuentra en la posici\'on de memoria
+  \texttt{[rbp - 8 * i]} (por ejemplo, la segunda
+  variable local est\'a en \texttt{[rbp - 16]}).
+\end{itemize}
+Por ejemplo:
+\begin{lstlisting}
+  mov rdi, [rbp + 24]  ; leer el segundo par\'ametro
+  mov rsi, [rbp - 16]  ; leer la segunda variable local
+\end{lstlisting}
+El orden de los par\'ametros y variables locales se
+puede elegir arbitrariamente, pero obviamente la elecci\'on
+tiene que ser consistente a lo largo del programa.
+
+\subsection{Asignaci\'on a par\'ametros y variables locales}
+
+Para compilar una asignaci\'on \texttt{x := expresi\'on},
+compilar primero el valor de la expresi\'on en alg\'un registro,
+por ejemplo en \texttt{rdi}, y luego hacer un \texttt{mov}
+a la direcci\'on en la que se encuentra el par\'ametro o la
+variable local.
+
+Por ejemplo:
+\begin{lstlisting}
+  ...; compilar la expresi\'on y guardar el resultado en rdi
+  mov [rbp + 24], rdi  ; reasignar el segundo par\'ametro a dicho valor
+\end{lstlisting}
+
+Por ejemplo:
+
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+    fun f(a : Int) {
+        a := 65
+        b := 66
+        putChar(a)
+        putChar(b)
+    }
+
+    fun main() {
+      f(0)
+    }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+section .text
+global main
+extern exit, putchar
+cuca_f:
+    push rbp
+    mov rbp, rsp
+    sub rsp, 8           ; reservar espacio para b
+    mov rdi, 65
+    mov [rbp + 16], rdi  ; asignar a := 65
+    mov rdi, 66
+    mov [rbp - 8], rdi   ; asignar b := 66
+    mov rdi, [rbp + 16]  ; acceder al par\'ametro a
+    call putchar
+    mov rdi, [rbp - 8]   ; acceder a la variable local b
+    call putchar
+    mov rsp, rbp         ; devolver el espacio de b
+    pop rbp
+    ret
+cuca_main:
+    push rbp
+    mov rbp, rsp
+    sub rsp, 8      ; reservar espacio para el par\'ametro a
+    mov rdi, 0
+    mov [rsp], rdi  ; pasaje del par\'ametro a = 0
+    call cuca_f
+    mov rsp, rbp    ; devolver el espacio del par\'ametro a
+    pop rbp
+    ret
+main:
+    call cuca_main
+    mov rdi, 0
+    call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+\subsection{Compilaci\'on de constantes booleanas}
+
+Las constantes booleanas se representan con enteros de 64 bits.
+El falso se representa con la constante binaria $\underbrace{0\hdots0}_{\text{64 veces}}$
+y el verdadero con la constante binaria $\underbrace{1\hdots1}_{\text{64 veces}}$.
+Notar que en complemento a 2 la constante \texttt{True} se puede escribir directamente
+como $-1$. Por ejemplo:
+\begin{lstlisting}
+  mov rdi, 0    ; guardar en rdi la representaci\'on de la constante False
+  mov rsi, -1   ; guardar en rsi la representaci\'on de la constante True
+\end{lstlisting}
+
+\subsection{Compilaci\'on de operadores aritm\'eticos, l\'ogicos y relacionales}
+
+Para compilar una expresi\'on $e$, supondremos que
+disponemos de un conjunto de registros que se encuentran
+libres, y que queremos guardar el resultado de evaluar $e$
+en uno de dichos registros.
+
+Supongamos primero que los registros disponibles son suficientes
+para evaluar la expresi\'on $e$. En ese caso podemos hacerlo con
+un algoritmo como el siguiente:
+\begin{lstlisting}
+.entrada Una expresi\'on (*@$e$@*) y una lista de registros disponibles (*@$r_1,r_2,\hdots,r_n$@*).
+.salida  C\'odigo para evaluar la expresi\'on (*@$e$@*) usando los registros (*@$r_1,r_2,\hdots,r_n$@*)
+         y dejando el resultado final en (*@$r_1$@*).
+  .if (*@$e$@*) es una expresi\'on at\'omica
+          por ejemplo una variable o una constante
+      Generar c\'odigo para "(*@$r_1 := e$@*)".
+  .elseif (*@$e$@*) es una operaci\'on unaria (*@${\bf op}(e')$@*)
+      Generar c\'odigo para evaluar (*@$e'$@*) usando los registros (*@$r_1,r_2,\hdots,r_n$@*).
+      Generar c\'odigo para "(*@$r_1$@*) := (*@{\bf op}@*)((*@$r_1$@*))".
+  .elseif (*@$e$@*) es una operaci\'on binaria (*@${\bf op}(e_1, e_2)$@*)
+      Generar c\'odigo para evaluar (*@$e_1$@*) usando los registros (*@$r_1,r_2,\hdots,r_n$@*).
+      Generar c\'odigo para evaluar (*@$e_2$@*) usando los registros (*@$r_2,\hdots,r_n$@*).
+      Generar c\'odigo para "(*@$r_1$@*) := (*@{\bf op}@*)((*@$r_1$@*), (*@$r_2$@*))".
+  .end
+\end{lstlisting}
+
+El conjunto de los registros de los que vamos a disponer
+en la arquitectura x86-64 es:
+$$
+\texttt{rdi}
+\hspace{.5cm}
+\texttt{rsi}
+\hspace{.5cm}
+\texttt{rax}
+\hspace{.5cm}
+\texttt{rbx}
+\hspace{.5cm}
+\texttt{rcx}
+\hspace{.5cm}
+\texttt{rdx}
+\hspace{.5cm}
+\texttt{r8}
+\hspace{.5cm}
+\texttt{r9}
+\hspace{.5cm}
+\texttt{r10}
+\hspace{.5cm}
+\texttt{r11}
+\hspace{.5cm}
+\texttt{r12}
+\hspace{.5cm}
+\texttt{r13}
+\hspace{.5cm}
+\texttt{r14}
+\hspace{.5cm}
+\texttt{r15}
+$$
+Si lo necesitan, pueden reservar algunos de los registros
+para almacenar valores temporales.
+Un ejemplo de c\'omo compilar una expresi\'on sencilla
+que se puede calcular usando \'unicamente los registros
+del procesador:
+
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+    fun main() {
+      a := 75 - (4 + 6)
+      putChar(a)
+    }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+    section .text
+    global main
+    extern exit, putchar
+    cuca_main:
+        push rbp
+        mov rbp, rsp
+        sub rsp, 8         ; reservar espacio para a
+        mov rdi, 75        ; guardar 75 en el 1er registro
+        mov rsi, 4         ; guardar 4 en el 2do registro
+        mov rax, 6         ; guardar 6 en el 3er registro
+        add rsi, rax       ; sumar 4 y 6
+        sub rdi, rsi       ; restar 75 y 10
+        mov [rbp - 8], rdi ; guardar el resultado en a
+        mov rdi, [rbp - 8]
+        call putchar
+        mov rsp, rbp
+        pop rbp
+        ret
+    main:
+        call cuca_main
+        mov rdi, 0
+        call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+En caso de que los registros no alcancen para
+compilar una expresi\'on, se deben reservar m\'as
+variables locales en la pila.
+Por ejemplo, si dispusi\'eramos \'unicamente de
+los registros \texttt{rdi} y \texttt{rsi},
+el c\'odigo anterior se compilar\'ia de la manera
+siguiente ({\bf comparar con el c\'odigo anterior}):
+
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+    fun main() {
+      a := 75 - (4 + 6)
+      putChar(a)
+    }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+    section .text
+    global main
+    extern exit, putchar
+    cuca_main:
+        push rbp
+        mov rbp, rsp
+        sub rsp, 16         ; reservar espacio para a y
+                            ; para una variable temporal
+        mov rdi, 75         ; guardar 75 en el 1er registro
+        mov rsi, 4          ; guardar 4 en el 2do registro
+        mov r15, 6
+        mov [rbp - 16], r15 ; guardar 6 en la primera
+                            ; variable temporal
+        add rsi, [rbp - 16] ; sumar 4 y 6
+        sub rdi, rsi        ; restar 75 y 10
+        mov [rbp - 8], rdi  ; guardar el resultado en a
+        mov rdi, [rbp - 8]
+        call putchar
+        mov rsp, rbp
+        pop rbp
+        ret
+    main:
+        call cuca_main
+        mov rdi, 0
+        call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+Tener en cuenta que cada funci\'on debe reservar espacio
+en la pila para guardar todas sus variables locales
+y, adem\'as, todas las variables temporales que se requieran para
+compilar las expresiones que aparecen en su cuerpo.
+Para ello se recomienda emitir el ``pr\'ologo'' de cada
+funci\'on despu\'es de haber visitado su cuerpo, para
+saber cu\'antas variables temporales se necesitan en total.
+
+\subsubsection{C\'odigo para compilar los operadores}
+
+Para compilar las operaciones binarias y unarias se recomienda
+usar las siguientes instrucciones:
+\begin{center}
+\begin{tabular}{l|l|l|l}
+{\bf Operaci\'on} & {\bf C\'odigo} & {\bf Efecto} & {\bf Comentarios} \\
+\hline
+suma  & \texttt{add $x$, $y$} & $x := x + y$ \\
+resta & \texttt{sub $x$, $y$} & $x := x - y$ \\
+producto & \texttt{imul $x$} & $\texttt{rax} := \texttt{rax} * x$ & Deja el resultado en \texttt{rax} y pisa el valor del registro \texttt{rdx}. \\
+``y'' l\'ogico & \texttt{and $x$, $y$} & $x := x \& y$ & Operaci\'on bit a bit.\\
+``o'' l\'ogico & \texttt{or $x$, $y$} & $x := x \,|\, y$ & Operaci\'on bit a bit.\\
+``no'' l\'ogico & \texttt{not $x$} & $x := \,\sim\!x$ & Operaci\'on bit a bit.\\
+\end{tabular}
+\end{center}
+Por simplicidad puede ser conveniente reservar los registros
+\texttt{rax} y \texttt{rdx}, es decir, no considerarlos
+disponibles para almacenar los resultados intermedios en
+los c\'alculos de las expresiones, y usarlos \'unicamente como
+registros temporales para calcular el producto (y potencialmente
+como registros temporales para algunos otros fines).
+
+Para compilar los operadores relacionales
+\texttt{<=}, \texttt{>=}, \texttt{<}, \texttt{>},
+\texttt{==}, \texttt{!=},
+se recomienda emitir la instrucci\'on ``\texttt{cmp $x$, $y$}''
+y a continuaci\'on una instruci\'on de salto condicional.
+
+\begin{center}
+\begin{tabular}{l|l|l}
+{\bf Operaci\'on} & {\bf C\'odigo} & {\bf Efecto} \\
+\hline
+Menor o igual & \texttt{jle $etiqueta$} & Salta a $etiqueta$ si $x \leq y$. \\
+Mayor o igual & \texttt{jge $etiqueta$} & Salta a $etiqueta$ si $x \geq y$. \\
+Menor estricto & \texttt{jl $etiqueta$} & Salta a $etiqueta$ si $x < y$. \\
+Mayor estricto & \texttt{jg $etiqueta$} & Salta a $etiqueta$ si $x > y$. \\
+Igual & \texttt{je $etiqueta$} & Salta a $etiqueta$ si $x = y$. \\
+Distinto & \texttt{jne $etiqueta$} & Salta a $etiqueta$ si $x \neq y$. \\
+\end{tabular}
+\end{center}
+
+Se deben crear etiquetas nuevas para cada operaci\'on relacional,
+y se sugiere combinar las operaciones de salto condicional
+anteriores con la operaci\'on de salto incondicional
+\texttt{jmp $etiqueta$}.
+
+Por ejemplo:
+
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+    fun main() {
+      putChar(42 == 42)
+    }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+    section .text
+    global main
+    extern exit, putchar
+    cuca_main:
+        push rbp
+        mov rbp, rsp
+        mov rdi, 42
+        mov rsi, 42
+        cmp rdi, rsi  ; comparar los dos valores
+        je .label_1   ; si son iguales saltar a .label_1
+        mov rdi, 0    ; si no eran iguales
+                      ;   guardar "False" en rdi
+        jmp .label_2  ;   y saltar a .label_2
+    .label_1:
+        mov rdi, -1   ; si eran iguales
+                      ;   guardar "True" en rdi
+    .label_2:
+        call putchar
+        mov rsp, rbp
+        pop rbp
+        ret
+    main:
+        call cuca_main
+        mov rdi, 0
+        call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+\subsection{Compilaci\'on de invocaciones a funciones que devuelven valores y del \texttt{return}}
+
+Las funciones retornar\'an valores en un registro distinguido.
+Por ejemplo, pueden devolver el valor en el registro \texttt{rax}.
+De esta manera podemos compilar la instrucci\'on \texttt{return}
+simplemente como un \texttt{mov} al registro \texttt{rax}.
+La invocaci\'on a una funci\'on que devuelve un valor se compila
+de igual manera que 
+la invocaci\'on a un procedimiento.
+Cuando la subrutina retorna el control a la rutina que la invoc\'o,
+puede asumir que el resultado de retorno se encuentra almacenado en
+\texttt{rax}.
+
+Hay una dificultad extra al momento de compilar invocaciones a
+funciones. Por ejemplo,
+para compilar la expresi\'on \texttt{1 + f()},
+se almacena primero el \texttt{1} en el registro auxiliar \texttt{rdi}
+y luego se invoca a \texttt{f}. El inconveniente es que \texttt{f}
+podr\'ia necesitar usar el registro \texttt{rdi}.
+Lo que haremos es lo siguiente:
+\begin{itemize}
+\item Antes de invocar a una funci\'on,
+      se almacenar\'an uno por uno todos
+      los registros que est\'en siendo utilizados como auxiliares,
+      usando la instrucci\'on \texttt{push $registro$}.
+\item Al finalizar la invocaci\'on a una funci\'on,
+      se recuperar\'an uno por uno todos
+      los registros de la pila,
+      usando la instrucci\'on \texttt{pop $registro$}.
+\end{itemize}
+
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+    fun uno() : Int {
+      return 1
+    }
+
+    fun main() {
+      putChar(65 + 2 * uno())
+    }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+  section .text
+  global main
+  extern exit, putchar
+  cuca_uno:
+      push rbp
+      mov rbp, rsp
+      mov rax, 1   ; valor de retorno
+      mov rsp, rbp
+      pop rbp
+      ret
+  cuca_main:
+      push rbp
+      mov rbp, rsp
+      mov rdi, 65
+      mov rsi, 2
+      push rdi      ; guardar 1er registro temporal
+      push rsi      ; guardar 2do registro temporal
+      call cuca_uno ; invocar a uno()
+      pop rsi       ; recuperar 2do registro temporal
+      pop rdi       ; recuperar 1er registro temporal
+      mov rbx, rax  ; guardar en rbx el valor
+                    ;   devuelto por la funci\'on uno()
+      mov rax, rsi
+      imul rbx
+      mov rsi, rax
+      add rdi, rsi
+      call putchar
+      mov rsp, rbp
+      pop rbp
+      ret
+  main:
+      call cuca_main
+      mov rdi, 0
+      call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+\subsection{Compilaci\'on de estructuras de control -- \texttt{if} y \texttt{while}}
+
+Las estructuras de control se compilan de la siguiente manera.
+Se muestra como compilar el \texttt{if} con \texttt{else}.
+Los nombres de las etiquetas deben generarse de tal manera que sean
+\'unicos (no debe haber dos etiquetas repetidas).
+El \texttt{if} sin else y el \texttt{while} quedan como ejercicios.
+
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+  if <condici\'on> {
+      <bloque1>
+  } else {
+      <bloque2>
+  }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+  {c\'odigo para evaluar <condici\'on> en el registro rdi}
+  cmp rdi, 0      ; comparar el valor de la condici\'on con 0
+  je .label_else  ; si es igual a 0 (es decir, False),
+                  ; saltar a .label_else
+  {c\'odigo para ejecutar <bloque1>}
+  jmp .label_fin
+  .label_else:
+  {c\'odigo para ejecutar <bloque2>}
+  .label_fin:
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+\subsection{Compilaci\'on de vectores}
+
+Para compilar las operaciones de vectores se proceder\'a
+de la manera que se describe a continuaci\'on.
+
+\subsubsection{Creaci\'on de un vector}
+Para compilar la creaci\'on de un vector
+$[e_1, \hdots, e_n]$
+se reservar\'a un espacio de $n + 1$ lugares
+en la pila.
+En el primer lugar se guardar\'a el tama\~no del vector ($n$)
+y en los $n$ lugares restantes se guardar\'a el resultado
+de evaluar cada una de las expresiones $e_1, \hdots, e_n$.
+El resultado final de evaluar la expresi\'on 
+$[e_1, \hdots, e_n]$ ser\'a la posici\'on de memoria
+en la que empieza el vector.
+Por ejemplo:
+
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+  fun main() {
+    x := [1, 2, 3]
+  }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+  section .text
+  global main
+  extern exit
+  cuca_main:
+      push rbp
+      mov rbp, rsp
+      sub rsp, 8
+      sub rsp, 32     ; reservar espacio para 4 lugares
+                      ;   en la pila
+      mov rdi, rsp    ; rdi es un puntero a la posici\'on
+                      ;   de memoria donde comienza el vector
+      mov qword [rdi], 3        ; almacenar el tama\~no del vector
+      mov rsi, 1
+      mov qword [rdi + 8], rsi  ; almacenar el primer elemento
+      mov rsi, 2
+      mov qword [rdi + 16], rsi ; almacenar el segundo elemento
+      mov rsi, 3
+      mov qword [rdi + 24], rsi ; almacenar el tercer elemento
+      mov [rbp - 8], rdi
+      mov rsp, rbp
+      pop rbp
+      ret
+  main:
+      call cuca_main
+      mov rdi, 0
+      call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+\subsubsection{Tama\~no de un vector}
+
+Para calcular el tama\~no de un vector basta con desreferenciar
+el puntero:
+
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+  fun main() {
+    x := [1,2,3]
+    putChar(#x)
+  }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+  section .text
+  global main
+  extern exit, putchar
+  cuca_main:
+      push rbp
+      mov rbp, rsp
+      sub rsp, 8
+      sub rsp, 32
+      mov rdi, rsp
+      mov qword [rdi], 3
+      mov rsi, 1
+      mov qword [rdi + 8], rsi
+      mov rsi, 2
+      mov qword [rdi + 16], rsi
+      mov rsi, 3
+      mov qword [rdi + 24], rsi
+      mov [rbp - 8], rdi
+      mov rax, [rbp - 8]        ; cargar en rax el valor de la
+                                ;   variable local x
+                                ;   que es un puntero a una posici\'on
+                                ;   de memoria
+      mov rdi, [rax]            ; desreferenciar rax
+      call putchar
+      mov rsp, rbp
+      pop rbp
+      ret
+  main:
+      call cuca_main
+      mov rdi, 0
+      call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+\subsubsection{Acceso a un vector}
+
+Para acceder a la $n$-\'esima posici\'on de un vector basta con
+desreferenciar el puntero; se debe sumar uno a la posici\'on para
+tener en cuenta que la primera posici\'on de memoria se utiliza
+para guardar el tama\~no del vector,
+y se debe multiplicar el \'indice por 8 para tener
+en cuenta que el tama\~no de cada entrada del vector es de 64
+bits (es decir, 8 bytes).
+La multiplicaci\'on por 8 se puede implementar f\'acilmente
+usando la operaci\'on \texttt{sal rax, 3} que hace un {\em shift}
+3 bits a la izquierda.
+
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+  fun main() {
+    x := [10,20,30]
+    putChar(x[2])
+  }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+  section .text
+  global main
+  extern exit, putchar
+  cuca_main:
+      push rbp
+      mov rbp, rsp
+      sub rsp, 8
+      sub rsp, 32
+      mov rdi, rsp
+      mov qword [rdi], 3
+      mov rsi, 10
+      mov qword [rdi + 8], rsi
+      mov rsi, 20
+      mov qword [rdi + 16], rsi
+      mov rsi, 30
+      mov qword [rdi + 24], rsi
+      mov [rbp - 8], rdi
+      mov rdi, 2          ; rdi = 2
+      mov rax, rdi        ; rax = rdi
+      inc rax             ; rax = rdi + 1
+      sal rax, 3          ; rax = 8 * (rdi + 1)
+      add rax, [rbp - 8]  ; rax = [rbp - 8] + 8 * (rdi + 1)
+      mov rdi, [rax]      ; desreferenciar el puntero rax
+      call putchar
+      mov rsp, rbp
+      pop rbp
+      ret
+  main:
+      call cuca_main
+      mov rdi, 0
+      call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+\subsubsection{Asignaci\'on a un vector}
+
+Para asignar a la $n$-\'esima posici\'on de un vector
+en la instrucci\'on \texttt{x[n] := e}
+se debe almacenar el resultado de evaluar la expresi\'on \texttt{e}
+en la posici\'on de memoria correspondiente a $n$
+(que se debe calcular de manera an\'aloga a la hecha
+para el acceso a un vector). Por ejemplo:
+
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+  fun main() {
+    x := [10,20,30]
+    x[2] := 33
+  }
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+  section .text
+  global main
+  extern exit
+  cuca_main:
+      push rbp
+      mov rbp, rsp
+      sub rsp, 8
+      sub rsp, 32
+      mov rdi, rsp
+      mov qword [rdi], 3
+      mov rsi, 10
+      mov qword [rdi + 8], rsi
+      mov rsi, 20
+      mov qword [rdi + 16], rsi
+      mov rsi, 30
+      mov qword [rdi + 24], rsi
+      mov [rbp - 8], rdi
+      mov rdi, 2          ; rdi = 2
+      mov rsi, 33
+      mov rax, rdi        ; rax = rdi
+      inc rax             ; rax = rdi + 1
+      sal rax, 3          ; rax = 8 * (rdi + 1)
+      add rax, [rbp - 8]  ; rax = [rbp - 8] + 8 * (rdi + 1)
+      mov [rax], rsi      ; almacenar en la posici\'on
+                          ;  del puntero rax
+      mov rsp, rbp
+      pop rbp
+      ret
+  main:
+      call cuca_main
+      mov rdi, 0
+      call exit
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+\section{Pautas de entrega}
+
+Para entregar el TP se debe enviar el c\'odigo fuente por e-mail
+a la casilla \texttt{foones@gmail.com} hasta las 23:59:59 del d\'ia
+estipulado para la entrega, incluyendo \texttt{[TP lds-est-parse]} en
+el asunto y el nombre de los integrantes del grupo en el cuerpo
+del e-mail. No es necesario hacer un informe sobre el TP, pero se espera
+que el c\'odigo sea razonablemente legible. Se debe incluir un README
+indicando las dependencias y el mecanismo de ejecuci\'on
+recomendado para que el programa provea la funcionalidad pedida.
+
+\end{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% entradasalida
+
+\begin{center}
+\begin{tabular}[t]{c@{\hspace{1cm}}|@{\hspace{1cm}}c}
+Entrada & Salida
+\\
+\hline
+  \begin{lstlisting}
+  #1
+  \end{lstlisting}
+&
+  \begin{lstlisting}
+  #2
+  \end{lstlisting}
+\end{tabular}
+\end{center}
+
+

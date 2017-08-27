@@ -1,0 +1,64 @@
+
+// Funciones que retornan valores:
+// div mod recursivo
+
+fun div(x : Int, y : Int) : Int {
+    if x < y {
+       res := 0
+    } else {
+       res := 1 + div(x - y, y)
+    }
+    return res
+}
+
+fun mod(x : Int, y : Int) : Int {
+    if x < y {
+       res := x
+    } else {
+       res := mod(x - y, y)
+    }
+    return res
+}
+
+fun testDivMod(x : Int, y : Int) {
+  putNum(x)
+  putChar(32)
+  putChar(100)
+  putChar(105)
+  putChar(118)
+  putChar(32)
+  putNum(y)
+  putChar(32)
+  putChar(61)
+  putChar(32)
+  putNum(div(x, y))
+  putChar(32)
+  putChar(124)
+  putChar(32)
+  putNum(x)
+  putChar(32)
+  putChar(109)
+  putChar(111)
+  putChar(100)
+  putChar(32)
+  putNum(y)
+  putChar(32)
+  putChar(61)
+  putChar(32)
+  putNum(mod(x, y))
+  putChar(10)
+}
+
+fun testDivModTo(x : Int, y : Int, n : Int) {
+    if x < n {
+        testDivMod(x, y)
+        testDivModTo(x + 1, y, n)
+    }
+}
+
+fun main() {
+    testDivModTo(0, 2, 10)
+    testDivModTo(0, 3, 10)
+    testDivModTo(0, 7, 100)
+    testDivModTo(0, 10, 100)
+}

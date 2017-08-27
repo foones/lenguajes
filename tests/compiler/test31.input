@@ -1,0 +1,78 @@
+
+// Operaciones logicas (and / or)
+
+fun p(x : Bool) {
+    if x {
+        putChar(84)
+        putChar(114)
+        putChar(117)
+        putChar(101)
+    } else {
+        putChar(70)
+        putChar(97)
+        putChar(108)
+        putChar(115)
+        putChar(101)
+    }
+}
+
+fun sep(op : Int) {
+    putChar(32)
+    if op == 1 {
+      putChar(97)
+      putChar(110)
+      putChar(100)
+    } else {
+      putChar(111)
+      putChar(114)
+    }
+    putChar(32)
+}
+
+fun eq() {
+    putChar(32)
+    putChar(61)
+    putChar(32)
+}
+
+fun enter() {
+    putChar(10)
+}
+
+fun fila(x : Bool, op1 : Int, y : Bool, op2 : Int, z : Bool) {
+
+    if op1 == 1 {
+        r := x and y
+    } else {
+        r := x or y
+    }
+
+    if op2 == 1 {
+        r := r and z
+    } else {
+        r := r or z
+    }
+
+    p(x) sep(op1) p(y) sep(op2) p(z) eq() p(r) enter()
+}
+
+fun tabla(op1 : Int, op2 : Int) {
+  putChar(45) putChar(45) putChar(45) putChar(10)
+  fila(False, op1, False, op2, False)
+  fila(False, op1, False, op2, True)
+  fila(False, op1, True,  op2, False)
+  fila(False, op1, True,  op2, True)
+  fila(True,  op1, False, op2, False)
+  fila(True,  op1, False, op2, True)
+  fila(True,  op1, True,  op2, False)
+  fila(True,  op1, True,  op2, True)
+  putChar(45) putChar(45) putChar(45) putChar(10)
+}
+
+fun main() {
+  tabla(1, 1)
+  tabla(1, 2)
+  tabla(2, 1)
+  tabla(2, 2)
+}
+

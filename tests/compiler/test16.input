@@ -1,0 +1,40 @@
+
+// Expresiones de suma anidadas
+fun main() {
+  a := 1
+  b := 2
+  c := 4
+  d := 8
+  e := 16
+  putNum(                a) putChar(10)
+  putNum(            b    ) putChar(10)
+  putNum(            b + a) putChar(10)
+  putNum(        c        ) putChar(10)
+  putNum(        c     + a) putChar(10)
+  putNum(        c + b    ) putChar(10)
+  putNum(        c + b + a) putChar(10)
+  putNum(    d            ) putChar(10)
+  putNum(    d +         a) putChar(10)
+  putNum(    d +     b    ) putChar(10)
+  putNum(    d +     b + a) putChar(10)
+  putNum(    d + c        ) putChar(10)
+  putNum(    d + c     + a) putChar(10)
+  putNum(    d + c + b    ) putChar(10)
+  putNum(    d + c + b + a) putChar(10)
+  putNum(e + d + c + b + a) putChar(10)
+  putNum(e +             a) putChar(10)
+  putNum(e +         b    ) putChar(10)
+  putNum(e +         b + a) putChar(10)
+  putNum(e +     c        ) putChar(10)
+  putNum(e +     c     + a) putChar(10)
+  putNum(e +     c + b    ) putChar(10)
+  putNum(e +     c + b + a) putChar(10)
+  putNum(e + d            ) putChar(10)
+  putNum(e + d +         a) putChar(10)
+  putNum(e + d +     b    ) putChar(10)
+  putNum(e + d +     b + a) putChar(10)
+  putNum(e + d + c        ) putChar(10)
+  putNum(e + d + c     + a) putChar(10)
+  putNum(e + d + c + b    ) putChar(10)
+  putNum(e + d + c + b + a) putChar(10)
+}

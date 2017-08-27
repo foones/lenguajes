@@ -1,0 +1,8 @@
+False or False or False = False
+False or False or True = True
+False or True or False = True
+False or True or True = True
+True or False or False = True
+True or False or True = True
+True or True or False = True
+True or True or True = True

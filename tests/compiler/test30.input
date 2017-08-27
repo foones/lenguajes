@@ -1,0 +1,25 @@
+// Igualdad
+
+fun main() {
+    if 1 == 1 { putChar(65) }
+    if 1 == 2 { putChar(66) }
+    if 2 == 2 { putChar(67) }
+    if 3 == 2 { putChar(68) }
+    if 3 == 3 { putChar(69) }
+
+    x := 1
+    if x == 1 { putChar(70) }
+    if x == 2 { putChar(71) }
+    if 1 == x { putChar(72) }
+    if 2 == x { putChar(73) }
+    if x == x { putChar(74) }
+
+    x := 2
+    if x == 1 { putChar(75) }
+    if x == 2 { putChar(76) }
+    if 1 == x { putChar(77) }
+    if 2 == x { putChar(78) }
+    if x == x { putChar(79) }
+    putChar(10)
+
+}

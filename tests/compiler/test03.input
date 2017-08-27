@@ -1,0 +1,8 @@
+// putNum
+
+fun main() {
+  putNum(123456)
+  putChar(10)
+  putNum(654321)
+  putChar(10)
+}

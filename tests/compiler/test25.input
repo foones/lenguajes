@@ -1,0 +1,36 @@
+// Constantes booleanas, if sin else
+
+fun f(x : Bool) {
+    if x {
+        putChar(64)
+    }
+}
+
+fun main() {
+    if True {
+        putChar(65)
+    }
+    if False {
+        putChar(66)
+    }
+
+    b := True
+    if b {
+        putChar(67)
+    }
+    b := False
+    if b {
+        putChar(68)
+    }
+    putChar(69)
+    f(True)
+    putChar(70)
+    f(False)
+    putChar(71)
+    f(b)
+    putChar(72)
+    b := True
+    f(b)
+
+    putChar(10)
+}

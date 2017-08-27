@@ -1,0 +1,25 @@
+
+// Invocaciones anidadas a procedimientos sin parametros.
+
+fun f() {
+  putChar(104)
+  putChar(111)
+  putChar(108)
+  putChar(97)
+  putChar(10)
+  g()
+}
+
+fun g() {
+  putChar(99)
+  putChar(104)
+  putChar(97)
+  putChar(117)
+  putChar(10)
+}
+
+fun main() {
+  f()
+  f()
+  g()
+}

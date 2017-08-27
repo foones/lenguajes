@@ -1,0 +1,40 @@
+---
+False and False and False = False
+False and False and True = False
+False and True and False = False
+False and True and True = False
+True and False and False = False
+True and False and True = False
+True and True and False = False
+True and True and True = True
+---
+---
+False and False or False = False
+False and False or True = True
+False and True or False = False
+False and True or True = True
+True and False or False = False
+True and False or True = True
+True and True or False = True
+True and True or True = True
+---
+---
+False or False and False = False
+False or False and True = False
+False or True and False = False
+False or True and True = True
+True or False and False = False
+True or False and True = True
+True or True and False = False
+True or True and True = True
+---
+---
+False or False or False = False
+False or False or True = True
+False or True or False = True
+False or True or True = True
+True or False or False = True
+True or False or True = True
+True or True or False = True
+True or True or True = True
+---

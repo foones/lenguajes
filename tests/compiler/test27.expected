@@ -1,0 +1,8 @@
+False and False and False = False
+False and False and True = False
+False and True and False = False
+False and True and True = False
+True and False and False = False
+True and False and True = False
+True and True and False = False
+True and True and True = True

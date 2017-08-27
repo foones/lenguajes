@@ -1,0 +1,14 @@
+
+// Invocacion a procedimiento sin parametros.
+
+fun f() {
+  putChar(104)
+  putChar(111)
+  putChar(108)
+  putChar(97)
+  putChar(10)
+}
+
+fun main() {
+  f()
+}

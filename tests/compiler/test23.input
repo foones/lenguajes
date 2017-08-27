@@ -1,0 +1,92 @@
+// Producto: productos anidados
+
+fun main() {
+  putNum(2 * 3 * 7)
+  putChar(10)
+
+  putNum(2 * (3 * 7))
+  putChar(10)
+
+  a := 2
+  b := 3
+  putNum(a * a * a * a) putChar(10)
+  putNum(a * a * (a * a)) putChar(10)
+  putNum(a * (a * a * a)) putChar(10)
+  putNum(a * (a * (a * a))) putChar(10)
+
+  putNum(a * a * a * b) putChar(10)
+  putNum(a * a * (a * b)) putChar(10)
+  putNum(a * (a * a * b)) putChar(10)
+  putNum(a * (a * (a * b))) putChar(10)
+
+  putNum(a * a * b * a) putChar(10)
+  putNum(a * a * (b * a)) putChar(10)
+  putNum(a * (a * b * a)) putChar(10)
+  putNum(a * (a * (b * a))) putChar(10)
+
+  putNum(a * a * b * b) putChar(10)
+  putNum(a * a * (b * b)) putChar(10)
+  putNum(a * (a * b * b)) putChar(10)
+  putNum(a * (a * (b * b))) putChar(10)
+
+  putNum(a * b * a * a) putChar(10)
+  putNum(a * b * (a * a)) putChar(10)
+  putNum(a * (b * a * a)) putChar(10)
+  putNum(a * (b * (a * a))) putChar(10)
+
+  putNum(a * b * a * b) putChar(10)
+  putNum(a * b * (a * b)) putChar(10)
+  putNum(a * (b * a * b)) putChar(10)
+  putNum(a * (b * (a * b))) putChar(10)
+
+  putNum(a * b * b * a) putChar(10)
+  putNum(a * b * (b * a)) putChar(10)
+  putNum(a * (b * b * a)) putChar(10)
+  putNum(a * (b * (b * a))) putChar(10)
+
+  putNum(a * b * b * b) putChar(10)
+  putNum(a * b * (b * b)) putChar(10)
+  putNum(a * (b * b * b)) putChar(10)
+  putNum(a * (b * (b * b))) putChar(10)
+
+  putNum(b * a * a * a) putChar(10)
+  putNum(b * a * (a * a)) putChar(10)
+  putNum(b * (a * a * a)) putChar(10)
+  putNum(b * (a * (a * a))) putChar(10)
+
+  putNum(b * a * a * b) putChar(10)
+  putNum(b * a * (a * b)) putChar(10)
+  putNum(b * (a * a * b)) putChar(10)
+  putNum(b * (a * (a * b))) putChar(10)
+
+  putNum(b * a * b * a) putChar(10)
+  putNum(b * a * (b * a)) putChar(10)
+  putNum(b * (a * b * a)) putChar(10)
+  putNum(b * (a * (b * a))) putChar(10)
+
+  putNum(b * a * b * b) putChar(10)
+  putNum(b * a * (b * b)) putChar(10)
+  putNum(b * (a * b * b)) putChar(10)
+  putNum(b * (a * (b * b))) putChar(10)
+
+  putNum(b * b * a * a) putChar(10)
+  putNum(b * b * (a * a)) putChar(10)
+  putNum(b * (b * a * a)) putChar(10)
+  putNum(b * (b * (a * a))) putChar(10)
+
+  putNum(b * b * a * b) putChar(10)
+  putNum(b * b * (a * b)) putChar(10)
+  putNum(b * (b * a * b)) putChar(10)
+  putNum(b * (b * (a * b))) putChar(10)
+
+  putNum(b * b * b * a) putChar(10)
+  putNum(b * b * (b * a)) putChar(10)
+  putNum(b * (b * b * a)) putChar(10)
+  putNum(b * (b * (b * a))) putChar(10)
+
+  putNum(b * b * b * b) putChar(10)
+  putNum(b * b * (b * b)) putChar(10)
+  putNum(b * (b * b * b)) putChar(10)
+  putNum(b * (b * (b * b))) putChar(10)
+}
+

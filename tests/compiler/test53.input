@@ -1,0 +1,39 @@
+// Vectores: creacion, longitud, acceso
+
+fun printVector(v : Vec) {
+    i := 0
+    putChar(91)
+    while i < #v {
+        putNum(v[i])
+        i := i + 1
+        if i < #v {
+            putChar(44)
+            putChar(32)
+        }
+    }
+    putChar(93)
+    putChar(10)
+}
+
+fun sumVector(v : Vec) : Int {
+    i := 0
+    s := 0
+    while i < #v {
+        s := s + v[i]
+        i := i + 1
+    }
+    return s
+}
+
+fun main() {
+    v := [1, 2, 3]
+    printVector(v)
+    putNum(sumVector(v)) putChar(10)
+
+    v := [10, 20, 30]
+    printVector(v)
+    putNum(sumVector(v)) putChar(10)
+
+    printVector([11, 22, 33, 44, 55, 66, 77, 88, 99])
+    putNum(sumVector([11, 22, 33, 44, 55, 66, 77, 88, 99])) putChar(10)
+}

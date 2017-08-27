@@ -1,0 +1,13 @@
+
+// Invocacion a procedimiento con un parametro.
+
+fun f(x : Int) {
+  putChar(x)
+  putChar(10)
+}
+
+fun main() {
+  f(65)
+  f(66)
+  f(67)
+}

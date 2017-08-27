@@ -1,0 +1,39 @@
+fun main() {
+  a := True
+  b := True
+  c := True
+  if (a) {}
+  if (a) {} else {}
+  if (a) { if (b) {} }
+  if (a) { if (b) {} else {} }
+  if (a) { if (b) {} } else {}
+  if (a) { if (b) {} else {} } else {}
+  if (a) { } else { if (c) {} }
+  if (a) { } else { if (c) {} else {} }
+  if (a) { if (b) {} } else { if (c) {} else {} }
+  if (a) { if (b) {} else {} } else { if (c) {} else {} }
+  while (a) {
+    if (a) {}
+    if (a) {} else {}
+    if (a) { if (b) {} }
+    if (a) { if (b) {} else {} }
+    if (a) { if (b) {} } else {}
+    if (a) { if (b) {} else {} } else {}
+    if (a) { } else { if (c) {} }
+    if (a) { } else { if (c) {} else {} }
+    if (a) { if (b) {} } else { if (c) {} else {} }
+    if (a) { if (b) {} else {} } else { if (c) {} else {} }
+    while (a) {
+      if (a) {}
+      if (a) {} else {}
+      if (a) { if (b) {} }
+      if (a) { if (b) {} else {} }
+      if (a) { if (b) {} } else {}
+      if (a) { if (b) {} else {} } else {}
+      if (a) { } else { if (c) {} }
+      if (a) { } else { if (c) {} else {} }
+      if (a) { if (b) {} } else { if (c) {} else {} }
+      if (a) { if (b) {} else {} } else { if (c) {} else {} }
+    }
+  }
+}

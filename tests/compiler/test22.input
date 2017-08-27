@@ -1,0 +1,27 @@
+// Producto
+
+fun main() {
+  z := 0
+  putNum(6 * 7 + z) putChar(10)
+  z := z + 1
+  putNum(7 * 6 + z) putChar(10)
+  x := 6
+  z := z + 1
+  putNum(x * 7 + z) putChar(10)
+  z := z + 1
+  putNum(7 * x + z) putChar(10)
+  x := x + 1
+  z := z + 1
+  putNum(x * 6 + z) putChar(10)
+  z := z + 1
+  putNum(6 * x + z) putChar(10)
+  z := z + 1
+  putNum(x * (x - 1) + z) putChar(10)
+  z := z + 1
+  putNum((x - 1) * x + z) putChar(10)
+  x := x - 1
+  z := z + 1
+  putNum(x * (x + 1) + z ) putChar(10)
+  z := z + 1
+  putNum((x + 1) * x + z) putChar(10)
+}

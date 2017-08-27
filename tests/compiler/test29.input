@@ -1,0 +1,44 @@
+
+// Not
+
+fun p(x : Bool) {
+    if x {
+        putChar(84)
+        putChar(114)
+        putChar(117)
+        putChar(101)
+    } else {
+        putChar(70)
+        putChar(97)
+        putChar(108)
+        putChar(115)
+        putChar(101)
+    }
+}
+
+fun sep() {
+    putChar(110)
+    putChar(111)
+    putChar(116)
+    putChar(32)
+}
+
+fun eq() {
+    putChar(32)
+    putChar(61)
+    putChar(32)
+}
+
+fun enter() {
+    putChar(10)
+}
+
+fun fila(x : Bool) {
+    r := not x
+    sep() p(x) eq() p(r) enter()
+}
+
+fun main() {
+  fila(False)
+  fila(True)
+}

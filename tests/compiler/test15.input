@@ -1,0 +1,35 @@
+
+// Suma
+
+fun f(x : Int) {
+  putNum(x + 30)
+  putChar(10)
+
+  putNum(30 + x)
+  putChar(10)
+
+  z := 30
+  putNum(x + z)
+  putChar(10)
+
+  putNum(z + x)
+  putChar(10)
+}
+
+fun main() {
+  putNum(40 + 2)
+  putChar(10)
+
+  x := 22
+  y := 20
+  putNum(x + y)
+  putChar(10)
+
+  x := 10
+  y := 2
+  f(x + y)
+
+  x := x + 2
+  f(x)
+}
+

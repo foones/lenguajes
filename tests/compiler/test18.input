@@ -1,0 +1,21 @@
+
+// Expresiones de suma anidadas: agotando los registros
+
+fun f(a : Int) {
+  a := a + 1
+  putNum(
+    a + ( a + ( a + ( a + ( a + ( a + ( a + ( a + ( a + ( a + (
+    a + ( a + ( a + ( a + ( a + ( a + ( a + ( a + ( a + ( a + (
+    a + ( a + ( a + ( a + ( a + ( a + ( a + ( a + ( a + ( a + (
+    a + ( a + ( a + ( a + ( a + ( a + ( a + ( a + ( a + ( a + (
+    a + a))))))))))))))))))))))))))))))))))))))))
+  )
+  putChar(10)
+}
+
+fun main() {
+  f(0)
+  f(1)
+  f(2)
+  f(4)
+}

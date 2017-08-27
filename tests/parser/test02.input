@@ -1,0 +1,28 @@
+
+  fun ifa(a : Vec)
+  {
+	i:=0
+	while i<#a
+	{
+	  a[ i ]:=0
+	  i:=i+1
+	}
+  }
+
+  fun
+     suma
+     (
+      a:Vec // Primer parametro
+     ,b:Vec // Segundo parametro
+     ,c:Vec // Tercer parametro
+     )
+{
+  if #a== #b and#b==#c{i:=0 while i < #a{c[i]:=a[i]+b[i] i:=i+1 }}else{ // blanquear
+    ifa(c) } }
+
+  fun main()
+  {
+	a:=[] a:=[1]
+	a:=[1,2] a:=[1,2,3]
+	a:=[1,2,4,5,6,7,8,9,10,11,12,999,1398332] suma(a,a,a)
+  }

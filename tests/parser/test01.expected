@@ -1,0 +1,32 @@
+(Program
+  (Function
+    main
+    Unit
+    (Block
+      (StmtCall
+        putChar
+        (ExprConstNum
+          72
+        )
+      )
+      (StmtCall
+        putChar
+        (ExprConstNum
+          79
+        )
+      )
+      (StmtCall
+        putChar
+        (ExprConstNum
+          76
+        )
+      )
+      (StmtCall
+        putChar
+        (ExprConstNum
+          65
+        )
+      )
+    )
+  )
+)

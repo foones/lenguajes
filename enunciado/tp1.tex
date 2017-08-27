@@ -1,0 +1,909 @@
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{listings}
+\usepackage{tabularx}
+\usepackage[margin=2cm]{geometry}
+\usepackage{mathpazo}
+
+\usepackage{tikz}
+\usetikzlibrary{svg.path}
+
+\lstset{
+  escapeinside={(*@}{@*)},
+  basicstyle=\tt,
+}
+
+\newcommand{\Cucaracha}[1][]{%
+    \tikz \fill [scale=1ex/45,yscale=-1,#1] svg "M44.6,33.589c-0.007-1.036-0.224-1.73-0.451-1.957c-0.752-0.75-1.821-1.15-3.089-1.15c-0.983,0-2.021,0.246-3.051,0.68  c-0.102-0.242-0.233-0.469-0.423-0.656c-0.646-0.646-2.137-0.841-3.541-0.978C27.914,26.529,23.633,15,23.633,5h-0.924  c0,10,3.872,20.841,9.576,24.614c-0.733,0.153-1.357,0.282-1.824,0.746c-0.603,0.605-0.861,1.394-0.937,2.428  C25.805,26.893,15,22.797,4,22.797v0.931c14,0,22.637,4.381,25.52,10.655c0,0,0.753,2.385,1.297,2.93  c0.235,0.237,0.521,0.384,0.853,0.483c-0.16,0.442-0.3,0.888-0.383,1.331c-0.337,1.804,0.024,3.347,1.024,4.348  c0.101,0.1,0.54,0.284,1.507,0.284c0.253,0,0.528-0.018,0.808-0.043c2.248-0.204,5.212-1.209,6.987-2.918  c2.181-2.097,2.976-5.134,2.995-7.096C44.606,33.662,44.6,33.627,44.6,33.589z M69.408,94.271l-5.449-7.195l0.453-0.219l5.215,7.139c0,0,0.129,0.443,0,0.486C69.551,94.51,69.408,94.271,69.408,94.271z M35.442,71.332l-0.049,0.07C35.454,71.385,35.5,71.361,35.442,71.332z M83.092,81.541c0.229-0.23-40.726-39.226-40.726-39.226c-1.699,1.417-8.172,2.952-7.995,3.547   c0.304,1.032,0.755,2.136,1.266,3.263l-16.512,1.958l0.803,0.496l-0.604,0.486l16.729-2.051c1.17,2.393,2.761,4.95,4.646,7.549   l-9.047,2.975l2.718,10.301c0,0,0.638,0.082,0.775,0.182L32,76.264v0.744l3.604-5.605c-0.101,0.031-0.363,0.049-0.307,0.033   c0.297-0.08,0.607-1.043,0.607-1.043l-2.158-8.631l8.117-2.646c2.166,2.83,4.659,5.684,7.393,8.418   c0.525,0.525,1.053,1.037,1.585,1.541l-2.474,8.707l2.497,1.541l-0.658,0.816l0.717,0.135l0.5-0.605l1.029,0.633l-0.545,0.688   l0.199,0.156l0.148,0.504l0.744-1.008l1.115,0.688l-0.549,0.754l0.211,0.164l0.242,0.369l0.668-0.936l1.309,0.809l-0.648,0.834   l0.166,0.127l0.197,0.158l0.672-0.881l1.773,1.092l-0.961,1.252l0.371-0.158l0.197,0.158l0.795-1.002l1.863,1.148l-0.721,0.912   l0.197,0.158l-0.197,0.428l1.072-1.281l3.293,2.033c0,0,0.811,0.191,0.953,0c0.113-0.156-0.223-0.736-0.223-0.736l-3.125-2.375   l0.623-0.748l-0.18-0.143l-0.041-0.33l-0.754,0.953l-1.736-1.32l0.635-0.807L60,81.789l-0.18-0.141l-0.631,0.82l-1.656-1.258   l0.814-1.072l-0.355,0.129l-0.166-0.129l-0.633,0.812l-1.291-0.98l0.561-0.785L56.25,79.02l-0.125-0.447l-0.736,1.008l-1.031-0.783   l0.656-0.889l-0.389-0.102l0.055-0.33l-0.771,0.979l-0.912-0.695l0.877-1.064l-0.787-0.143l-0.639,0.793l-0.986-0.752l2.221-4.941   c6.229,5.408,12.623,9.314,18.014,11.057l0.32,1.641l1.215,2.381l0.209-2.797l-0.15-0.764c1.436,0.361,2.789,0.557,4.027,0.557   C79.641,83.727,81.793,82.84,83.092,81.541z M95.609,68.072l-6.764-5.123c-0.021-0.123-0.043-0.221-0.043-0.221l-2.031-3.295l1.281-1.072l-0.428,0.197l-0.158-0.197  l-0.912,0.723l-1.148-1.865l1.002-0.791l-0.158-0.199l0.158-0.371l-1.25,0.959l-1.094-1.771l0.881-0.672l-0.156-0.199L84.66,54.01  l-0.834,0.65l-0.807-1.312l0.934-0.668l-0.369-0.24l-0.164-0.211l-0.754,0.551l-0.688-1.117l1.008-0.743l-0.504-0.149l-0.154-0.198  l-0.689,0.543l-0.633-1.03l0.607-0.5l-0.137-0.718l-0.816,0.657l-1.541-2.497l-8.936,2.747c-0.486-0.511-0.963-1.024-1.471-1.53  c-2.393-2.396-4.676-4.521-6.887-6.385l2.699-8.282l8.635,2.143c0,0,0.961-0.355,1.041-0.651c0.025-0.097-0.029,0.173-0.104,0.019  L79.773,31h-0.744l-5.244,3.582c-0.1-0.134-0.182-0.449-0.182-0.449l-10.301-2.659l-3.01,9.179  c-2.934-2.339-5.754-4.227-8.545-5.572l-2.062-17.516l-0.496,0.8l-0.486-0.613l2.054,16.858c-1.164-0.51-2.329-0.965-3.493-1.29  c-1.098-0.307-1.223,0.614-1.178,1.285c-0.326,2.183-1.019,4.618-2.587,6.551l39.903,39.957c1.102-1.865,1.314-4.479,0.756-7.549  l0.877,0.119l2.32-0.43l-2.146-0.898l-1.34-0.162c-1.406-5.717-5.285-12.791-11.221-19.695l5.285-2.373l0.75,0.988l-0.793,0.637  l0.143,0.785L79.1,51.66l0.693,0.912l-0.98,0.771l0.332-0.055l0.102,0.387l0.889-0.654l0.783,1.031l-1.008,0.736l0.447,0.125  l0.166,0.211l0.785-0.559l0.98,1.291l-0.812,0.633l0.129,0.166l-0.129,0.355l1.072-0.814l1.258,1.656l-0.82,0.631l0.141,0.18  l0.172,0.217l0.807-0.637l1.318,1.736l-0.951,0.756l0.33,0.041l0.145,0.18l0.746-0.623l2.373,3.123c0,0,0.582,0.338,0.736,0.227  c0.031-0.023,0.037-0.082,0.049-0.127l6.484,4.734c0,0,0.441,0.129,0.484,0C95.848,68.215,95.609,68.072,95.609,68.072z";%
+}
+
+\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
+
+\newcommand{\TODO}[1]{\textcolor{red}{#1}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\len}[1]{|#1|}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\ST}{\ |\ }
+\newcommand{\pal}{\alpha}
+\newcommand{\paltwo}{\beta}
+\newcommand{\palthree}{\gamma}
+\newcommand{\palfour}{\delta}
+\newcommand{\setunion}{\cup}
+\newcommand{\deriv}{\mathrel{\Rightarrow}}
+%\newcommand{\cucapalabra}{\textsf{Cucaracha}\xspace}
+\newcommand{\cucaconcuca}{\textsf{Cucaracha}\!\!\raisebox{.05em}{\Cucaracha}\xspace}
+\newcommand{\cuca}{\cucaconcuca}
+\renewcommand{\ast}[1]{\textcolor{darkgreen}{\texttt{\underline{#1}}}}
+\newcommand{\type}[1]{\textcolor{blue}{\texttt{#1}}}
+\newcommand{\tok}[1]{\textcolor{red}{\texttt{#1}}}
+\newcommand{\s}[1]{\textcolor{blue}{{\it$\langle$#1$\rangle$}}}
+\newcommand{\produccion}[2]{
+  \noindent
+  \begin{tabularx}{\textwidth}{lrlr}
+  #1 & $\xrightarrow{\hspace{.5cm}}$ & #2
+  \end{tabularx}\\
+}
+\newcommand{\EMPTY}{$\epsilon$}
+\newcommand{\ALT}{
+  \\ & $\mid$ &
+}
+\newcommand{\symbolentry}[3]{#1 & #2 && #3 \\}
+\newcommand{\nb}[1]{\footnotesize{#1}}
+\newcommand{\NB}[1]{
+  & {\footnotesize {#1}}
+}
+\newcommand{\typedecl}[2]{\noindent
+  \begin{tabularx}{\textwidth}{lrlr}
+  {\bf type} #1 & $::=$ & #2
+  \end{tabularx}\\
+}
+\newcommand{\datadecl}[2]{\noindent
+  \begin{tabularx}{\textwidth}{lrlr}
+  {\bf data} #1 & $::=$ & #2
+  \end{tabularx}\\
+}
+
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+\newcounter{ejercicio}
+\newenvironment{ejercicio}{\addtocounter{ejercicio}{1}{\bf Ejercicio \theejercicio.}}{\bigskip}
+
+\usepackage{amsmath}
+\begin{document}
+\begin{center}
+\textsc{{\small Parseo y Generaci\'on de C\'odigo -- $2^{\text{do}}$ semestre 2016}} \\ 
+\textsc{{\small Licenciatura en Inform\'atica con Orientaci\'on en Desarrollo de Software}} \\
+\textsc{{\small Universidad Nacional de Quilmes}} \\
+\bigskip
+\blfootnote{La cucaracha de \cucaconcuca es un dibujo de Michael Thompson licenciado bajo Creative Commons Attribution 3.0 United States License -- \texttt{https://creativecommons.org/licenses/by/3.0/us/}}
+{\Large Trabajo pr\'actico 1} \\
+{\large {\bf Analizador sint\'actico y sem\'antico para \cucaconcuca}} \\
+\bigskip
+Fecha de entrega: 21 de septiembre
+\end{center}
+
+\tableofcontents
+
+\section{Introducci\'on}
+
+Este trabajo consiste en programar el {\em front-end} para un compilador del lenguaje \cuca.
+El trabajo consta de tres partes:
+\begin{enumerate}
+\item En primer lugar, se debe programar un parser.
+Dado el c\'odigo fuente de un programa escrito en \cuca,
+el analizador sint\'actico debe dar como resultado un \'arbol de sintaxis abstracta~(AST).
+El parser se puede implementar manualmente (por ejemplo, utilizando la t\'ecnica de an\'alisis
+sint\'actico por descenso recursivo) o utilizando cualquier generador de parsers
+disponible para el lenguaje de implementaci\'on elegido
+(por ejemplo \texttt{bison} para C, \texttt{ply} para Python, \texttt{happy} para Haskell,
+\texttt{ANTLR} para Java, etc.).
+\item En segundo lugar, se debe implementar funcionalidad para serializar
+el AST convirti\'endolo a una representaci\'on textual.
+Esto servir\'a para validar que el parser construido
+en la primera etapa es correcto.
+Esta etapa se puede implementar mediante un simple recorrido {\em preorder}
+sobre el AST.
+\item Por \'ultimo, se debe programar un analizador sem\'antico para \cuca.
+En esta etapa se deben identificar errores sem\'anticos.
+Nos interesan esencialmente los errores de tipos.
+La implementaci\'on del analizador
+se puede hacer recorriendo el AST para validar que el programa est\'e correctamente
+formado. Por ejemplo, la condici\'on de un \texttt{if} debe ser una
+expresi\'on de tipo booleano.
+\end{enumerate}
+
+\section{Descripci\'on informal del lenguaje \cuca}
+
+El siguiente programa en \cuca imprime ``HOLA'' en la salida:
+\begin{lstlisting}
+fun main() {
+  putChar(72)
+  putChar(79)
+  putChar(76)
+  putChar(65)
+}
+\end{lstlisting}
+Un programa en \cuca es una lista de declaraciones de funciones.
+Las funciones en \cuca pueden no devolver nada (procedimientos
+a los que se invoca exclusivamente por su efecto) o devolver un valor.
+Las funciones que no devuelven nada se declaran de la siguiente manera:
+\begin{center}
+\texttt{fun nombre(par\'ametros) bloque}
+\end{center}
+Las funciones que devuelven algo deben venir acompa\~nadas del
+tipo del valor que devuelven. En ese caso la sintaxis es:
+\begin{center}
+\texttt{fun nombre(par\'ametros) : tipo\_de\_retorno bloque}
+\end{center}
+Los nombres de todos los identificadores (nombres de funciones, variables y par\'ametros) est\'an dados por una secuencia de caracteres alfanum\'ericos (\texttt{a..z}, \texttt{A..Z}, \texttt{0..9}) y el gui\'on bajo (\texttt{\_}), pero no pueden empezar con un n\'umero.
+
+\subsection{Instrucciones}
+
+El cuerpo de una funci\'on en \cuca es un bloque.
+Un bloque es una lista de instrucciones delimitadas por llaves.
+
+Las instrucciones en \cuca son las siguientes.
+Cada una se acompa\~na del nombre que tendr\'a asociado en el \'arbol
+de sintaxis (\ast{EscritoEnCamelCase}) y de un ejemplo.
+\begin{itemize}
+\item {\bf Asignaci\'on} (\ast{StmtAssign}).\\
+      \texttt{variable := expresi\'on}
+  \begin{lstlisting}
+  fun main() {
+    x := 65
+    putChar(x)
+  }
+  \end{lstlisting}
+\item {\bf Asignaci\'on a un vector} (\ast{StmtVecAssign}).\\
+      \texttt{variable[expresi\'on] := expresi\'on}
+  \begin{lstlisting}
+  fun main() {
+    x := [1,2,3]
+    x[0] := 65
+    putChar(x[0])
+  }
+  \end{lstlisting}
+\item {\bf Condicional con o sin else} (\ast{StmtIf}, \ast{StmtIfElse}).\\
+      \texttt{if expresi\'on bloque}\\
+      \texttt{if expresi\'on bloque else bloque}
+  \begin{lstlisting}
+  fun main() {
+    if 1 > 0 {
+      putChar(65)
+    }
+  }
+  \end{lstlisting}
+  \begin{lstlisting}
+  fun main() {
+    if 1 > 0 {
+      putChar(65)
+    } else {
+      putChar(66)
+    }
+  }
+  \end{lstlisting}
+
+\item {\bf While} (\ast{StmtWhile}).\\
+      \texttt{while expresi\'on bloque}
+  \begin{lstlisting}
+  fun main() {
+    x := 10
+    while x > 0 {
+      x := x - 1
+      putChar(65)
+    }
+  }
+  \end{lstlisting}
+\item {\bf Return} (\ast{StmtReturn}).\\
+      \texttt{return expresi\'on}
+  \begin{lstlisting}
+  fun letraA() : Int {
+    return 65
+  }
+
+  fun main() {
+    putChar(letraA())
+  }
+  \end{lstlisting}
+\item {\bf Invocaci\'on a una funci\'on} (\ast{StmtCall}).\\
+      \texttt{funci\'on(argumentos)}
+  \begin{lstlisting}
+  fun decirHola() {
+    putChar(72)
+    putChar(79)
+    putChar(76)
+    putChar(65)
+  }
+
+  fun main() {
+    decirHola()
+  }
+  \end{lstlisting}
+\end{itemize}
+
+\subsection{Tipos de datos}
+
+El lenguaje \cuca maneja tres tipos de datos:
+{\em n\'umeros}, {\em valores l\'ogicos} y {\em vectores de n\'umeros}.
+Las funciones pueden recibir como par\'ametros
+n\'umeros, valores l\'ogicos y vectores de n\'umeros,
+y pueden devolver n\'umeros y valores l\'ogicos,
+pero {\bf no pueden devolver vectores}\footnote{Es dif\'icil apreciar la importancia de este hecho en el TP1, pero va a ser de suma importancia para el TP2.}.
+En las declaraciones de tipos, los tipos se escriben de la siguiente manera:
+\begin{itemize}
+\item \texttt{Int} -- el tipo de los n\'umeros.
+\item \texttt{Bool} -- el tipo de los valores l\'ogicos.
+\item \texttt{Vec} -- el tipo de los vectores de n\'umeros.
+\end{itemize}
+La lista de par\'ametros formales en la declaraci\'on de una
+funci\'on es una lista de nombres de par\'ametros separados
+por comas. Cada par\'ametro viene acompa\~nado de su tipo.
+Por ejemplo:
+\begin{lstlisting}
+fun f(numero : Int, vector : Vec) : Bool {
+  return numero > vector[0]
+}
+\end{lstlisting}
+
+\subsection{Expresiones}
+
+\begin{itemize}
+\item
+  {\bf Uso de una variable} (\ast{ExprVar}).
+  Simplemente un identificador (p.ej. \texttt{x}).
+\item
+  {\bf Constantes num\'ericas} (\ast{ExprConstNum}).
+  Se escriben siempre en notaci\'on decimal como 
+  una secuencia de d\'igitos (p.ej. \texttt{54321}).
+\item
+  {\bf Constantes l\'ogicas} (\ast{ExprConstBool}).
+  Se escriben \texttt{True} y \texttt{False}.
+\item
+  {\bf Constructor de vectores} (\ast{ExprVecMake}).
+  Los vectores se construyen con una lista de expresiones
+  separadas por comas y delimitadas por corchetes.\\
+  \texttt{[expresi\'on, expresi\'on, ..., expresi\'on]}
+  \begin{lstlisting}
+  fun main() {
+      x := [64 + 1, 65, 66]
+      putChar(x[0])
+  }
+  \end{lstlisting}
+\item
+  {\bf Tama\~no de un vector} (\ast{ExprVecLength}).
+  Un cardinal seguido de un identificador (que puede ser una
+  variable o par\'ametro).\\
+  \texttt{\#identificador}
+  \begin{lstlisting}
+  fun mostrarTodo(v : Vec) {
+      i := 0
+      while i < #v { 
+          putChar(v[i])
+          i := i + 1
+      }
+  }
+  \end{lstlisting}
+\item
+  {\bf Acceso al $i$-\'esimo elemento de un vector} (\ast{ExprVecDeref}).
+  Un identificador seguido de una expresi\'on entre corchetes.\\
+  \texttt{identificador[expresi\'on]}
+  \begin{lstlisting}
+  fun enesimo(v : Vec, n : Int) : Int {
+      return v[n]
+  }
+  \end{lstlisting}
+\item {\bf Invocaci\'on a una funci\'on (\ast{ExprCall})}\\
+  \texttt{funci\'on(argumentos)}
+\item {\bf Operadores l\'ogicos}
+  Son los siguientes:
+  \begin{itemize}
+  \item \texttt{and} (\ast{ExprAnd}): operador binario.
+  \item \texttt{or}  (\ast{ExprOr}): operador binario.
+  \item \texttt{not} (\ast{ExprNot}): operador unario.
+  \end{itemize}
+\item {\bf Operadores relacionales}
+  Son los siguientes:
+  \begin{itemize}
+  \item \texttt{<=} (\ast{ExprLe}): operador binario.
+  \item \texttt{>=} (\ast{ExprGe}): operador binario.
+  \item \texttt{<}  (\ast{ExprLt}): operador binario.
+  \item \texttt{>} (\ast{ExprGt}): operador binario.
+  \item \texttt{==} (\ast{ExprEq}): operador binario.
+  \item \texttt{!=} (\ast{ExprNe}): operador binario.
+  \end{itemize}
+\item {\bf Operadores aritm\'eticos}
+  Son los siguientes:
+  \begin{itemize}
+  \item \texttt{+} (\ast{ExprAdd}): operador binario.
+  \item \texttt{-} (\ast{ExprSub}): operador binario.
+  \item \texttt{*}  (\ast{ExprMul}): operador binario.
+  \end{itemize}
+  {\bf Nota:} el lenguaje \cuca no cuenta con el operador
+  ``menos'' unario (p.ej. \texttt{-2} no es una expresi\'on v\'alida).
+\end{itemize}
+
+\subsection{Precedencia y asociatividad de los operadores}
+
+Todos los operadores l\'ogicos y aritm\'eticos asocian a izquierda.
+Los operadores relacionales no se pueden asociar
+(p.ej. $a == b == c$ es una expresi\'on inv\'alida).
+Hay cuatro niveles de precedencia, de menor a mayor:
+\begin{itemize}
+\item {\bf Operadores l\'ogicos binarios:} \texttt{and or}
+\item {\bf Negaci\'on l\'ogica:} \texttt{not}
+\item {\bf Todos los operadores relacionales:} \texttt{<= >=\ <\ >\ ==\ !=}
+\item {\bf Operadores aritm\'eticos aditivos:} \texttt{+ -}
+\item {\bf Multiplicaci\'on:} \texttt{*}
+\end{itemize}
+Se pueden utilizar par\'entesis para forzar la asociatividad deseada.
+Por ejemplo:
+\begin{center}
+\texttt{not 5 <\ 2 + 3 * 2 and 2 * (3 + 3) == 12}
+\end{center}
+asocia as\'i:
+\begin{center}
+\texttt{(not (5 <\ (2 + (3 * 2)))) and ((2 * (3 + 3)) == 12)}
+\end{center}
+
+\subsection{Comentarios}
+
+Se pueden incluir comentarios en el programa.
+Los comentarios comienzan con \texttt{//} y se extienden hasta
+el final de la l\'inea. Por ejemplo:
+
+  \begin{lstlisting}
+  fun main() {
+      resolverMisterioDelUniverso()
+  }
+
+  fun resolverMisterioDelUniverso() {
+      // No implementado.
+  }
+  \end{lstlisting}
+
+\section{Serializaci\'on del AST}
+\label{serializacion_ast}
+
+El analizador sint\'actico debe construir un AST.
+Para validar que est\'e construido correctamente, se pide
+contar con funcionalidad para serializar el AST, escribi\'endolo como
+un texto.
+Para serializar un nodo del AST, se debe imprimir, en el siguiente orden:
+\begin{itemize}
+\item Un par\'entesis izquierdo ``$($''.
+\item El nombre del nodo, por ejemplo $\ast{StmtAssign}$, tal como figura en el Ap\'endice~\ref{apendice_ast}.
+\item Un caracter de nueva l\'inea (es decir un ``enter'', el caracter \texttt{'\textbackslash{n}'}).
+\item Todos y cada uno de los hijos del nodo, identados con dos espacios m\'as que el padre,
+      recursivamente, en el orden en el que figuran en el Ap\'endice~\ref{apendice_ast}.
+\item Un par\'entesis derecho ''$)$''.
+\item Un caracter de nueva l\'inea.
+\end{itemize}
+Los identificadores se serializan escribiendo su nombre.
+Los n\'umeros se serializan escribiendo sus d\'igitos decimales.
+Las constantes booleanas se serializan escribiendo \texttt{True} y \texttt{False}.
+Los tipos se serializan escribiendo \texttt{Int}, \texttt{Bool}, \texttt{Vec} y \texttt{Unit}.
+\bigskip
+
+\noindent {\bf Ejemplo.}
+El siguiente programa:
+\begin{lstlisting}
+  fun main() {
+    x := 65
+    putChar(x)
+  }
+\end{lstlisting}
+se serializa as\'i:
+\begin{lstlisting}
+  (Program
+    (Function
+      main
+      Unit
+      (Block
+        (StmtAssign
+          x
+          (ExprConstNum
+            65
+          )
+        )
+        (StmtCall
+          putChar
+          (ExprVar
+            x
+          )
+        )
+      )
+    )
+  )
+\end{lstlisting}
+
+\section{An\'alisis sem\'antico y chequeo de tipos}
+\label{sec_analizador_semantico}
+
+Una vez construido el AST, se debe hacer un recorrido por el \'arbol
+verificando que el programa est\'e bien formado desde el punto de
+vista sem\'antico. Para ello se sugiere proceder en el orden siguiente:
+\begin{enumerate}
+\item Visitar todas las definiciones de funciones y armar una {\bf tabla de funciones}
+      que dado el nombre de una funci\'on indique los tipos de sus par\'ametros
+      y su tipo de retorno. En este recorrido es debe:
+      \begin{enumerate}
+      \item Verificar que no haya dos funciones con el mismo nombre.
+      \item Verificar que el tipo de retorno de las funciones nunca sea \texttt{Vec}.
+      \item Verificar que haya una funci\'on \texttt{main} sin
+            par\'ametros y con tipo de retorno \texttt{Unit}.
+      \end{enumerate}
+      La tabla de funciones se debe inicializar con dos funciones que
+      provee el lenguaje para imprimir texto por la salida,
+      \texttt{putChar} y \texttt{putNum}. Ambas reciben un \texttt{Int}
+      y devuelven \texttt{Unit}.
+\item Visitar el cuerpo de todas y cada una de las funciones.
+      El alcance de las variables es local a cada funci\'on.
+      Al momento de visitar el cuerpo de cada funci\'on, se sugiere crear una
+      {\bf tabla de nombres locales} que a cada nombre de variable o par\'ametro
+      le asocia su tipo.
+\item En un momento dado de este recorrido por el programa,
+      podemos decir que una expresi\'on est\'a bien formada
+      de acuerdo con la siguiente definici\'on inductiva:
+      \begin{itemize}
+      \item Una variable \texttt{x} est\'a bien formada si est\'a registrada
+            en la tabla de nombres locales y tiene el tipo indicado en la tabla.
+      \item Una constante num\'erica o l\'ogica siempre est\'a bien formada
+            y tiene tipo \texttt{Int} o \texttt{Bool} respectivamente.
+      \item La construcci\'on de un vector \texttt{[e$_1$, $\hdots$, e$_n$]}
+            est\'a bien formada y tiene tipo \texttt{Vec}
+            si cada expresi\'on \texttt{e$_i$} tiene tipo \texttt{Int}.
+      \item La longitud de un vector \texttt{\#x} tiene tipo \texttt{Int}
+            si \texttt{x} es un nombre local de tipo \texttt{Vec}.
+      \item El acceso a un vector \texttt{e$_1$[e$_2$]} est\'a bien formado
+            si \texttt{e$_1$} es una expresi\'on de tipo \texttt{Vec}
+            y \texttt{e$_2$} es una expresi\'on de tipo \texttt{Int}.
+      \item Una expresi\'on formada a partir de una invocaci\'on a funci\'on
+            \texttt{f(e$_1$, $\hdots$, e$_n$)}
+            est\'a bien formada si \texttt{f} es una funci\'on definida
+            en la tabla de funciones que tiene $n$ par\'ametros,
+            cada expresi\'on \texttt{e$_i$} est\'a bien formada
+            y su tipo coincide con el del $i$-\'esimo par\'ametro de $f$.
+            Adem\'as, $f$ debe devolver \texttt{Int} o \texttt{Bool}
+            (no debe devolver \texttt{Unit}).
+      \item Los operadores tienen los tipos esperados:
+            \begin{itemize}
+            \item \texttt{and}, \texttt{or}, \texttt{not}: reciben booleanos y devuelven booleanos.
+            \item \texttt{<=}, \texttt{>=}, \texttt{<}, \texttt{>}, \texttt{==}, \texttt{!=}: reciben n\'umeros y devuelven booleanos.
+            \item \texttt{+}, \texttt{-}, \texttt{*}: reciben n\'umeros y devuelven n\'umeros.
+            \end{itemize}
+      \end{itemize}
+\item El cuerpo de cada funci\'on es una lista de instrucciones.
+      Para que la funci\'on est\'e bien formada, cada instrucci\'on debe estar bien formada. 
+      \begin{itemize}
+      \item Una asignaci\'on \texttt{x := e} est\'a bien formada si \texttt{e}
+            es una expresi\'on bien formada.
+            En este caso, si \texttt{x} a\'un no figura en la tabla de nombres locales,
+            agregar \texttt{x} a la tabla de nombres locales con el tipo correspondiente.
+            Si \texttt{x} ya figuraba en la tabla de nombres locales,
+            verificar que el tipo que ten\'ia coincida con el de \texttt{e}.
+      \item Una asignaci\'on a un vector \texttt{x[e$_1$] := e$_2$} est\'a bien
+            formada si \texttt{x} es un nombre local de tipo \texttt{Vec},
+            y tanto \texttt{e$_1$} como \texttt{e$_2$} son expresiones bien formadas de tipo \texttt{Int}.
+      \item Un condicional con o sin else \texttt{if e bloque} / \texttt{if e bloque else bloque}
+            est\'a bien formado si la condici\'on \texttt{e} es una expresi\'on
+            bien formada de tipo \texttt{Bool} y los bloques est\'an bien formados.
+      \item Un ciclo \texttt{while e bloque}
+            est\'a bien formado si la condici\'on \texttt{e} es una expresi\'on
+            bien formada de tipo \texttt{Bool} y el bloque est\'a bien formado.
+      \item La instrucci\'on \texttt{return e}
+            est\'a bien formada si \texttt{e} es una expresi\'on bien formada
+            y su tipo coincide con el tipo de retorno de la funci\'on.
+            Adem\'as, en \cuca el \texttt{return} solamente puede aparecer
+            como la \'ultima instrucci\'on en el cuerpo de una funci\'on.
+      \item Una instrucci\'on formada a partir de una invocaci\'on a funci\'on
+            \texttt{f(e$_1$, $\hdots$, e$_n$)}
+            est\'a bien formada si \texttt{f} es una funci\'on definida
+            en la tabla de funciones que tiene $n$ par\'ametros,
+            cada expresi\'on \texttt{e$_i$} est\'a bien formada
+            y su tipo coincide con el del $i$-\'esimo par\'ametro de $f$.
+            Adem\'as, $f$ debe devolver \texttt{Unit}
+            (no debe devolver \texttt{Int} ni \texttt{Bool}).
+      \end{itemize}
+\item Por \'ultimo, si una funci\'on tiene tipo de retorno \texttt{Int} o \texttt{Bool},
+      se debe verificar que la \'ultima instrucci\'on sea un \texttt{return},
+      mientras que si el tipo de retorno es \texttt{Unit}
+      se debe verificar que {\bf no} tenga un \texttt{return}.
+\end{enumerate}
+
+El analizador sem\'antico debe aceptar los programas que cumplan estas
+verificaciones y rechazar los que no las cumplan. En caso de rechazarlos,
+se debe proveer un mensaje de error indicando su causa lo mejor que
+se pueda.\bigskip
+
+{\em Nota:} el siguiente programa no se rechaza:
+\begin{lstlisting}
+    fun main() {
+      if (False) {
+        x := 1
+      }
+      putChar(x)
+    }
+\end{lstlisting}
+porque no lo consideramos un error de tipos.
+Es un error de naturaleza din\'amica (como dividir por $0$,
+acceder a un vector fuera de rango o escribir un while que se cuelga).
+Estos errores se pueden identificar potencialmente
+con t\'ecnicas m\'as sofisticadas de an\'alisis est\'atico
+que veremos m\'as adelante.
+
+\section{Pautas de entrega}
+
+Para entregar el TP se debe enviar el c\'odigo fuente por e-mail
+a la casilla \texttt{foones@gmail.com} hasta las 23:59:59 del d\'ia
+estipulado para la entrega, incluyendo \texttt{[TP lds-est-parse]} en
+el asunto y el nombre de los integrantes del grupo en el cuerpo
+del e-mail. No es necesario hacer un informe sobre el TP, pero se espera
+que el c\'odigo sea razonablemente legible. Se debe incluir un README
+indicando las dependencias y el mecanismo de ejecuci\'on
+recomendado para que el programa provea la funcionalidad pedida.
+
+\appendix
+
+\newpage
+\section{Gram\'atica del lenguaje \cuca}
+
+\subsection{Lista de s\'imbolos terminales}
+
+Todos los s\'imbolos terminales se acompa\~nan de su nombre \tok{EN\_MAYUSCULAS}.\bigskip
+
+\noindent{\bf Identificadores y constantes}\medskip\\
+\begin{tabularx}{\textwidth}{llXr}
+\symbolentry{\texttt{[\_a-zA-Z][\_a-zA-Z0-9]*}}{\tok{ID}}{\nb{Identificador (nombres de variables y funciones).}}
+\symbolentry{\texttt{[0-9]+}}{\tok{NUM}}{\nb{Constante num\'erica.}}
+\end{tabularx}
+
+\begin{itemize}
+\item Se acepta que el parser se limite a identificadores de hasta $64$ caracteres.
+\item Se acepta que el parser se limite a constantes num\'ericas hasta $2^{31} - 1$
+(que es el m\'aximo
+entero con signo que se puede escribir con 32 bits, es decir $2147483647$).
+\end{itemize}
+\bigskip
+
+\noindent{\bf S\'imbolos}\medskip\\
+\begin{tabularx}{\textwidth}{llXr}
+\symbolentry{\texttt{(}}{\tok{LPAREN}}{\nb{Par\'entesis izquierdo (para delimitar de par\'ametros y asociar).}}
+\symbolentry{\texttt{)}}{\tok{RPAREN}}{\nb{Par\'entesis derecho.}}
+\symbolentry{\texttt{,}}{\tok{COMMA}}{\nb{Coma (para separar listas de par\'ametros y expresiones).}}
+\symbolentry{\texttt{[}}{\tok{LBRACK}}{\nb{Corchete izquierdo (para construir y referenciar vectores).}}
+\symbolentry{\texttt{]}}{\tok{RBRACK} }{\nb{Corchete derecho.}}
+\symbolentry{\texttt{\{}}{\tok{LBRACE}}{\nb{Llave izquierda (para abrir bloques).}}
+\symbolentry{\texttt{\}}}{\tok{RBRACE}}{\nb{Llave derecha.}}
+\symbolentry{\texttt{:=}}{\tok{ASSIGN}}{\nb{Operador de asignaci\'on (para asignar a una variable o vector).}}
+\symbolentry{\texttt{:}}{\tok{COLON}}{\nb{Dos puntos (para especificar tipos de par\'ametros y el tipo de retorno).}}
+\symbolentry{\texttt{\#}}{\tok{HASH}}{\nb{Cardinal (para obtener la longitud de un vector).}}
+\symbolentry{\texttt{<=}}{\tok{LE}}{\nb{Operador relacional (menor o igual).}}
+\symbolentry{\texttt{>=}}{\tok{GE}}{\nb{Operador relacional (mayor o igual).}}
+\symbolentry{\texttt{<}}{\tok{LT}}{\nb{Operador relacional (menor estricto).}}
+\symbolentry{\texttt{>}}{\tok{GT}}{\nb{Operador relacional (mayor estricto).}}
+\symbolentry{\texttt{==}}{\tok{EQ}}{\nb{Operador relacional (igual).}}
+\symbolentry{\texttt{!=}}{\tok{NE}}{\nb{Operador relacional (distinto).}}
+\symbolentry{\texttt{+}}{\tok{PLUS}}{\nb{Operador aritm\'etico (suma).}}
+\symbolentry{\texttt{-}}{\tok{MINUS}}{\nb{Operador aritm\'etico (resta).}}
+\symbolentry{\texttt{*}}{\tok{TIMES}}{\nb{Operador aritm\'etico (multiplicaci\'on).}}
+\end{tabularx}\bigskip
+
+\noindent{\bf Palabras clave}\medskip\\
+\begin{tabularx}{\textwidth}{llXr}
+\symbolentry{\texttt{Bool}}{\tok{BOOL}}{\nb{Tipo de los valores l\'ogicos.}}
+\symbolentry{\texttt{Int}}{\tok{INT}}{\nb{Tipo de los valores num\'ericos.}}
+\symbolentry{\texttt{Vec}}{\tok{VEC}}{\nb{Tipo de los vectores de n\'umeros.}}
+\symbolentry{\texttt{True}}{\tok{TRUE}}{\nb{Constante l\'ogica: verdadero.}}
+\symbolentry{\texttt{False}}{\tok{FALSE}}{\nb{Constante l\'ogica: falso.}}
+\symbolentry{\texttt{and}}{\tok{AND}}{\nb{Operador l\'ogico (``y'').}}
+\symbolentry{\texttt{else}}{\tok{ELSE}}{\nb{Else.}}
+\symbolentry{\texttt{fun}}{\tok{FUN}}{\nb{Encabeza las definiciones de funciones.}}
+\symbolentry{\texttt{if}}{\tok{IF}}{\nb{If.}}
+\symbolentry{\texttt{not}}{\tok{NOT}}{\nb{Operador l\'ogico (``no'').}}
+\symbolentry{\texttt{or}}{\tok{OR}}{\nb{Operador l\'ogico (``o'').}}
+\symbolentry{\texttt{return}}{\tok{RETURN}}{\nb{Return.}}
+\symbolentry{\texttt{while}}{\tok{WHILE}}{\nb{While.}}
+\end{tabularx}
+
+\subsection{Producciones de la gram\'atica}
+
+Los s\'imbolos no terminales se describen con su nombre \s{en\_cursiva}.
+\bigskip
+
+\produccion{\s{programa}}{
+\EMPTY
+\ALT
+\s{declaraci\'on\_de\_funci\'on} \s{programa}
+}
+
+\produccion{\s{declaraci\'on\_de\_funci\'on}}{
+  \tok{FUN} \tok{ID} \s{par\'ametros} \s{bloque}
+  \NB{Procedimiento.}
+\ALT
+  \tok{FUN} \tok{ID} \s{par\'ametros} \tok{COLON} \s{tipo} \s{bloque}
+  \NB{Funci\'on que devuelve un valor.}
+}
+\produccion{\s{par\'ametros}}{
+  \tok{LPAREN} \s{lista\_par\'ametros} \tok{RPAREN}
+}
+\produccion{\s{lista\_par\'ametros}}{
+  \EMPTY  
+\ALT
+  \s{lista\_par\'ametros\_no\_vac\'ia}
+}
+\produccion{\s{lista\_par\'ametros\_no\_vac\'ia}}{
+  \s{par\'ametro}
+\ALT
+  \s{par\'ametro} \tok{COMMA} \s{lista\_par\'ametros\_no\_vac\'ia}
+}
+\produccion{\s{par\'ametro}}{
+  \tok{ID} \tok{COLON} \s{tipo}
+}
+\produccion{\s{tipo}}{
+  \tok{INT}
+  \NB{Tipo de los n\'umeros.}
+\ALT
+  \tok{BOOL}
+  \NB{Tipo de los valores l\'ogicos.}
+\ALT
+  \tok{VEC}
+  \NB{Tipo de los vectores de n\'umeros.}
+}
+\produccion{\s{bloque}}{
+  \tok{LBRACE} \s{lista\_instrucciones} \tok{RBRACE}
+  \NB{Lista de instrucciones delimitadas por llaves.}
+}
+\produccion{\s{lista\_instrucciones}}{
+  \EMPTY
+\ALT
+  \s{instrucci\'on} \s{lista\_instrucciones}
+}
+\produccion{\s{instrucci\'on}}{
+  \tok{ID} \tok{ASSIGN} \s{expresi\'on}
+  \NB{Asignaci\'on a una variable.}
+\ALT
+  \tok{ID} \tok{LBRACK} \s{expresi\'on} \tok{RBRACK} \tok{ASSIGN} \s{expresi\'on}
+  \NB{Asignaci\'on a un vector.}
+\ALT
+  \tok{IF} \s{expresi\'on} \s{bloque}
+  \NB{Condicional sin else.}
+\ALT
+  \tok{IF} \s{expresi\'on} \s{bloque} \tok{ELSE} \s{bloque}
+  \NB{Condicional con else.}
+\ALT
+  \tok{WHILE} \s{expresi\'on} \s{bloque}
+  \NB{While.}
+\ALT
+  \tok{RETURN} \s{expresi\'on}
+  \NB{Return.}
+\ALT
+  \tok{ID} \tok{LPAREN} \s{lista\_expresiones} \tok{RPAREN} 
+  \NB{Invocaci\'on a una funci\'on.}
+}
+\produccion{\s{lista\_expresiones}}{
+  \EMPTY
+\ALT
+  \s{lista\_expresiones\_no\_vac\'ia}
+}
+\produccion{\s{lista\_expresiones\_no\_vac\'ia}}{
+  \s{expresi\'on}
+\ALT
+  \s{expresi\'on} \tok{COMMA} \s{lista\_expresiones\_no\_vac\'ia}
+}
+\produccion{\s{expresi\'on}}{
+  \s{expresi\'on\_l\'ogica}
+}
+\produccion{\s{expresi\'on\_l\'ogica}}{
+  \s{expresi\'on\_l\'ogica} \tok{AND} \s{expresi\'on\_l\'ogica\_at\'omica}
+  \NB{Conjunci\'on l\'ogica.}
+\ALT
+  \s{expresi\'on\_l\'ogica} \tok{OR} \s{expresi\'on\_l\'ogica\_at\'omica}
+  \NB{Disyunci\'on l\'ogica.}
+\ALT
+  \s{expresi\'on\_l\'ogica\_at\'omica}
+}
+\produccion{\s{expresi\'on\_l\'ogica\_at\'omica}}{
+  \tok{NOT} \s{expresi\'on\_l\'ogica\_at\'omica}
+  \NB{Negaci\'on l\'ogica.}
+\ALT
+  \s{expresi\'on\_relacional}
+}
+\produccion{\s{expresi\'on\_relacional}}{
+  \s{expresi\'on\_aditiva} \tok{LE} \s{expresi\'on\_aditiva}
+  \NB{Menor o igual.}
+\ALT
+  \s{expresi\'on\_aditiva} \tok{GE} \s{expresi\'on\_aditiva}
+  \NB{Mayor o igual.}
+\ALT
+  \s{expresi\'on\_aditiva} \tok{LT} \s{expresi\'on\_aditiva}
+  \NB{Menor estricto.}
+\ALT
+  \s{expresi\'on\_aditiva} \tok{GT} \s{expresi\'on\_aditiva}
+  \NB{Mayor estricto.}
+\ALT
+  \s{expresi\'on\_aditiva} \tok{EQ} \s{expresi\'on\_aditiva}
+  \NB{Igual.}
+\ALT
+  \s{expresi\'on\_aditiva} \tok{NE} \s{expresi\'on\_aditiva}
+  \NB{Distinto.}
+\ALT
+  \s{expresi\'on\_aditiva}
+}
+\produccion{\s{expresi\'on\_aditiva}}{
+  \s{expresi\'on\_aditiva} \tok{PLUS} \s{expresi\'on\_multiplicativa}
+  \NB{Suma.}
+\ALT
+  \s{expresi\'on\_aditiva} \tok{MINUS} \s{expresi\'on\_multiplicativa}
+  \NB{Resta.}
+\ALT
+  \s{expresi\'on\_multiplicativa}
+}
+\produccion{\s{expresi\'on\_multiplicativa}}{
+  \s{expresi\'on\_multiplicativa} \tok{TIMES} \s{expresi\'on\_at\'omica}
+  \NB{Multiplicaci\'on.}
+\ALT
+  \s{expresi\'on\_at\'omica}
+}
+\produccion{\s{expresi\'on\_at\'omica}}{
+  \tok{ID}
+  \NB{Uso de una variable.}
+\ALT
+  \tok{NUM}
+  \NB{Constante num\'erica.}
+\ALT
+  \tok{TRUE}
+  \NB{La constante l\'ogica verdadero.}
+\ALT
+  \tok{FALSE}
+  \NB{La constante l\'ogica falso.}
+\ALT
+  \tok{LBRACK} \s{lista\_expresiones} \tok{RBRACK}
+  \NB{Construcci\'on de un vector.}
+\ALT
+  \tok{HASH} \tok{ID}
+  \NB{Longitud de un vector.}
+\ALT
+  \tok{ID} \tok{LBRACK} \s{expresi\'on} \tok{RBRACK}
+  \NB{Acceso al $i$-\'esimo de un vector.}
+\ALT
+  \tok{ID} \tok{LPAREN} \s{lista\_expresiones} \tok{RPAREN}
+  \NB{Invocaci\'on a una funci\'on.}
+\ALT
+  \tok{LPAREN} \s{expresi\'on} \tok{RPAREN} 
+  \NB{Uso de par\'entesis para asociar.}
+}
+
+\newpage
+\section{\'Arbol de sintaxis abstracta para \cuca}
+\label{apendice_ast}
+
+Para referencia sobre c\'omo se construyen los \'arboles
+de sintaxis abstracta y c\'omo se llama cada uno de los
+nodos se utiliza notaci\'on estilo Haskell.
+El \'arbol puede estar implementado internamente de la manera
+que prefieran, pero se debe respetar el formato de serializaci\'on
+indicado en la Secci\'on~\ref{serializacion_ast}.
+\bigskip
+
+\typedecl{\type{Id}}{\type{String}}
+\datadecl{\type{Start}}{[\type{Definition}]}
+\datadecl{\type{Type}}{
+  \ast{Int}
+  \NB{Tipo de los n\'umeros.}
+\ALT
+  \ast{Bool}
+  \NB{Tipo de los valores l\'ogicos.}
+\ALT
+  \ast{Vec}
+  \NB{Tipo de los vectores de n\'umeros.}
+\ALT
+  \ast{Unit}
+  \NB{Tipo de retorno de las funciones que no devuelven nada.}
+}
+\bigskip
+
+\datadecl{\type{ProgramT}}{
+  \ast{Program} [\type{FunctionT}]
+}
+\datadecl{\type{FunctionT}}{
+  \ast{Function} \type{Id} \type{Type} [\type{ParameterT}] \type{BlockT}
+}
+\indent\hspace{1cm}{{\em Nota:} las funciones que no devuelven nada se anotan con el tipo \ast{Unit}.}
+
+\datadecl{\type{ParameterT}}{
+  \ast{Parameter} \type{Id} \type{Type}
+  \NB{Par\'ametro con su anotaci\'on de tipos.}
+}
+\datadecl{\type{BlockT}}{
+  \ast{Block} [\type{StmtT}]
+}
+\datadecl{\type{StmtT}}{
+  \ast{StmtAssign} \type{Id} \type{ExprT}
+  \NB{Asignaci\'on a una variable.}
+\ALT
+  \ast{StmtVecAssign} \type{Id} \type{ExprT} \type{ExprT}
+  \NB{Asignaci\'on a un vector.}
+\ALT
+  \ast{StmtIf} \type{ExprT} \type{BlockT}
+  \NB{Condicional sin else.}
+\ALT
+  \ast{StmtIfElse} \type{ExprT} \type{BlockT} \type{BlockT}
+  \NB{Condicional con else.}
+\ALT
+  \ast{StmtWhile} \type{ExprT} \type{BlockT}
+  \NB{While.}
+\ALT
+  \ast{StmtReturn} \type{ExprT}
+  \NB{Return.}
+\ALT
+  \ast{StmtCall} \type{Id} [\type{ExprT}]
+  \NB{Invocaci\'on a una funci\'on.}
+}
+\datadecl{\type{ExprT}}{
+  \ast{ExprVar} \type{Id}
+  \NB{Uso de una variable.}
+\ALT
+  \ast{ExprConstNum} \type{Integer}
+  \NB{Constante num\'erica.}
+\ALT
+  \ast{ExprConstBool} \type{Bool}
+  \NB{Constante booleana.}
+\ALT
+  \ast{ExprVecMake} [\type{ExprT}]
+  \NB{Construcci\'on de un vector.}
+\ALT
+  \ast{ExprVecLength} \type{Id}
+  \NB{Longitud de un vector.}
+\ALT
+  \ast{ExprVecDeref} \type{Id} \type{ExprT}
+  \NB{Acceso al $i$-\'esimo de un vector.}
+\ALT
+  \ast{ExprCall} \type{Id} [\type{ExprT}]
+  \NB{Invocaci\'on a una funci\'on.}
+\ALT
+  \ast{ExprAnd} \type{ExprT} \type{ExprT}
+  \NB{Conjunci\'on l\'ogica.}
+\ALT
+  \ast{ExprOr} \type{ExprT} \type{ExprT}
+  \NB{Disyunci\'on l\'ogica.}
+\ALT
+  \ast{ExprNot} \type{ExprT}
+  \NB{Negaci\'on l\'ogica.}
+\ALT
+  \ast{ExprLe} \type{ExprT} \type{ExprT}
+  \NB{Menor o igual.}
+\ALT
+  \ast{ExprGe} \type{ExprT} \type{ExprT}
+  \NB{Mayor o igual.}
+\ALT
+  \ast{ExprLt} \type{ExprT} \type{ExprT}
+  \NB{Menor estricto.}
+\ALT
+  \ast{ExprGt} \type{ExprT} \type{ExprT}
+  \NB{Mayor estricto.}
+\ALT
+  \ast{ExprEq} \type{ExprT} \type{ExprT}
+  \NB{Igual.}
+\ALT
+  \ast{ExprNe} \type{ExprT} \type{ExprT}
+  \NB{Distinto.}
+\ALT
+  \ast{ExprAdd} \type{ExprT} \type{ExprT}
+  \NB{Suma.}
+\ALT
+  \ast{ExprSub} \type{ExprT} \type{ExprT}
+  \NB{Resta.}
+\ALT
+  \ast{ExprMul} \type{ExprT} \type{ExprT}
+  \NB{Multiplicaci\'on.}
+}
+
+\end{document}
+

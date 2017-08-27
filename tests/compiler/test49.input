@@ -1,0 +1,16 @@
+// While con un if adentro
+
+fun main() {
+    i := 0
+    s := 0
+    j := True
+    while i < 1000 {
+        if j {
+            s := s + i
+        }
+        j := not j
+        i := i + 1
+    }
+    putNum(s)
+    putChar(10)
+}

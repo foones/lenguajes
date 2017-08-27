@@ -1,0 +1,14 @@
+// Varias variables locales
+
+fun main() {
+  x := 104
+  y := 111
+  putChar(x)
+  putChar(y)
+  x := 108
+  y := 97
+  putChar(x)
+  putChar(y)
+  x := 10
+  putChar(x)
+}

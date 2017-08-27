@@ -1,0 +1,34 @@
+
+// Funciones que retornan valores:
+// otra version del factorial recursivo
+
+fun esCero(n : Int) : Bool {
+    return n == 0
+}
+
+fun producto(x : Int, y : Int) : Int {
+    return x * y
+}
+
+fun factorial(n : Int) : Int {
+    if esCero(n) {
+        n := 1
+    } else {
+        n := n - 1
+        n := producto(n + 1, factorial(n))
+    }
+    return n
+}
+
+fun main() {
+    putNum(factorial(1)) putChar(10)
+    putNum(factorial(2)) putChar(10)
+    putNum(factorial(3)) putChar(10)
+    putNum(factorial(4)) putChar(10)
+    putNum(factorial(5)) putChar(10)
+    putNum(factorial(6)) putChar(10)
+    putNum(factorial(7)) putChar(10)
+    putNum(factorial(8)) putChar(10)
+    putNum(factorial(9)) putChar(10)
+    putNum(factorial(10)) putChar(10)
+}

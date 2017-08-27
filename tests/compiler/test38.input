@@ -1,0 +1,10 @@
+// Funciones que retornan valores
+
+fun f() : Int {
+    return 65
+}
+
+fun main() {
+    putChar(f())
+    putChar(10)
+}

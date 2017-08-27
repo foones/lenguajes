@@ -1,0 +1,28 @@
+// Pruebas con el orden de la declaracion de las variables locales
+
+fun f(b : Bool) {
+    if b {
+        x := 100
+        y := 10
+    } else {
+        y := 99
+        x := 999
+    }
+    putNum(x - y)
+    putChar(10)
+}
+
+fun g() {
+    if True {
+        x := 10
+    }
+    putNum(x)
+    putChar(10)
+}
+
+fun main() {
+    f(True)
+    f(False)
+    g()
+}
+

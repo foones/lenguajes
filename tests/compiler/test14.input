@@ -1,0 +1,17 @@
+// Procedimientos con parametros y con variables locales
+
+fun f(h : Int, o : Int) {
+  l := 108
+  a := 97
+  enter := 10
+  putChar(h)
+  putChar(o)
+  putChar(l)
+  putChar(a)
+  putChar(enter)
+}
+
+fun main() {
+  f(104, 111)
+  f(72, 79)
+}

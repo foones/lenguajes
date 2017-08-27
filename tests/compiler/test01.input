@@ -1,0 +1,4 @@
+// putChar
+fun main() {
+  putChar(65)
+}

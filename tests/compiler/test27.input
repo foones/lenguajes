@@ -1,0 +1,50 @@
+// And
+
+fun p(x : Bool) {
+    if x {
+        putChar(84)
+        putChar(114)
+        putChar(117)
+        putChar(101)
+    } else {
+        putChar(70)
+        putChar(97)
+        putChar(108)
+        putChar(115)
+        putChar(101)
+    }
+}
+
+fun sep() {
+    putChar(32)
+    putChar(97)
+    putChar(110)
+    putChar(100)
+    putChar(32)
+}
+
+fun eq() {
+    putChar(32)
+    putChar(61)
+    putChar(32)
+}
+
+fun enter() {
+    putChar(10)
+}
+
+fun fila(x : Bool, y : Bool, z : Bool) {
+    r := x and y and z
+    p(x) sep() p(y) sep() p(z) eq() p(r) enter()
+}
+
+fun main() {
+  fila(False, False, False)
+  fila(False, False, True)
+  fila(False, True, False)
+  fila(False, True, True)
+  fila(True, False, False)
+  fila(True, False, True)
+  fila(True, True, False)
+  fila(True, True, True)
+}

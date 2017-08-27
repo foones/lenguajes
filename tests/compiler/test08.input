@@ -1,0 +1,21 @@
+
+// Invocaciones a procedimientos con parametros, anidadas
+
+fun g(x : Int) {
+  putChar(x)
+  putChar(x)
+  putChar(x)
+}
+
+fun f(x : Int, y : Int) {
+  g(x)
+  g(y)
+  g(x)
+  putChar(10)
+}
+
+fun main() {
+  f(65, 66)
+  f(66, 67)
+  f(67, 68)
+}

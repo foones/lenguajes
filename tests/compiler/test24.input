@@ -1,0 +1,57 @@
+
+// Producto: multiplicando parametros
+fun f(x1 : Int, y1 : Int) {
+  x2 := y1 - 1
+  y2 := x1 + 1
+
+  y2 := y2 + 3
+  x1 := x1 + 1
+  putNum(6 * 7) putChar(10)
+  y2 := y2 + 3
+  x1 := x1 + 1
+  putNum(x1 * 7) putChar(10)
+  y2 := y2 + 3
+  x1 := x1 + 1
+  putNum(x2 * 7) putChar(10)
+
+  y2 := y2 + 3
+  x1 := x1 + 1
+  putNum(6 * y1) putChar(10)
+  y2 := y2 + 3
+  x1 := x1 + 1
+  putNum(x1 * y1) putChar(10)
+  y2 := y2 + 3
+  x1 := x1 + 1
+  putNum(x2 * y1) putChar(10)
+  y2 := y2 + 3
+  x1 := x1 + 1
+
+  y2 := y2 + 3
+  x1 := x1 + 1
+  putNum(6 * y2) putChar(10)
+  y2 := y2 + 3
+  x1 := x1 + 1
+  putNum(x1 * y2) putChar(10)
+  y2 := y2 + 3
+  x1 := x1 + 1
+  putNum(x2 * y2) putChar(10)
+  y2 := y2 + 3
+  x1 := x1 + 1
+
+  y2 := y2 + 3
+  x1 := x1 + 1
+  putNum(6 * y2) putChar(10)
+  y2 := y2 + 3
+  x1 := x1 + 1
+  putNum(x1 * y2) putChar(10)
+  y2 := y2 + 3
+  x1 := x1 + 1
+  putNum(x2 * y2) putChar(10)
+}
+
+fun main() {
+  a := 6
+  b := a + 1
+  f(a, b)
+}
+

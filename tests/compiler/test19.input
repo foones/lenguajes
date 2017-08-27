@@ -1,0 +1,62 @@
+// Resta 
+
+fun f(x : Int, y : Int) {
+  putNum(x - y)
+  putChar(10)
+}
+
+fun main() {
+  putNum(100 - 58)
+  putChar(10)
+  f(100, 58)
+
+  a := 100
+  b := 58
+  putNum(a - b)
+  putChar(10)
+  f(a, b)
+
+  a := a + 1
+  b := b - 1
+  a := 2 * a
+  b := 2 * b
+  putNum(a - b)
+  putChar(10)
+  f(a, b)
+
+  a := a + 1
+  b := b - 1
+  a := 2 * a
+  b := 2 * b
+  putNum(a - b)
+  putChar(10)
+  f(a, b)
+
+  a := a + 1
+  b := b - 1
+  a := 2 * a
+  b := 2 * b
+  putNum(a - b)
+  putChar(10)
+  f(a, b)
+
+  a := a + 1
+  b := b - 1
+  a := 2 * a
+  b := 2 * b
+  putNum(a - b)
+  putChar(10)
+  f(a, b)
+
+  a := a + 1
+  b := b - 1
+  a := 2 * a
+  b := 2 * b
+  putNum(a - b)
+  putChar(10)
+  f(a, b)
+
+  putNum(a) putChar(10)
+  putNum(b) putChar(10)
+}
+

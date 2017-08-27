@@ -1,0 +1,185 @@
+// If con else, ifs anidados
+
+fun g(x : Int) {
+    putChar(x)
+}
+
+fun f0(b1 : Bool, b2 : Bool, b3 : Bool) {
+    g(85)
+    if b1 {
+        g(81)
+        if b2 {
+            g(73)
+            if b3 {
+                g(65)
+            } else {
+                g(66)
+            }
+            g(74)
+        } else {
+            g(75)
+            if b3 {
+                g(67)
+            } else {
+                g(68)
+            }
+            g(76)
+        }
+        g(82)
+    } else {
+        g(83)
+        if b2 {
+            g(77)
+            if b3 {
+                g(69)
+            } else {
+                g(70)
+            }
+            g(78)
+        } else {
+            g(79)
+            if b3 {
+                g(71)
+            } else {
+                g(72)
+            }
+            g(80)
+        }
+        g(84)
+    } 
+    g(86)
+}
+
+fun f1(b1 : Bool, b2 : Bool, b3 : Bool) {
+    g(85)
+    if b1 {
+        g(81)
+        if b2 {
+            g(73)
+            if b3 {
+                g(65)
+            }
+            g(74)
+        } else {
+            g(75)
+            if b3 {
+                g(67)
+            }
+            g(76)
+        }
+        g(82)
+    } else {
+        g(83)
+        if b2 {
+            g(77)
+            if b3 {
+                g(69)
+            }
+            g(78)
+        } else {
+            g(79)
+            if b3 {
+                g(71)
+            }
+            g(80)
+        }
+        g(84)
+    } 
+    g(86)
+}
+
+fun f2(b1 : Bool, b2 : Bool, b3 : Bool) {
+    g(85)
+    if b1 {
+        g(81)
+        if b2 {
+            g(73)
+            if b3 {
+                g(65)
+            } else {
+                g(66)
+            }
+            g(74)
+        }
+        g(82)
+    } else {
+        g(83)
+        if b2 {
+            g(77)
+            if b3 {
+                g(69)
+            } else {
+                g(70)
+            }
+            g(78)
+        }
+        g(84)
+    } 
+    g(86)
+}
+
+fun f3(b1 : Bool, b2 : Bool, b3 : Bool) {
+    g(85)
+    if b1 {
+        g(81)
+        if b2 {
+            g(73)
+            if b3 {
+                g(65)
+            }
+            g(74)
+        }
+        g(82)
+    } else {
+        g(83)
+        if b2 {
+            g(77)
+            if b3 {
+                g(69)
+            }
+            g(78)
+        }
+        g(84)
+    } 
+    g(86)
+}
+
+
+fun main() {
+    f0(False, False, False) putChar(10)
+    f0(False, False, True) putChar(10)
+    f0(False, True, False) putChar(10)
+    f0(False, True, True) putChar(10)
+    f0(True, False, False) putChar(10)
+    f0(True, False, True) putChar(10)
+    f0(True, True, False) putChar(10)
+    f0(True, True, True) putChar(10)
+    putChar(45) putChar(10)
+    f1(False, False, False) putChar(10)
+    f1(False, False, True) putChar(10)
+    f1(False, True, False) putChar(10)
+    f1(False, True, True) putChar(10)
+    f1(True, False, False) putChar(10)
+    f1(True, False, True) putChar(10)
+    f1(True, True, False) putChar(10)
+    f1(True, True, True) putChar(10)
+    putChar(45) putChar(10)
+    f2(False, False, False) putChar(10)
+    f2(False, False, True) putChar(10)
+    f2(False, True, False) putChar(10)
+    f2(False, True, True) putChar(10)
+    f2(True, False, False) putChar(10)
+    f2(True, False, True) putChar(10)
+    f2(True, True, False) putChar(10)
+    f2(True, True, True) putChar(10)
+    putChar(45) putChar(10)
+    f3(False, False, False) putChar(10)
+    f3(False, False, True) putChar(10)
+    f3(False, True, False) putChar(10)
+    f3(False, True, True) putChar(10)
+    f3(True, False, False) putChar(10)
+    f3(True, False, True) putChar(10)
+    f3(True, True, False) putChar(10)
+    f3(True, True, True) putChar(10)
+}
+

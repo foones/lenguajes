@@ -1,0 +1,76 @@
+
+// Menor o igual
+
+fun main() {
+    z := 64
+    z := z + 1 if 1 <= 1 { putChar(z) }
+    z := z + 1 if 1 <= 2 { putChar(z) }
+    z := z + 1 if 2 <= 1 { putChar(z) }
+    z := z + 1 if 2 <= 2 { putChar(z) }
+    z := z + 1 if 2 <= 3 { putChar(z) }
+    z := z + 1 if 3 <= 2 { putChar(z) }
+    z := z + 1 if 3 <= 3 { putChar(z) }
+
+    putChar(10)
+    z := 64
+    x := 1
+
+    z := z + 1 if x <= 1 { putChar(z) }
+    z := z + 1 if x <= 2 { putChar(z) }
+    z := z + 1 if x <= 1 { putChar(z) }
+    z := z + 1 if x <= 2 { putChar(z) }
+    z := z + 1 if x <= 3 { putChar(z) }
+    z := z + 1 if x <= 2 { putChar(z) }
+    z := z + 1 if x <= 3 { putChar(z) }
+    z := z + 1 if 1 <= x { putChar(z) }
+    z := z + 1 if 1 <= x { putChar(z) }
+    z := z + 1 if 2 <= x { putChar(z) }
+    z := z + 1 if 2 <= x { putChar(z) }
+    z := z + 1 if 2 <= x { putChar(z) }
+    z := z + 1 if 3 <= x { putChar(z) }
+    z := z + 1 if 3 <= x { putChar(z) }
+    z := z + 1 if x <= x { putChar(z) }
+
+    putChar(10)
+    z := 64
+    x := 2
+
+    z := z + 1 if x <= 1 { putChar(z) }
+    z := z + 1 if x <= 2 { putChar(z) }
+    z := z + 1 if x <= 1 { putChar(z) }
+    z := z + 1 if x <= 2 { putChar(z) }
+    z := z + 1 if x <= 3 { putChar(z) }
+    z := z + 1 if x <= 2 { putChar(z) }
+    z := z + 1 if x <= 3 { putChar(z) }
+    z := z + 1 if 1 <= x { putChar(z) }
+    z := z + 1 if 1 <= x { putChar(z) }
+    z := z + 1 if 2 <= x { putChar(z) }
+    z := z + 1 if 2 <= x { putChar(z) }
+    z := z + 1 if 2 <= x { putChar(z) }
+    z := z + 1 if 3 <= x { putChar(z) }
+    z := z + 1 if 3 <= x { putChar(z) }
+    z := z + 1 if x <= x { putChar(z) }
+
+    putChar(10)
+    z := 64
+    x := 3
+
+    z := z + 1 if x <= 1 { putChar(z) }
+    z := z + 1 if x <= 2 { putChar(z) }
+    z := z + 1 if x <= 1 { putChar(z) }
+    z := z + 1 if x <= 2 { putChar(z) }
+    z := z + 1 if x <= 3 { putChar(z) }
+    z := z + 1 if x <= 2 { putChar(z) }
+    z := z + 1 if x <= 3 { putChar(z) }
+    z := z + 1 if 1 <= x { putChar(z) }
+    z := z + 1 if 1 <= x { putChar(z) }
+    z := z + 1 if 2 <= x { putChar(z) }
+    z := z + 1 if 2 <= x { putChar(z) }
+    z := z + 1 if 2 <= x { putChar(z) }
+    z := z + 1 if 3 <= x { putChar(z) }
+    z := z + 1 if 3 <= x { putChar(z) }
+    z := z + 1 if x <= x { putChar(z) }
+
+    putChar(10)
+}
+

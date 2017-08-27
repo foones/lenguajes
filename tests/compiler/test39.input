@@ -1,0 +1,23 @@
+// Funciones que retornan valores: factorial recursivo
+
+fun factorial(n : Int) : Int {
+    if n == 0 {
+        res := 1
+    } else {
+        res := n * factorial(n - 1)
+    }
+    return res
+}
+
+fun main() {
+    putNum(factorial(1)) putChar(10)
+    putNum(factorial(2)) putChar(10)
+    putNum(factorial(3)) putChar(10)
+    putNum(factorial(4)) putChar(10)
+    putNum(factorial(5)) putChar(10)
+    putNum(factorial(6)) putChar(10)
+    putNum(factorial(7)) putChar(10)
+    putNum(factorial(8)) putChar(10)
+    putNum(factorial(9)) putChar(10)
+    putNum(factorial(10)) putChar(10)
+}

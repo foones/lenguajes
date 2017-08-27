@@ -1,0 +1,19 @@
+// While: whiles anidados
+
+fun tabla(ancho : Int, alto : Int) {
+    j := 0
+    while j < alto {
+      i := 0
+      while i < ancho {
+          putChar(120)
+          i := i + 1
+      }
+      putChar(10)
+      j := j + 1
+    }
+}
+
+fun main() {
+    tabla(10, 8)
+}
+

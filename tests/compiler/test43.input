@@ -1,0 +1,23 @@
+// Funciones que retornan valores:
+// Fibonacci recursiva
+
+fun fib(n : Int) : Int {
+    if n <= 1 {
+        res := n
+    } else {
+        res := fib(n - 2) + fib(n - 1)
+    } 
+    return res
+}
+
+fun probar(i : Int, n : Int) {
+    if i <= n {
+        putNum(fib(i))
+        putChar(10)
+        probar(i + 1, n)
+    }
+}
+
+fun main() {
+   probar(0, 20)
+}

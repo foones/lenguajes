@@ -1,0 +1,21 @@
+// While: factorial iterativo
+
+fun factorial(n : Int) : Int {
+    i := 0
+    p := 1
+    while i < n {
+        i := i + 1
+        p := p * i
+    }
+    return p
+}
+
+fun main() {
+  i := 0
+  while i <= 10 {
+    putNum(factorial(i))
+    putChar(10)
+    i := i + 1
+  }
+}
+

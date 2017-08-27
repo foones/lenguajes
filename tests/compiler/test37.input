@@ -1,0 +1,122 @@
+
+// Operadores relacionales (==, <=, >=, <, >, !=)
+
+fun pi(x : Int) {
+    putNum(x)
+}
+
+fun pb(x : Bool) {
+    if x {
+        putChar(84)
+        putChar(114)
+        putChar(117)
+        putChar(101)
+    } else {
+        putChar(70)
+        putChar(97)
+        putChar(108)
+        putChar(115)
+        putChar(101)
+    }
+}
+
+fun sep(op : Int) {
+    putChar(32)
+    if op == 1 {
+      putChar(61)
+      putChar(61)
+    }
+    if op == 2 {
+      putChar(60)
+      putChar(61)
+    }
+    if op == 3 {
+      putChar(62)
+      putChar(61)
+    }
+    if op == 4 {
+      putChar(60)
+    }
+    if op == 5 {
+      putChar(62)
+    }
+    if op == 6 {
+      putChar(33)
+      putChar(61)
+    }
+    putChar(32)
+}
+
+fun eq() {
+    putChar(32)
+    putChar(61)
+    putChar(32)
+}
+
+fun enter() {
+    putChar(10)
+}
+
+fun fila(x : Int, op : Int, y : Int) {
+
+    if op == 1 {
+        r := x == y
+    }
+    if op == 2 {
+        r := x <= y
+    }
+    if op == 3 {
+        r := x >= y
+    }
+    if op == 4 {
+        r := x < y
+    }
+    if op == 5 {
+        r := x > y
+    }
+    if op == 6 {
+        r := x != y
+    }
+
+    pi(x) sep(op) pi(y) eq() pb(r) enter()
+}
+
+fun tabla(x : Int, y : Int) {
+  putChar(45) putChar(45) putChar(45) putChar(10)
+  fila(x, 1, y)
+  fila(x, 2, y)
+  fila(x, 3, y)
+  fila(x, 4, y)
+  fila(x, 5, y)
+  fila(x, 6, y)
+  putChar(45) putChar(45) putChar(45) putChar(10)
+}
+
+fun f(x : Int) {
+  y := 0
+  y := y + 1 tabla(x, y)
+  y := y + 1 tabla(x, y)
+  y := y + 1 tabla(x, y)
+  y := y + 1 tabla(x, y)
+  y := y + 1 tabla(x, y)
+  y := y + 1 tabla(x, y)
+  y := y + 1 tabla(x, y)
+  y := y + 1 tabla(x, y)
+  y := y + 1 tabla(x, y)
+  y := y + 1 tabla(x, y)
+}
+
+fun main() {
+  x := 0
+  x := x + 1 f(x)
+  x := x + 1 f(x)
+  x := x + 1 f(x)
+  x := x + 1 f(x)
+  x := x + 1 f(x)
+  x := x + 1 f(x)
+  x := x + 1 f(x)
+  x := x + 1 f(x)
+  x := x + 1 f(x)
+  x := x + 1 f(x)
+}
+

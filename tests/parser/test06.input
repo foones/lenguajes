@@ -1,0 +1,26 @@
+fun main() {
+  a := 10
+  b := 11
+  c := 12
+
+  x := a <= b
+  x := c >= b
+  x := a < b
+  x := b > c
+  x := a == b
+  x := b != a
+
+  x := a < b and b < c
+  x := a < b or b < c
+  x := not a < b
+  x := a < b and b < c and c < a
+  x := a < b or b < c or c < a
+  x := a < b and b < c or c < a
+  x := a < b or b < c and c < a
+  x := not a < b or not b < c
+  x := not not a < b or b < c
+  x := a < b or not not b < c
+  x := not (a < b and b < c)
+  x := not (a < b and b < c) or not (b < c and a < b)
+  x := not (a < b and b < c) or not (b < c and a < b)
+}

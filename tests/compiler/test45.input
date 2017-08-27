@@ -1,0 +1,61 @@
+// While: div mod iterativo
+
+fun div(x : Int, y : Int) : Int {
+    r := 0
+    while x >= y {
+        x := x - y
+        r := r + 1
+    }
+    return r
+}
+
+fun mod(x : Int, y : Int) : Int {
+    while x >= y {
+        x := x - y
+    }
+    return x
+}
+
+fun testDivMod(x : Int, y : Int) {
+  putNum(x)
+  putChar(32)
+  putChar(100)
+  putChar(105)
+  putChar(118)
+  putChar(32)
+  putNum(y)
+  putChar(32)
+  putChar(61)
+  putChar(32)
+  putNum(div(x, y))
+  putChar(32)
+  putChar(124)
+  putChar(32)
+  putNum(x)
+  putChar(32)
+  putChar(109)
+  putChar(111)
+  putChar(100)
+  putChar(32)
+  putNum(y)
+  putChar(32)
+  putChar(61)
+  putChar(32)
+  putNum(mod(x, y))
+  putChar(10)
+}
+
+fun testDivModTo(x : Int, y : Int, n : Int) {
+    while x < n {
+        testDivMod(x, y)
+        x := x + 1
+    }
+}
+
+fun main() {
+    testDivModTo(0, 2, 10)
+    testDivModTo(0, 3, 10)
+    testDivModTo(0, 7, 100)
+    testDivModTo(0, 10, 100)
+}
+

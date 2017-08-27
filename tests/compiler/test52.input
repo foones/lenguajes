@@ -1,0 +1,26 @@
+// Vectores: creacion, longitud, acceso
+
+fun printVector(v : Vec) {
+    i := 0
+    putChar(91)
+    while i < #v {
+        putNum(v[i])
+        i := i + 1
+        if i < #v {
+            putChar(44)
+            putChar(32)
+        }
+    }
+    putChar(93)
+    putChar(10)
+}
+
+fun main() {
+    v := [1, 2, 3]
+    printVector(v)
+
+    v := [10, 20, 30]
+    printVector(v)
+
+    printVector([11, 22, 33, 44, 55, 66, 77, 88, 99])
+}

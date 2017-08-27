@@ -1,0 +1,33 @@
+
+// Resta: expresiones mas complejas
+
+fun main() {
+  a := 165
+  b := 80
+  c := 40
+  d := 20
+  e := 10
+  putNum(a) putChar(10)
+  putNum(a - b) putChar(10)
+  putNum(a - b - c) putChar(10)
+  putNum(a - (b - c)) putChar(10)
+  putNum(a - b - c - d) putChar(10)
+  putNum(a - b - (c - d)) putChar(10)
+  putNum(a - (b - c) - d) putChar(10)
+  putNum(a - (b - c - d)) putChar(10)
+  putNum(a - (b - (c - d))) putChar(10)
+  putNum(a - b - c - d - e) putChar(10)
+  putNum(a - b - c - d - e) putChar(10)
+  putNum(a - b - c - (d - e)) putChar(10)
+  putNum(a - b - (c - d) - e) putChar(10)
+  putNum(a - b - (c - d - e)) putChar(10)
+  putNum(a - b - (c - (d - e))) putChar(10)
+  putNum(a - (b - c) - d - e) putChar(10)
+  putNum(a - (b - c - d) - e) putChar(10)
+  putNum(a - (b - (c - d)) - e) putChar(10)
+  putNum(a - (b - c - d - e)) putChar(10)
+  putNum(a - (b - c - (d - e))) putChar(10)
+  putNum(a - (b - (c - d) - e)) putChar(10)
+  putNum(a - (b - (c - d - e))) putChar(10)
+  putNum(a - (b - (c - (d - e)))) putChar(10)
+}

@@ -1,0 +1,26 @@
+
+fun main() {
+  a := True 
+  b := False 
+  c := True 
+  x := a and b
+  x := b or a
+  x := not a
+  x := a and b and c
+  x := a and (b and c)
+  x := a or b or c
+  x := a or (b or c)
+  x := a and b or c
+  x := a and (b or c)
+  x := a or b and c
+  x := a or (b and c)
+  x := not a and b
+  x := not (a and b)
+  x := a and not b
+  x := not a or not b
+  x := not (a or not b)
+  x := not not a or not not b
+  x := not (not a or not not b)
+  x := not not (a or not not b)
+  x := not (not not a or not b)
+}
