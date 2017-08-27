@@ -20,7 +20,12 @@ main = do
     _ -> putStr (
              "Uso: cuca <archivo>      -- interpretar\n" ++
              "     cuca -a <archivo>   -- imprimir AST\n" ++
-             "     cuca -c <archivo>   -- compilar\n"
+             "     cuca -c <archivo>   -- compilar\n" ++
+             "\n" ++
+             "Una vez compilado:\n" ++
+             "     nasm -felf64 foo.asm\n" ++
+             "     gcc -static -o foo foo.o\n" ++
+             "     ./foo\n"
          )
 
 parseAndPrint :: String -> IO ()
