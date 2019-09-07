@@ -1,0 +1,17 @@
+---- Primitiva: OR
+
+def printBool x =
+  case x
+  | True      -> (unsafePrintChar 'T'; unsafePrintChar '\n')
+  | False     -> (unsafePrintChar 'F'; unsafePrintChar '\n')
+
+def colgarse x = colgarse x
+
+def main =
+  printBool (True  || True)  ;
+  printBool (True  || False) ;
+  printBool (False || True)  ;
+  printBool (False || False) ;
+  unsafePrintChar '-'; unsafePrintChar '\n';
+  printBool (False || colgarse 0)
+

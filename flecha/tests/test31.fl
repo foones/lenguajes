@@ -1,0 +1,9 @@
+---- Primitiva: UMINUS
+
+def printInt x =
+  case x
+  | Int -> (unsafePrintInt x; unsafePrintChar '\n')
+
+def main =
+  printInt (-1);
+  printInt (-(5 + 5))

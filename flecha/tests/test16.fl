@@ -1,0 +1,52 @@
+
+---- Print
+
+def unsafePrintString s =
+  case s
+  | Nil       -> 0
+  | Cons x xs -> (unsafePrintChar x; unsafePrintString xs)
+
+def printList list =
+  case list
+  | Nil       -> 0
+  | Cons x xs ->
+    (print x;
+     if null xs
+      then 0
+      else (unsafePrintString ", "; printList xs))
+
+def print x =
+  case x
+  | Int       -> unsafePrintInt x
+  | Char      -> unsafePrintChar x
+  | False     -> unsafePrintString "False"
+  | True      -> unsafePrintString "True"
+  | Closure   -> unsafePrintString "<fun>"
+  | Nil       -> unsafePrintString "[]"
+  | Cons x xs -> (unsafePrintString "[";
+                  printList (Cons x xs);
+                  unsafePrintString "]")
+
+def println x = print x; print '\n'
+
+---- Listas
+
+def null list =
+  case list
+  | Nil       -> True
+  | Cons x xs -> False
+
+def map f l =
+  case l
+  | Nil       -> Nil
+  | Cons x xs -> Cons (f x) (map f xs)
+
+---- Main
+
+def main = 
+  println (map (\ x -> 42)
+               (Cons 1 (Cons 2 (Cons 3 Nil))));
+
+  println (map (\ x -> Cons x (Cons x Nil))
+               (Cons 1 (Cons 2 (Cons 3 Nil))))
+

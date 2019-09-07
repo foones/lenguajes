@@ -1,0 +1,8 @@
+
+def x = 42
+
+def main = unsafePrintInt ((\ y -> x) 43);
+           unsafePrintChar '\n';
+           unsafePrintInt ((\ x -> x) 43);
+           unsafePrintChar '\n'
+

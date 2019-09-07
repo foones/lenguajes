@@ -1,0 +1,23 @@
+
+def main =
+  let x = 44 in
+  (
+    unsafePrintInt x; unsafePrintChar '\n';
+    let y = x in
+    let x = 43 in
+    (
+      unsafePrintInt x; unsafePrintChar '\n';
+      unsafePrintInt y; unsafePrintChar '\n';
+      let z = y in
+      let y = x in
+      let x = 42 in (
+        unsafePrintInt x; unsafePrintChar '\n';
+        unsafePrintInt y; unsafePrintChar '\n';
+        unsafePrintInt z; unsafePrintChar '\n'
+      );
+      unsafePrintInt x; unsafePrintChar '\n';
+      unsafePrintInt y; unsafePrintChar '\n'
+    );
+    unsafePrintInt x; unsafePrintChar '\n'
+  )
+

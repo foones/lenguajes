@@ -1,0 +1,900 @@
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{tabularx}
+\usepackage[margin=1.9cm]{geometry}
+\usepackage{amsmath}
+\usepackage{minted}
+
+\colorlet{darkgreen}{green!60!black}
+\newcommand{\TODO}[1]{\textcolor{red}{TODO: #1}}
+\newcommand{\HS}{\hspace{.5cm}}
+\newcommand{\flecha}{\textsf{Flecha}\xspace}
+\newcommand{\tok}[1]{\textcolor{red}{{\texttt{$\langle$#1$\rangle$}}}}
+\newcommand{\nonterm}[1]{\textcolor{blue}{{\em{$\langle$#1$\rangle$}}}}
+\newcommand{\produccion}[2]{
+  \item[]
+  \begin{tabularx}{\textwidth}{lrlr}
+  #1 & $\xrightarrow{\hspace{.5cm}}$ & #2
+  \end{tabularx}\\
+}
+\newcommand{\EMPTY}{$\epsilon$}
+\newcommand{\ALT}{
+  \\ & $\mid$ &
+}
+
+% AST
+\newcommand{\type}[1]{\textcolor{darkgreen}{\texttt{#1}}}
+%\renewcommand{\ast}[1]{\textcolor{darkgreen}{\texttt{\underline{#1}}}}
+%\newcommand{\instruction}[1]{\textcolor{darkgreen}{\texttt{\underline{#1}}}}
+\newcommand{\typedecl}[2]{\noindent
+  \begin{tabularx}{\textwidth}{lrlr}
+  #1 & $=$ & #2
+  \end{tabularx}\\
+}
+\newcommand{\datadecl}[2]{\noindent
+  \begin{tabularx}{\textwidth}{lrp{13cm}r}
+  #1 & $::=$ & #2
+  \end{tabularx}\\
+}
+\newcommand{\fl}[1]{\mintinline{haskell}{#1}}
+\newcommand{\astkw}[1]{\texttt{\textcolor{red}{"#1"}}}
+\newcommand{\astpart}[2]{$\underbrace{\text{#2}}_{\text{#1}}$}
+
+\begin{document}
+\begin{center}
+\textsc{{\small Parseo y Generaci\'on de C\'odigo -- $2^{\text{do}}$ semestre 2018}} \medskip \\ 
+\textsc{{\small Licenciatura en Inform\'atica con Orientaci\'on en Desarrollo de Software}} \medskip \\
+\textsc{{\small Universidad Nacional de Quilmes}} \medskip \\
+{\Large Trabajo pr\'actico 1} \medskip \\
+{\large {\bf Parser para \flecha}} \medskip \\
+\bigskip
+Fecha de entrega: 4 de octubre
+\end{center}
+
+\tableofcontents
+
+\section{Introducci\'on}
+
+Este TP consiste en implementar un analizador sintáctico
+para el lenguaje de programación funcional \flecha.
+El analizador sintáctico puede estar implementado en el lenguaje de su
+preferencia, y se puede definir manualmente (por ejemplo, usando la técnica
+de descenso recursivo) o a través un generador de parsers\footnote{Por ejemplo
+\texttt{yacc} para C/C++, \texttt{ANTLR} para Java, \texttt{ply} para Python, \texttt{happy} para Haskell,
+etc.}.
+En el apéndice~A se encuentra definida la gramática formal del lenguaje \flecha.
+Si usan un generador de parsers, probablemente tengan que adaptar la gramática
+para eliminar ambigüedades.
+
+El analizador sintáctico debe poder analizar programas válidos escritos en lenguaje
+\flecha y construir un árbol de sintaxis abstracta~(AST).
+Se debe programar también la funcionalidad necesaria para generar
+el AST en formato \texttt{JSON}, como se detalla en el apéndice~B,
+a los efectos de comprobar que su implementación coincida con la esperada.
+
+{\bf Nota:} En este TP no se evalúan cuestiones de estilo,
+pero consideren que el TP~2 será una extensión del TP~1,
+por lo que es recomendable usar buenas prácticas para facilitar
+su propia tarea en el futuro.
+
+\section{Características del lenguaje \flecha}
+
+En esta sección describimos informalmente las características del lenguaje \flecha.
+\begin{itemize}
+\item {\bf Tipos.}
+      \flecha es un lenguaje {\em no tipado}.
+      Los tipos de datos existen únicamente como propiedades de los
+      valores en tiempo de ejecución. Esto es similar a lo que
+      ocurre en lenguajes a veces llamados ``dinámicos'', como
+      SmallTalk, Python o JavaScript.
+\item {\bf Tipos de datos primitivos.}
+      \flecha cuenta con dos tipos de datos primitivos:
+      enteros y caracteres. Por ejemplo:
+\begin{minted}{haskell}
+1      2      3      0      65536                        -- enteros
+'a'    'z'    'A'    'Z'    '0'    '9'    '_'    '\n'    -- caracteres
+\end{minted}
+\item {\bf Estructuras.}
+      \flecha cuenta con el tipo de las {\em estructuras}.
+      Una estructura se forma aplicando un constructor a una lista
+      de argumentos. Un constructor es cualquier identificador empezado
+      por mayúsculas. Por ejemplo, las siguientes son estructuras:
+\begin{minted}{haskell}
+True                                   -- sin argumentos
+False                                  -- sin argumentos
+HeladoDeFrambuesa                      -- sin argumentos
+Just 'a'                               -- un argumento
+MkCoordenada 3 5                       -- dos argumentos
+Cons 1 (Cons 2 (Cons 3 Nil))           -- dos argumentos (recursiva)
+\end{minted}
+\item {\bf Strings.}
+      \flecha permite escribir listas de caracteres usando una sintaxis
+      abreviada en forma de {\em string}. Por ejemplo,
+      \fl{"hola"} es una manera abreviada de escribir
+      la siguiente estructura:
+\begin{minted}{haskell}
+Cons 'h' (Cons 'o' (Cons 'l' (Cons 'a' Nil)))
+\end{minted}
+\item {\bf Operaciones aritméticas, relacionales y lógicas.}
+  \flecha soporta los siguientes operadores:
+  \begin{enumerate}
+  \item Operaciones {\bf aritméticas} con enteros: suma (\fl{+}),
+        resta (\fl{-}), multiplicación (\fl{*}), división entera (\fl{/})
+        y resto en la división entera (\!\texttt{\%}).
+  \item Operaciones {\bf relacionales} para comparar por
+        igualdad (\fl{==}), desigualdad (\fl{!=}),
+        mayor o igual (\fl{>=}), menor o igual (\fl{<=}),
+        mayor estricto (\fl{>}), menor estricto (\fl{<}).
+  \item Operaciones {\bf lógicas} para
+        la conjunción, es decir, el ``y'' lógico (\fl{&&}),
+        la disyunción, es decir, el ``o'' lógico (\fl{||}),
+        y la negación (\fl{!}).
+  \end{enumerate}
+  Por ejemplo:
+  \begin{minted}{haskell}
+    n * (n - 1) / 2
+    0 <= x && x <= 9 || 0 <= y && y <= 9
+  \end{minted}
+\item {\bf Definición de constantes y funciones.}
+  Un programa en \flecha es una secuencia de definiciones de constantes
+  y funciones. Por ejemplo:
+\begin{minted}{haskell}
+def miNumeroFavorito = 7
+def cuadrado x = x * x
+def main = cuadrado (cuadrado miNumeroFavorito)
+\end{minted}
+\item {\bf Alternativa condicional.}
+  \flecha permite escribir expresiones condicionales
+  de la forma \fl{if c then x else y}.
+  Dado que el \fl{if} es una expresión, siempre debe tener una
+  rama \fl{else}.
+  En este TP todavía no nos interesa la {\em semántica} de las
+  operaciones, pero vale aclarar que la estructura \fl{True}
+  se considera el valor verdadero y la estructura \fl{False} es el
+  valor falso, mientras que cualquier otro valor provocará un error
+  en tiempo de ejecución.
+\begin{minted}{haskell}
+if True  then 1 else 2        ==> 1
+if False then 1 else 2        ==> 2
+if 7     then 1 else 2        ==> (error)
+if Nil   then 1 else 2        ==> (error)
+\end{minted}
+  La construcción \fl{if} puede incorporar cero, una o varias ramas
+  \fl{elif}:
+\begin{minted}{haskell}
+def diaSemana n =
+    if n == 1 then Lunes
+  elif n == 2 then Martes
+  elif n == 3 then Miercoles
+  elif n == 4 then Jueves
+  elif n == 5 then Viernes
+  elif n == 6 then Sabado
+              else Domingo
+\end{minted}
+\item {\bf Pattern matching.}
+\flecha permite hacer pattern matching usando la construcción \fl{case}.
+La construcción \fl{case} recibe un valor y tiene varias {\bf ramas}.
+Cada rama verifica si el valor es una estructura armada usando un
+constructor. Por ejemplo:
+\begin{minted}{haskell}
+def longitud lista =
+  case lista
+  | Nil       -> 0
+  | Cons x xs -> 1 + longitud xs
+
+longitud "abc"    ==> 3
+longitud False    ==> (error)
+longitud 7        ==> (error)
+\end{minted}
+Por simplicidad, supondremos que el {\em pattern matching}
+no puede incluir constructores anidados, por ejemplo:
+\begin{minted}{haskell} 
+  -- Lo siguiente no está permitido:
+  def tieneExactamenteUnElemento lista =
+    case lista
+    | Nil                -> False
+    | Cons x Nil         -> True    -- Nil adentro de Cons
+    | Cons x (Cons y ys) -> False   -- Cons adentro de Cons
+
+  -- Lo siguiente sí está permitido:
+  def tieneExactamenteUnElemento lista =
+    case lista
+    | Nil       -> False
+    | Cons x xs -> (case xs
+                    | Nil       -> True
+                    | Cons y ys -> False)
+\end{minted}
+\item {\bf Declaraciones locales.}
+  Se permite declarar constantes y funciones locales con \fl{let}.
+\begin{minted}{haskell}
+  def f x y =
+    let z = x + y in
+      Coordenada z z
+
+  f 10 20  ==> Coordenada 30 30
+
+  def g x =
+    let h y = x + y in
+      Coordenada (g 1) (g 2)
+
+  g 10  ==> Coordenada 11 12
+\end{minted}
+\item {\bf Secuenciación.}
+  A pesar de ser un lenguaje funcional, \flecha cuenta con efectos
+  secundarios para hacer entrada/salida.
+  Para ello resulta útil contar con el operador de secuenciación,
+  escrito con un punto y coma (\fl{;}).
+  Si escribimos \texttt{p1; p2} esto tiene el efecto de ejecutar
+  \texttt{p1}, descartando su valor, y a continuación ejecutar
+  \texttt{p2}. Por ejemplo:
+\begin{minted}{haskell}
+def main =
+  print "hola\n";
+  print "chau\n"
+\end{minted}
+El operador de secuenciación es solamente una abreviatura.
+Internamente el analizador sintáctico convierte
+la expresión \texttt{(p1; p2)}
+en la expresión \fl{(let _ = p1 in p2)}.
+\item {\bf Funciones.}
+En \flecha las funciones también son datos.
+Se permite también definir funciones anónimas con notación {\em lambda}.
+Por ejemplo:
+\begin{minted}{haskell}
+  def twice f = \ x -> f (f x)
+
+  twice (Cons 1) Nil     ==> Cons 1 (Cons 1 Nil)
+
+  def map = \ f lista -> case lista
+                         | Nil       -> Nil
+                         | Cons x xs -> Cons (f x) (map f xs)
+
+  map (\ x -> 2 * x) (Cons 1 (Cons 2 (Cons 3 Nil)))
+\end{minted}
+\end{itemize}
+
+\section{Construcción del árbol de sintaxis abstracta}
+
+Como resultado del análisis sintáctico, debe construirse un árbol
+de sintaxis abstracta o AST.
+La representación interna del AST puede ser la que prefieran,
+pero deben implementar la funcionalidad necesaria para generar
+un AST en formato JSON de acuerdo con lo que se especifica en el
+apéndice~B.
+
+\section{Pautas de entrega}
+
+Para entregar el TP se debe enviar el c\'odigo fuente por e-mail
+a la casilla \texttt{foones@gmail.com} hasta las 23:59:59 del d\'ia
+estipulado para la entrega, incluyendo \texttt{[TP lds-est-parse]} en
+el asunto y el nombre de los integrantes del grupo en el cuerpo
+del e-mail. No es necesario hacer un informe sobre el TP, pero se espera
+que el c\'odigo sea razonablemente legible.
+Se debe incluir un README
+indicando las dependencias y el mecanismo de ejecuci\'on
+recomendado para que el programa provea la funcionalidad pedida.
+Se recomienda probar el programa con el conjunto de tests provistos.
+
+\appendix
+
+\section{Gramática formal de \flecha}
+
+\subsection{Convenciones léxicas}
+
+En esta sección se detalla el funcionamiento del analizador léxico.
+Escribimos en \tok{MAYÚSCULAS} el nombre del símbolo terminal o {\em token}
+que usaremos formalmente en la gramática.
+
+\subsubsection*{Blancos y comentarios}
+  Se ignoran los caracteres en blanco, incluyendo
+  espacios (\verb|' '|, caracter \texttt{0x20}),
+  tabs (\verb|'\t'|, caracter \texttt{0x09}),
+  saltos de línea (\verb|'\n'|, caracter \texttt{0x0a}),
+  y retornos de carro (\verb|'\r'|, caracter \texttt{0x0d}).
+
+  Se ignoran los comentarios.
+  Un comentario puede empezar en cualquier punto
+  del programa con una secuencia de dos guiones seguidos, es decir dos
+  veces el símbolo ``menos'', (\verb|--|).
+  Un comentario termina en la siguiente ocurrencia de un salto de línea
+  (\verb|'\n'|).
+
+\subsubsection*{Identificadores}
+
+  Un {\bf identificador} es una secuencia no vacía de símbolos consecutivos
+  que empiezan con un caracter alfabético
+  y pueden incluir
+  minúsculas (\verb|a..z|),
+  mayúsculas (\verb|A..Z|),
+  caracteres numéricos (\verb|0..9|)
+  y guiones bajos (\verb|_|).
+  Distinguimos dos tipos de identificadores:
+  \begin{enumerate}
+  \item Identificador que comienza en minúscula,
+        es decir, de la forma
+        \verb|[a-z][_a-zA-Z0-9]*|.\\
+        Se utiliza para nombres de variables, constantes y funciones.\\
+        El token correspondiente es \tok{LOWERID}.
+  \item Identificador que comienza en mayúscula,
+        es decir, de la forma
+        \verb|[A-Z][_a-zA-Z0-9]*|.\\
+        Se utiliza para nombres de constructores.\\
+        El token correspondiente es \tok{UPPERID}.
+  \end{enumerate}
+  Los identificadores podrían tener longitud arbitrariamente larga,
+  pero se acepta que la implementación se limite a identificadores de
+  longitud hasta 1023.
+
+\subsubsection*{Constantes numéricas}
+  Una constante numérica es una secuencia no vacía de dígitos
+  decimales (\verb|0..9|).
+  Se utiliza para representar enteros (escritos en decimal).
+  El token correspondiente es \tok{NUMBER}.
+
+  Las constantes numéricas podrían representar enteros arbitrariamente
+  grandes,
+  pero se acepta que la implementación se limite a números entre
+  0 y $2^{31}-1$, es decir, el máximo entero positivo representable
+  usando una representación con signo de 32 bits.
+
+\subsubsection*{Constantes de caracter}
+  Una constante de caracter consta de un caracter delimitado por comillas
+  simples (\verb|'|).
+  Por ejemplo, \verb|'a'| y \verb|'9'| son constantes de caracter.
+  El token correspondiente es \tok{CHAR}.
+  Para poder representar algunos caracteres especiales como retornos de línea,
+  y comillas simples se aceptan las siguientes seis secuencias de escape:
+  \begin{center}
+  \begin{tabular}{ll}
+  \verb|'\''| & representa la comilla simple \verb|'| \\
+  \verb|'\"'| & representa la comilla doble \verb|"| \\
+  \verb|'\\'| & representa la contrabarra \verb|\| \\
+  \verb|'\t'| & representa un tab \verb|\t|, caracter \texttt{0x09}\\
+  \verb|'\n'| & representa un salto de línea \verb|\n|, caracter \texttt{0x0a}\\
+  \verb|'\r'| & representa un retorno de carro \verb|\r|, caracter \texttt{0x0d}\\
+  \end{tabular}
+  \end{center}
+\subsubsection*{Constantes de {\em string}}
+  Una constante de {\em string} consta de una secuencia de caracteres
+delimitados por comillas dobles (\verb|"|).
+El token correspondiente es \tok{STRING}.
+Para las constantes de {\em string} se aceptan las mismas
+seis secuencias de escape que en el caso de las constantes de
+caracter. Por ejemplo, \verb|"Hola\n"| representa un {\em string}
+de cinco caracteres, el último de los cuales es un salto de línea.
+
+Los strings podrían tener longitud arbitrariamente larga,
+pero se acepta que la implementación se limite a escribir constantes
+de string de longitud hasta 1023.
+
+\subsubsection*{Palabras clave}
+\begin{center}
+\begin{tabular}{ll}
+\hspace{-5cm}{\bf Definiciones} \\
+\texttt{def}    & \tok{DEF}  \\
+\hspace{-5cm}{\bf Alternativa condicional} \\
+\texttt{if}     & \tok{IF}   \\
+\texttt{then}   & \tok{THEN} \\
+\texttt{elif}   & \tok{ELIF} \\
+\texttt{else}   & \tok{ELSE} \\
+\hspace{-5cm}{\bf {\em Pattern matching}} \\
+\texttt{case}   & \tok{CASE} \\
+\hspace{-5cm}{\bf Declaraciones locales} \\
+\texttt{let}    & \tok{LET}  \\
+\texttt{in}     & \tok{IN}   \\
+\end{tabular}
+\end{center}
+
+\subsubsection*{Símbolos reservados}
+\begin{center}
+\begin{tabular}{lll@{\hspace{1cm}}l}
+\hspace{-.5cm}{\bf Delimitadores} \\
+{\small Igual} &
+\texttt{=} & \tok{DEFEQ}     & {\small para definiciones (\fl{def x = ...} y \fl{let x = ...}).}\\
+{\small Punto y coma} &
+\texttt{;} & \tok{SEMICOLON} & {\small para la secuenciación (\texttt{p1; p2}).}\\
+{\small Paréntesis izquierdo} &
+\texttt{(} & \tok{LPAREN} & {\small para agrupar expresiones.}\\
+{\small Paréntesis derecho} &
+\texttt{)} & \tok{RPAREN} & {\small para agrupar expresiones.}\\
+{\small Contrabarra} &
+\verb|\| & \tok{LAMBDA} & {\small para definir funciones anónimas \fl{(\ x -> x)}.}\\
+{\small Barra vertical} &
+\texttt{|} & \tok{PIPE} & {\small para las ramas del \fl{case}.}\\
+{\small Flecha} &
+\texttt{->} & \tok{ARROW} & {\small para las funciones anónimas y las ramas del \fl{case}.}\\
+\hspace{-.5cm}{\bf Operadores lógicos} \\
+{\small Conjunción} & \texttt{\&\&} & \tok{AND} \\
+{\small Disyunción} & \texttt{||}   & \tok{OR}  \\
+{\small Negación}   & \texttt{!}    & \tok{NOT} \\
+\hspace{-.5cm}{\bf Operadores relacionales} \\
+{\small Igualdad}       & \texttt{==} & \tok{EQ} \\
+{\small Desigualdad}    & \texttt{!=} & \tok{NE} \\
+{\small Mayor o igual}  & \texttt{>=} & \tok{GE} \\
+{\small Menor o igual}  & \texttt{<=} & \tok{LE} \\
+{\small Mayor estricto} & \texttt{>}  & \tok{GT} \\
+{\small Menor estricto} & \texttt{<}  & \tok{LT} \\
+\hspace{-.5cm}{\bf Operadores aritméticos} \\
+{\small Suma}           & \texttt{+} & \tok{PLUS} \\
+{\small Resta}          & \texttt{-} & \tok{MINUS} \\
+{\small Multiplicación} & \texttt{*} & \tok{TIMES} \\
+{\small División}       & \texttt{/} & \tok{DIV} \\
+{\small Resto}          & \verb|%|   & \tok{MOD} \\
+\end{tabular}
+\end{center}
+
+\subsection{Sintaxis}
+
+En esta sección se da una gramática independiente del contexto para
+\flecha.
+\begin{itemize}
+\produccion{
+  \nonterm{programa}
+}{
+  \EMPTY
+  \ALT
+  \nonterm{programa} \nonterm{definición}
+}
+\produccion{
+  \nonterm{definición}
+}{
+  \tok{DEF} \tok{LOWERID} \nonterm{parámetros} \tok{DEFEQ} \nonterm{expresión}
+}
+\produccion{
+  \nonterm{parámetros}
+}{
+  \EMPTY \ALT \tok{LOWERID} \nonterm{parámetros}
+}
+\produccion{
+  \nonterm{expresión}
+}{
+  \nonterm{expresiónExterna}
+\ALT
+  \nonterm{expresiónExterna} \tok{SEMICOLON} \nonterm{expresión}
+}
+\produccion{
+  \nonterm{expresiónExterna}
+}{
+  \nonterm{expresiónIf}
+  \ALT
+  \nonterm{expresiónCase}
+  \ALT
+  \nonterm{expresiónLet}
+  \ALT
+  \nonterm{expresiónLambda}
+  \ALT
+  \nonterm{expresiónInterna}
+}
+\produccion{
+  \nonterm{expresiónIf}
+}{
+  \tok{IF}
+  \nonterm{expresionInterna}
+  \tok{THEN}
+  \nonterm{expresionInterna}
+  \nonterm{ramasElse}
+}
+\produccion{
+  \nonterm{ramasElse}
+}{
+  \tok{ELIF} \nonterm{expresionInterna} \tok{THEN} \nonterm{expresionInterna}
+             \nonterm{ramasElse}
+  \ALT
+  \tok{ELSE} \nonterm{expresionInterna}
+}
+\produccion{
+  \nonterm{expresiónCase}
+}{
+  \tok{CASE} \nonterm{expresionInterna} \nonterm{ramasCase}
+}
+\produccion{
+  \nonterm{ramasCase}
+}{
+  \EMPTY
+  \ALT
+  \nonterm{ramaCase} \nonterm{ramasCase}
+}
+\produccion{
+  \nonterm{ramaCase}
+}{
+  \tok{PIPE} \tok{UPPERID} \nonterm{parámetros} \tok{ARROW} \nonterm{expresionInterna}
+}
+\produccion{
+  \nonterm{expresiónLet}
+}{
+  \tok{LET} \tok{ID} \nonterm{parámetros} \tok{DEFEQ}
+  \nonterm{expresiónInterna} \tok{IN} \nonterm{expresiónExterna}
+}
+\produccion{
+  \nonterm{expresiónLambda}
+}{
+  \tok{LAMBDA} \nonterm{parámetros} \tok{ARROW} \nonterm{expresiónExterna}
+}
+\produccion{
+  \nonterm{expresiónInterna}
+}{
+  \nonterm{expresiónAplicación}
+  \ALT
+  \nonterm{expresiónInterna} \nonterm{operadorBinario} \nonterm{expresiónInterna}
+  \ALT
+  \nonterm{operadorUnario} \nonterm{expresiónInterna}
+}
+\produccion{
+  \nonterm{operadorBinario}
+}{
+       \tok{AND}
+  \ALT \tok{OR}
+  \ALT \tok{EQ}
+  \ALT \tok{NE}
+  \ALT \tok{GE}
+  \ALT \tok{LE}
+  \ALT \tok{GT}
+  \ALT \tok{LT}
+  \ALT \tok{PLUS}
+  \ALT \tok{MINUS}
+  \ALT \tok{TIMES}
+  \ALT \tok{DIV}
+  \ALT \tok{MOD}
+}
+\produccion{
+  \nonterm{operadorUnario}
+}{
+  \tok{NOT}
+  \ALT
+  \tok{MINUS}
+}
+\produccion{
+  \nonterm{expresiónAplicación}
+}{
+  \nonterm{expresiónAtómica}
+  \ALT
+  \nonterm{expresiónAplicación} \nonterm{expresiónAtómica}
+}
+\produccion{
+  \nonterm{expresiónAtómica}
+}{
+  \tok{LOWERID}
+  \ALT
+  \tok{UPPERID}
+  \ALT
+  \tok{NUMBER}
+  \ALT
+  \tok{CHAR}
+  \ALT
+  \tok{STRING}
+  \ALT
+  \tok{LPAREN} \nonterm{expresión} \tok{RPAREN}
+}
+\end{itemize}
+
+Aclaraciones:
+\begin{itemize}
+\item El operador de secuenciación (punto y coma) tiene menor precedencia
+      que todas las demás construcciones. Por ejemplo, son equivalentes:
+\begin{minted}{haskell}
+  if a then b else c ; d
+  (if a then b else c) ; d
+\end{minted}
+\item Le siguen en precedencia las {\em expresiones externas}, es decir,
+      el \fl{if}, el \fl{case}, el \fl{let} y las funciones anónimas
+      (lambda). Por ejemplo, son equivalentes:
+\begin{minted}{haskell}
+  if a then b else c + d
+  if a then b else (c + d)
+\end{minted}
+\item La condición y las ramas del \fl{if} y del \fl{case} no pueden
+      ser expresiones externas, salvo que estén entre paréntesis.
+      Asimismo, el valor ligado en un \fl{let} no puede ser una expresión
+      externa.
+      Por ejemplo,
+\begin{minted}{haskell}
+  if x then \ x -> x   else y        -- error de sintaxis
+  if x then (\ x -> x) else y        -- OK
+
+  case dir
+  | Izq -> if a then b else c      -- error de sintaxis
+
+  case dir
+  | Izq -> (if a then b else c)    -- OK
+
+  let x = let y = 3 in y   in x      -- error de sintaxis
+  let x = (let y = 3 in y) in x      -- OK
+\end{minted}
+\item El cuerpo del \fl{let} y el cuerpo de las funciones anónimas (lambda)
+      pueden ser expresiones externas. Por ejemplo:
+\begin{minted}{haskell}
+  let x = 1 in
+  let y = 2 in
+    \ z -> if a then x else y + z   -- OK
+\end{minted}
+\item Todos los operadores tienen menor precedencia que la aplicación.
+Por ejemplo, son equivalentes:
+\begin{minted}{haskell}
+  f x y + g z
+  (f x y) + (g z)
+\end{minted}
+\end{itemize}
+
+\subsection{Asociatividad y precedencia}
+
+Los operadores binarios y unarios deben respetar la siguiente tabla,
+ordenada de menor a mayor precedencia. Los elementos de cada fila tienen
+la misma precedencia entre ellos, y mayor precedencia que los de las
+filas anteriores.
+Todos los operadores binarios son asociativos a izquierda.
+\[
+\begin{tabular}{|c|}
+\hline
+  \verb`||`
+\\
+\hline
+  \verb|&&|
+\\
+\hline
+  \verb|!| {\em (unario)}
+\\
+\hline
+  \verb|==| \HS
+  \verb|!=| \HS
+  \verb|>=| \HS
+  \verb|<=| \HS
+  \verb|>| \HS
+  \verb|<|
+\\
+\hline
+  \verb|+| \HS \verb|-|
+\\
+\hline
+  \verb|*|
+\\
+\hline
+  \verb|/| \HS \verb|%|
+\\
+\hline
+  \verb|-| {\em (unario)}
+\\
+\hline
+\end{tabular}
+\]
+Por ejemplo, son equivalentes:
+\begin{minted}{haskell}
+  ! x == y && z > a * b + c * d
+  (!(x == y)) && (z > ((a * b) + (c * d)))
+\end{minted}
+
+\section{Árbol de sintaxis abstracta}
+
+El árbol de sintaxis abstracta en formato JSON tiene la siguiente estructura.
+Usamos \type{ID} para denotar un identificador arbitrario (string)
+y \type{NUM} para denotar un número arbitrario (entero).
+\medskip
+
+\datadecl{\type{Program}}{[
+  \type{Definition},
+  $\hdots$,
+  \type{Definition}
+]
+\hfill {\small Lista de $n$ definiciones, con $n \geq 0$.}
+}
+\medskip
+
+\datadecl{\type{Definition}}{
+[\astkw{Def}, \type{ID}, \type{Expr}]
+\hfill {\small Definición.}
+}
+\medskip
+
+\datadecl{\type{Expr}}{
+[\astkw{ExprVar}, \type{ID}]
+  \hfill {\small Variable.}
+\ALT
+[\astkw{ExprConstructor}, \type{ID}]
+  \hfill {\small Constructor.}
+\ALT
+[\astkw{ExprNumber}, \type{NUM}]
+  \hfill {\small Constante numérica.}
+\ALT
+[\astkw{ExprChar}, \type{NUM}]
+  \hfill {\small Constante de caracter.}
+\ALT
+[\astkw{ExprCase}, \type{Expr}, [\type{CaseBranch}, $\hdots$, \type{CaseBranch}]]
+  \hfill {\small Case de $n$ ramas, con $n \geq 0$.}
+\ALT
+[\astkw{ExprLet}, \type{ID}, \type{Expr}, \type{Expr}]
+  \hfill {\small Declaración local.}
+\ALT
+[\astkw{ExprLambda}, \type{ID}, \type{Expr}]
+  \hfill {\small Función anónima.}
+\ALT
+[\astkw{ExprApply}, \type{Expr}, \type{Expr}]
+  \hfill {\small Aplicación.}
+}
+\medskip
+
+\datadecl{\type{CaseBranch}}{
+  [\astkw{CaseBranch}, \type{ID}, [\type{ID}, $\hdots$, \type{ID}], \type{Expr}]
+  \hfill {\small Rama del case de $n$ parámetros, con $n \geq 0$.}
+}
+
+\begin{itemize}
+\item
+  Todas las lambdas reciben un único parámetro.
+  Las lambdas que reciben varios parámetros deben expresarse como
+  muchas lambdas anidadas. Por ejemplo, son equivalentes:
+  \begin{minted}{haskell}
+  \ x y z -> x + y
+  \ x -> (\ y -> (\ z -> x + y))
+  \end{minted}
+\item
+  Las funciones definidas con \fl{def} y \fl{let} se deben expresar
+  con lambdas. Por ejemplo, son equivalentes:
+  \begin{minted}{haskell}
+  def f x y = let g z = x * z in y + z
+  def f = \ x y -> let g = (\ z -> x * z) in y + z
+  \end{minted}
+\item
+  El operador de secuenciación debe expresarse en términos del \fl{let}.
+  Por ejemplo, son equivalentes:
+  \begin{minted}{haskell}
+  def main = print "hola\n"; print "chau\n"
+  def main = let _ = print "hola\n" in print "chau\n"
+  \end{minted}
+\item
+  Las ramas \fl{elif} de un \fl{if} deben expresarse internamente
+  como ifs anidados. Por ejemplo, son equivalentes:
+  \begin{minted}{haskell}
+  if a then 1 elif b then 2 elif c then 3 else 4
+  if a then 1 else (if b then 2 else (if c then 3 else 4))
+  \end{minted}
+\item
+  El \fl{if} debe expresarse internamente como un \fl{case}.
+  Por ejemplo, son equivalentes:
+  \begin{minted}{haskell}
+  if a then b else c
+
+  case a
+  | True  -> b
+  | False -> c
+  \end{minted}
+\item
+  Los caracteres se expresan con su código en la codificación ASCII o UTF-8.
+  Se puede asumir que la entrada cuenta exclusivamente con caracteres
+  imprimibles (en el rango 32..127).
+  Por ejemplo, el AST de la expresión \fl{'A'}
+  es \verb|["ExprChar", 97]|.
+\item
+  Los strings se expresan como listas de caracteres construidas usando
+  \fl{Cons} y \fl{Nil}. Por ejemplo, son equivalentes:
+  \begin{minted}{haskell}
+  "hola"
+  Cons 'h' (Cons 'o' (Cons 'l' (Cons 'a' Nil)))
+  \end{minted}
+\item
+  La aplicación es siempre binaria, usando currificación.
+  Por ejemplo, son equivalentes:
+  \begin{minted}{haskell}
+  f (g 1) 2 (g 3)
+  ((f (g 1)) 2) (g 3)
+  \end{minted}
+\item
+  Los operadores se expresan como la aplicación de {\em variables} 
+  con nombres especiales a sus argumentos.
+  Por ejemplo:
+  \begin{itemize}
+  \item El AST de la expresión \verb|!4| es:
+\begin{verbatim}
+  ["ExprApply", ["ExprVar", "NOT"], ["ExprNumber", 4]]
+\end{verbatim}
+  \item El AST de la expresión \verb|x + y| es:
+\begin{verbatim}
+  ["ExprApply", ["ExprApply", ["ExprVar", "ADD"], ["ExprVar", "x"]], ["ExprVar", "y"]]
+\end{verbatim}
+  \end{itemize}
+Los nombres de los demás operadores son los siguientes:
+\begin{center}
+\begin{tabular}{ll@{\hspace{2cm}}ll@{\hspace{2cm}}ll}
+  \verb`||` & \astkw{OR}
+&
+  \verb|&&| & \astkw{AND}
+&
+  \verb|!| {\em (unario)} & \astkw{NOT}
+\\
+  \verb|==| & \astkw{EQ}
+&
+  \verb|!=| & \astkw{NE}
+&
+  \verb|>=| & \astkw{GE}
+\\
+  \verb|<=| & \astkw{LE}
+&
+  \verb|>| & \astkw{GT}
+&
+  \verb|<| & \astkw{LT}
+\\
+  \verb|+| & \astkw{ADD}
+&
+  \verb|-| & \astkw{SUB}
+&
+  \verb|*| & \astkw{MUL}
+\\
+  \verb|/| & \astkw{DIV}
+&
+  \verb|%| & \astkw{MOD}
+&
+  \verb|-| {\em (unario)} & \astkw{UMINUS}
+\end{tabular}
+\end{center}
+Observar que no puede haber conflicto con los nombres de otras variables,
+porque las variables siempre tienen nombres empezados en minúsculas.
+\end{itemize}
+
+\subsection{Ejemplo completo de análisis sintáctico}
+
+\subsubsection*{Programa}
+
+\begin{minted}{haskell}
+def sumar lista = 
+  case lista
+  | Nil       -> 0
+  | Cons x xs -> x + sumar xs
+
+def main = sumar (Cons 1 (Cons 2 Nil))
+\end{minted}
+
+\subsubsection*{AST obtenido}
+
+\begin{verbatim}
+[
+ ["Def", "sumar",
+  ["ExprLambda", "lista",
+   ["ExprCase",
+    ["ExprVar", "lista"],
+    [
+     ["CaseBranch", "Nil", [],
+      ["ExprNumber", 0]
+     ],
+     ["CaseBranch", "Cons", ["x", "xs"],
+      ["ExprApply",
+       ["ExprApply",
+        ["ExprVar", "ADD"],
+        ["ExprVar", "x"]
+       ],
+       ["ExprApply",
+        ["ExprVar", "sumar"],
+        ["ExprVar", "xs"]
+       ]
+      ]
+     ]
+    ]
+   ]
+  ]
+ ],
+ ["Def", "main",
+  ["ExprApply",
+   ["ExprVar", "sumar"],
+   ["ExprApply",
+    ["ExprApply",
+     ["ExprConstructor", "Cons"],
+     ["ExprNumber", 1]
+    ],
+    ["ExprApply",
+     ["ExprApply",
+      ["ExprConstructor", "Cons"],
+      ["ExprNumber", 2]
+     ],
+     ["ExprConstructor", "Nil"]
+    ]
+   ]
+  ]
+ ]
+]
+\end{verbatim}
+
+
+
+\end{document}
+

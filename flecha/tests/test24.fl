@@ -1,0 +1,12 @@
+---- Primitiva: GT
+
+def printBool x =
+  case x
+  | True      -> (unsafePrintChar 'T'; unsafePrintChar '\n')
+  | False     -> (unsafePrintChar 'F'; unsafePrintChar '\n')
+
+def main =
+  printBool (10 > 9);
+  printBool (10 > 10);
+  printBool (10 > 11)
+

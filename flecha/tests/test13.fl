@@ -1,0 +1,30 @@
+
+def test numero fn valor =
+  unsafePrintChar 'T';
+  unsafePrintChar 'E';
+  unsafePrintChar 'S';
+  unsafePrintChar 'T';
+  unsafePrintChar ' ';
+  unsafePrintInt numero;
+  unsafePrintChar '\n';
+  unsafePrintChar '\t';
+  fn valor;
+  unsafePrintChar '\n'
+
+def pb b      = unsafePrintChar (if b then 'T' else 'F')
+def and b1 b2 = if b1 then b2 else False
+def or  b1 b2 = if b1 then True else b2
+def not b     = if b then False else True 
+
+def main =
+  test 0 pb (and True True);
+  test 1 pb (and True False);
+  test 2 pb (and False True);
+  test 3 pb (and False False);
+  test 4 pb (or True True);
+  test 5 pb (or True False);
+  test 6 pb (or False True);
+  test 7 pb (or False False);
+  test 8 pb (not True);
+  test 9 pb (not False)
+

@@ -1,0 +1,185 @@
+
+def test numero fn valor =
+  unsafePrintChar 'T';
+  unsafePrintChar 'E';
+  unsafePrintChar 'S';
+  unsafePrintChar 'T';
+  unsafePrintChar ' ';
+  unsafePrintInt numero;
+  unsafePrintChar '\n';
+  unsafePrintChar '\t';
+  fn valor;
+  unsafePrintChar '\n'
+
+---- Representación de datos usando funciones lambda.
+
+-- Funciones
+
+def id  x = x
+def compose f g x = f (g x)
+def const x y = x
+
+-- Booleanos
+
+def true  x y   = x
+def false x y   = y
+def cond  x y z = x y z
+
+def printBool b =
+  cond b
+       (\ u -> (unsafePrintChar 'T';
+                unsafePrintChar 'r';
+                unsafePrintChar 'u';
+                unsafePrintChar 'e'))
+       (\ u -> (unsafePrintChar 'F';
+                unsafePrintChar 'a';
+                unsafePrintChar 'l';
+                unsafePrintChar 's';
+                unsafePrintChar 'e'))
+       '_'
+
+-- Naturales
+
+def zero     z f   = z
+def suc      n z f = f (n z f)
+def foldn    z f n = n z f
+def printNat n =
+  foldn (\ u   -> unsafePrintChar 'O')
+        (\ r u -> (unsafePrintChar 'S'; r u))
+        n
+        '_'
+def n0 = zero
+def n1 = suc n0
+def n2 = suc n1
+def n3 = suc n2
+def n4 = suc n3
+def n5 = suc n4
+def n6 = suc n5
+def n7 = suc n6
+def n8 = suc n7
+def n9 = suc n8
+def add n m = foldn id
+                    (\ r -> compose suc r)
+                    n m
+def mul n m = foldn (\ m   -> n0)
+                    (\ r m -> add m (r m))
+                    n m
+
+-- Pares
+
+def pair x y f = f x y
+def fst p = p true
+def snd p = p false
+def printPair fn1 fn2 p =
+  unsafePrintChar '(';
+  fn1 (fst p);
+  unsafePrintChar ',';
+  fn2 (snd p);
+  unsafePrintChar ')'
+
+-- Listas
+
+def nil   z f      = z
+def cons  x xs z f = f x (xs z f)
+def foldr z f lst  = lst z f
+def printList fn lst =
+  unsafePrintChar '[';
+  foldr (\ sep -> '_')
+        (\ x r sep -> (
+          sep '_'; fn x;
+          r (\ u -> (unsafePrintChar ','; unsafePrintChar ' '))
+        ))
+        lst
+        (\ u -> 0);
+  unsafePrintChar ']'
+
+def null = foldr true (compose const const false)
+def head = foldr '_' (\ x u -> x)
+def tail lst =
+  snd (foldr (pair nil nil)
+             (\ x r -> pair (cons x (fst r)) (fst r))
+             lst)
+
+def printLB  = printList printBool
+def printLN  = printList printNat
+def printLLN = printList (printList printNat)
+
+def length lst = length_ lst '_'
+def length_ lst =
+  cond (null lst)
+       (\ u -> n0)
+       (\ u -> suc (length_ (tail lst) '_'))
+
+def map f lst = map_ f lst '_'
+def map_ f lst =
+  cond (null lst)
+       (\ u -> nil)
+       (\ u -> cons (f (head lst))
+                    (map_ f (tail lst) '_'))
+
+def printS lst = printS_ lst '_'
+def printS_ lst =
+  cond (null lst)
+       (\ u -> '_')
+       (\ u -> (
+         unsafePrintChar (head lst);
+         printS_ (tail lst) '_'
+       ))
+
+--
+
+def main =
+  -- Booleanos
+  test  0 printBool true;
+  test  1 printBool false;
+  test  2 printLB (cons true (cons false nil));
+  test  3 printBool (null nil);
+  test  4 printBool (null (cons n1 (cons n2 (cons n3 nil))));
+  test  5 printNat (head (cons n1 (cons n2 (cons n3 nil))));
+  -- Naturales
+  test  6 printNat n0;
+  test  7 printNat n1;
+  test  8 printNat n2;
+  test  9 printNat n3;
+  test 10 printNat n4;
+  test 11 printNat n5;
+  test 12 printNat n6;
+  test 13 printNat n7;
+  test 14 printNat n8;
+  test 15 printNat n9;
+  test 16 printNat (add n2 n5);
+  test 17 printNat (mul n2 n5);
+  -- Pares
+  test 18 (printPair printBool printNat) (pair true n2);
+  -- Listas
+  let l0 = nil in
+  let l1 = cons n1 nil in
+  let l2 = cons n1 (cons n2 nil) in
+  let l3 = cons n1 (cons n2 (cons n3 nil)) in
+  let ll = cons l3 (cons l2 (cons l1 nil)) in (
+    test 19 printLN   l0;
+    test 20 printLN   l1;
+    test 21 printLN   l2;
+    test 22 printLN   l3;
+    test 22 printLB   (cons true (cons false (cons true nil)));
+    test 23 printLLN  ll;
+    test 24 printBool (null l0);
+    test 25 printBool (null l1);
+    test 26 printBool (null l2);
+    test 27 printBool (null l3);
+    test 28 printNat  (head l3);
+    test 29 printLN   (head ll);
+    test 30 printLN   (tail l3);
+    test 31 printLLN  (tail ll);
+    test 32 printNat  (length l0);
+    test 33 printNat  (length l1);
+    test 34 printNat  (length l2);
+    test 35 printNat  (length l3);
+    test 36 printLN   (let z = n2 in
+                       let f x = mul z x in
+                         map (\ x -> f x) l3);
+    test 37 printS
+      (cons 'H' (cons 'o' (cons 'l' (cons 'a' (cons ' '
+      (cons 'm' (cons 'u' (cons 'n' (cons 'd' (cons 'o' nil))))))))))
+  )
+

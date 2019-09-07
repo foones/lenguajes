@@ -1,0 +1,5 @@
+
+def foo = 42
+
+def main = unsafePrintInt foo
+

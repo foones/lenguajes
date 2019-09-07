@@ -1,0 +1,37 @@
+
+def test numero fn valor =
+  unsafePrintChar 'T';
+  unsafePrintChar 'E';
+  unsafePrintChar 'S';
+  unsafePrintChar 'T';
+  unsafePrintChar ' ';
+  unsafePrintInt numero;
+  unsafePrintChar '\n';
+  unsafePrintChar '\t';
+  fn valor;
+  unsafePrintChar '\n'
+
+def pc x = unsafePrintChar x
+
+def main =
+  test  1 pc (case A | A -> 'S');
+  test  2 pc (case A | A -> 'S' | B -> 'N');
+  test  3 pc (case B | A -> 'N' | B -> 'S');
+  test  4 pc (case A | A -> 'S' | B -> 'N' | C -> 'N');
+  test  5 pc (case B | A -> 'N' | B -> 'S' | C -> 'N');
+  test  5 pc (case C | A -> 'N' | B -> 'N' | C -> 'S');
+  test  6 pc (case True  | True -> 'S' | False -> 'N');
+  test  7 pc (case False | True -> 'N' | False -> 'S');
+  (let cond1 = True  in
+   let cond2 = False in (
+     test  8 pc (if cond1 then 'S' else 'N');
+     test  9 pc (if cond2 then 'N' else 'S')));
+  test 10 pc (case 42  | Int -> 'S');
+  test 11 pc (case 42  | A -> 'N' | Char -> 'N' | Int -> 'S' | B -> 'N');
+  test 12 pc (case 'z' | Char -> 'S');
+  test 13 pc (case 'z' | A -> 'N' | Char -> 'S' | Int -> 'N');
+  test 14 pc (case pc  | Closure -> 'S');
+  test 15 pc (case pc  | Int -> 'N' | Char -> 'N' | Closure -> 'S');
+  unsafePrintChar '\n'
+
+

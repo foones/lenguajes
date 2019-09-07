@@ -1,0 +1,29 @@
+
+def test x y =
+  unsafePrintChar 'T';
+  unsafePrintChar 'E';
+  unsafePrintChar 'S';
+  unsafePrintChar 'T';
+  unsafePrintChar ' ';
+  unsafePrintInt x;
+  unsafePrintChar '\n';
+  unsafePrintChar '\t';
+  unsafePrintInt y;
+  unsafePrintChar '\n'
+
+def true x y = x
+
+def false x y = y
+
+def cond x y z = x y z
+
+def main =
+ test 1 ((\ x y -> x) 42 43);
+ test 2 ((\ x y -> y) 42 43);
+ test 3 (true 1 2);
+ test 4 (false 1 2);
+ test 5 (cond true 1 2);
+ test 6 (cond false 1 2);
+ test 7 ((\ x y z -> x y z) (\ x y -> x) 1 2);
+ test 8 ((\ x y z -> x y z) (\ x y -> y) 1 2)
+

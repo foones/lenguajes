@@ -1,0 +1,9 @@
+
+def foo = 42
+
+def main =
+  unsafePrintInt foo; unsafePrintChar '\n';
+  let foo = 43 in
+    unsafePrintInt foo; unsafePrintChar '\n';
+  unsafePrintInt foo; unsafePrintChar '\n'
+

@@ -1,0 +1,13 @@
+---- Primitiva: NOT
+
+def printBool x =
+  case x
+  | True      -> (unsafePrintChar 'T'; unsafePrintChar '\n')
+  | False     -> (unsafePrintChar 'F'; unsafePrintChar '\n')
+
+def main =
+  printBool (!False);
+  printBool (!True);
+  printBool (!!False);
+  printBool (!!True)
+

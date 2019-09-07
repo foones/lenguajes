@@ -1,0 +1,33 @@
+
+def print x =
+  case x
+  | Int   -> unsafePrintInt  x
+  | Char  -> unsafePrintChar x
+  | True  -> (unsafePrintChar 'T';
+              unsafePrintChar 'r';
+              unsafePrintChar 'u';
+              unsafePrintChar 'e')
+  | False -> (unsafePrintChar 'F';
+              unsafePrintChar 'a';
+              unsafePrintChar 'l';
+              unsafePrintChar 's';
+              unsafePrintChar 'e')
+  | Closure -> (unsafePrintChar '<';
+                unsafePrintChar 'f';
+                unsafePrintChar 'u';
+                unsafePrintChar 'n';
+                unsafePrintChar '>')
+
+def println x = print x; print '\n'
+
+def main =
+  println 42;
+  print 'H';
+  print 'o';
+  print 'l';
+  print 'a';
+  print '\n';
+  println (\ x y -> x);
+  println True;
+  println False
+

@@ -1,0 +1,14 @@
+
+def main =
+  unsafePrintChar 'H';
+  unsafePrintChar 'o';
+  unsafePrintChar 'l';
+  unsafePrintChar 'a';
+  unsafePrintChar ' ';
+  unsafePrintChar 'm';
+  unsafePrintChar 'u';
+  unsafePrintChar 'n';
+  unsafePrintChar 'd';
+  unsafePrintChar 'o';
+  unsafePrintChar '\n'
+
