@@ -1,0 +1,77 @@
+body	{
+	/*background: #fff url(_cubo.jpg) no-repeat fixed top right;*/
+    background: #fff,
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt
+	}
+table	{
+	background: transparent;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt
+	}
+h1	{
+	font-size: 14pt;
+	color: #000000;
+	font-weight: bold;
+	text-align: left
+	}
+h2	{	
+	color: #000000;
+	font-size: 12pt;
+	font-weight: bold;
+	text-align: left
+	}
+.inv {
+	background: #000000;
+	color: #ffffff;
+	width: 60%;
+	font-size: 12pt;
+	font-weight: bold;
+	text-align: left
+}
+h3	{
+	color: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12pt;
+	font-weight: normal;
+	text-align: left
+	}
+p	{
+	text-align: left;
+	text-indent: 0%;
+	margin-top: 10pt;
+	margin-bottom: 3pt;
+	margin-left: 2.5%;
+	margin-right: 20%;
+	line-height: 150%;
+}
+
+a:link {
+	text-decoration: none;
+	color: #0000ff
+}
+a:visited {
+	text-decoration: none;
+	color: #000080
+}
+
+
+.fr {
+	background: #000080;
+	color: #ffffff
+}
+.fr a:link {
+	text-decoration: none;
+	color: #00ffff
+}
+.fr a:visited {
+	text-decoration: none;
+	color: #ffffff
+}
+.tp {
+	color: #800000
+}
+.ref {
+	font-weight: bold;
+	color: #000080
+}
