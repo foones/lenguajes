@@ -1,0 +1,20 @@
+
+(defun ref (d)
+ (fun parms
+	(call (d) parms)))
+
+(macro defref (n d)
+ `(def ,n (ref (fun () ,d))))
+
+(defmodule m
+ (defun f (x)
+	(* x 2)))
+
+(defmodule n
+ (defref g m.f))
+
+(pr (n.g 1))
+
+(set m.f (fun (x) (* x 3)))
+
+(pr (n.g 1))

@@ -1,0 +1,27 @@
+
+(herald
+ --name =functor
+ --package =funes-lib
+ --description "Generic function mapping over arbitrary structures."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:fmap))
+
+(import foones #t)
+(import loop :emap)
+
+(defmethod fmap (f (<seq> x))
+ (map f x))
+
+(defmethod fmap (f (<cons> x))
+	(cons (f (car x))
+				(f (cdr x))))
+
+(defmethod fmap (f (<struct> x))
+ (le t (struct-type x)
+	(le slot-names (stype-slots t)
+	 (call
+		(stype-constructor t slot-names)
+		(emap slot-name slot-names
+       (f (slot-value x slot-name)))))))
+

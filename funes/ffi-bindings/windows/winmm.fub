@@ -1,0 +1,17 @@
+; vim:ft=funes
+
+(import binder
+  bindings)
+
+(unless (member (os-type) '(=os-windows))
+ (throw '&sistema-no-soportado "El sistema no soporta <conio.h>"))
+
+(bindings _winmm
+
+  (=include "<windows.h>" "<mmsystem.h>")
+  (=link "winmm")
+
+  (=c-type HWND "HWND" int)
+
+  (=c-function mci-send-string "mciSendStringA" (string ptr int HWND) int))
+

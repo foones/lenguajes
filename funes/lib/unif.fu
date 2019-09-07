@@ -1,0 +1,184 @@
+
+(herald
+ --name =unif
+ --package =funes-lib
+ --description "Unification and generalized binding."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:bind :bindw :bind-vars
+	 				 :mkbinding :sust
+	         :fresh :copy-binding
+					 :constructor-type :constructor-atom?
+					 :constructor-unif       ; T -> binding
+					 :constructor-map        ; T -> T
+					 :var? :var-name))
+
+(import dict #t)
+(import foones #t)
+(import reader #t)
+(import functional :curry)
+(import loop :meach)
+(import memo :defmemoized)
+(import functor :fmap)
+
+;;; TODO:
+;;; cambiar la interfaz que se pide a los tipos por un
+;;; fold asociado al tipo en lugar de algo tan horrible
+;;; como ahora (== convertir back&forth a lista).
+
+;;; Algoritmo de unificacion
+
+;; representante de la clase de equivalencia de x en d
+(def repr
+ (le fallo (gensym)
+	 (fun (d x)
+		(le r (dict-get d x fallo)
+			(if (eq r fallo) x (repr d r))))))
+
+;; unifica las expresiones e1, e2 en d
+;; unif :: (Dict Var Expr) -> Expr -> Expr -> Maybe (Dict Var Expr)
+(defun unif (d e1 e2)
+ (let ((r (repr d e1)) (s (repr d e2)))
+    (if
+     (var? r)
+				(dict-define d r s)
+     (var? s)
+				(dict-define d s r)
+		 (and (constructor-atom? r) (constructor-atom? s))
+		   (and (eq r s) d)
+     (not (eq (constructor-type r) (constructor-type s)))
+        #f
+     ; constructores iguales
+		 (constructor-unif d r s))))
+
+;; hace la sustitucion
+(defun sust (d expr)
+ (if
+   (var? expr)
+	   (le r (repr d expr)
+			(if (eq expr r) 
+			  r
+		    (sust d r)))
+   (constructor-atom? expr)
+		  expr
+ 	 ; constructor no at'omico
+	 (constructor-map (curry sust d) expr)))
+
+;; cambia las variables por variables nuevas
+(defun fresh (expr)
+ (defmemoized genvar (v) (make-<var> (gensym)))
+ (nlet aux ((x expr))
+	 (if
+		 (var? x)
+		   (genvar x)
+		 (constructor-atom? x)
+		   x
+		 (constructor-map aux x))))
+
+;;; Variables
+
+(defstruct (<var> =print-function (fun (v) "?$v.name")) name)
+
+(def var? <var>)
+(def var-name <var>-name)
+
+(defmemoized crear-variable (s)
+  (make-<var> s))
+
+(reader-macro \? (s)
+ (le nam (vec->list (symbol-name s))
+		(if (and (singlep nam) (eq (car nam) \_))
+		   ; es #?_
+			 (make-<var> (gensym))
+			 (crear-variable s))))
+
+;;; Definicion de constructor-type, constructor-atom?
+;;; constructor-unif y constructor-map para varios tipos.
+
+(defmethod constructor-type ((<any> x))
+ (type-of x))
+(defmethod constructor-type ((<struct> x))
+ (struct-type x))
+
+(defmethod constructor-atom? ((<any> x)) #t)
+(defmethod constructor-atom? ((<struct> x)) #f)
+(defmethod constructor-atom? ((<vec> x)) #f)
+(defmethod constructor-atom? ((<cons> x)) #f)
+
+; unificacion de vectores
+(defmethod constructor-unif (d (<vec> x) (<vec> y))
+ (block
+	(unless (= (len x) (len y))
+		(return #f))
+	(meach ((i x) (j y))
+	 (unless (unif d i j)
+		(return #f)))
+	d))
+
+; unificacion de conses
+(defmethod constructor-unif (d (<cons> x) (<cons> y))
+ (and
+	(unif d (car x) (car y))
+	(unif d (cdr x) (cdr y))))
+
+; unificacion de structs
+(defmethod constructor-unif (d (<struct> x) (<struct> y))
+ (block
+	 (unless (eq (struct-type x) (struct-type y))
+		(return #f))
+	 (each slot-name (stype-slots (struct-type x))
+		(unless
+			(unif d
+				(slot-value x slot-name)
+				(slot-value y slot-name))
+			(return #f)))
+	 d))
+
+; XXX: no funciona con hashes
+;(defmethod constructor-args ((<hash> x)) (data x #t))
+
+;; se define como funci'on gen'erica para que sea
+;; posible sobrecargarla desde afuera.
+(defmethod constructor-map (f x)
+ (fmap f x))
+
+;;;
+
+(macro bind-vars (binding . body)
+ (with-gensyms (gr e k)
+	 `(le ,gr ,binding
+			(when ,gr
+				(def ,e (dir))
+				(each ,k (,dict-keys ,gr)
+					(set (,e (,<var>-name ,k))
+							 (,sust ,gr ,k)))
+				,gr ; para que lo devuelva cuando body es vacio
+				,@body))))
+
+#|
+(macro bindw (bd x y . body)
+ (with-gensyms (gr e k)
+	 `(le ,gr (,unif ,bd ,x ,y)
+		 (when ,gr
+			 (def ,e (dir))
+			 (each ,k (,dict-keys ,gr)
+				(set (,e (,<var>-name ,k))
+						 (,repr ,gr ,k)))
+			 ,gr
+			 ,@body))))
+|#
+
+(macro bindw (bd x y . body)
+ `(,bind-vars (,unif ,bd ,x ,y) ,@body))
+
+(macro bind (x y . body)
+ `(,bindw (,mkdict) ,x ,y ,@body))
+
+(def mkbinding mkdict)
+(defun add-bindings (b1 b2)
+	(each k (dict-keys b1)
+				(dict-define b2 k (dict-get b1 #f)))
+	b2)
+
+(def copy-binding dict-copy)
+

@@ -1,0 +1,37 @@
+
+(herald
+ --name =sem
+ --package =funes-lib
+ --description "Semaphores."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:mksem :sem-init :sem-acquire :sem-release
+				   :sem-val :with-sem))
+
+(defun mksem (--value 0)
+ (le sem (gensym)
+	(_sem_init sem value)
+	sem))
+
+(defun sem-init (sem value)
+ (_sem_init sem value))
+
+(defun sem-acquire (sem)
+ (_sem_p sem))
+
+(defun sem-release (sem)
+ (_sem_v sem))
+
+(defun sem-val (sem)
+ (_sem_val sem))
+
+(defset sem-val (sem v)
+ (_sem_set sem v))
+
+(macro with-sem (sem . body)
+ (with-gensyms (gs)
+ `(le ,gs ,sem
+		(,_sem_p ,gs)
+		,@body
+		(,_sem_v ,gs))))
+

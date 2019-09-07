@@ -1,0 +1,14 @@
+(symbol-macro << x
+	`(backquote ,x))
+
+(symbol-macro >> #f)
+
+(set-reader-funapply #t)
+
+(set-reader-macro \{
+ (fun (x stream)
+	`(unquote ,(read stream))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+pr(<<(if ,if))
+

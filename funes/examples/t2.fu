@@ -1,0 +1,33 @@
+(import comptime #t)
+
+(def $features (list =windows))
+
+(defun compile-when-dispatch (char stream)
+ (fun (x stream)
+	`(compile-when
+		(,(if (eq char \+))
+		 (member (key (quote ,(read stream))) $features))
+		 ,(read stream))))
+
+(set-reader-macro 'sorete
+ (fun (x stream)
+	`(compile-when
+		 (member (key (quote ,(read stream))) $features)
+		 ,(read stream))))
+
+(set-reader-macro \+
+ (fun (x stream)
+	`(compile-when
+		 (member (key (quote ,(read stream))) $features)
+		 ,(read stream))))
+
+(set-reader-macro \v
+	(fun (x stream)
+		 `(vec ,@(read stream))))
+
+;; equivalentes
+#+windows(pr "tengo windows")
+|sorete windows (pr "tengo windows")
+
+(pr #v(1))
+

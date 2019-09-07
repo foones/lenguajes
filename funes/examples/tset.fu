@@ -1,0 +1,10 @@
+(defstruct (a =get (fun (self)
+										'hola)))
+
+(def eja (make-a))
+(pr (eja))
+
+(defset eja (v)
+ (pr "chau"))
+
+(set (eja) 10)

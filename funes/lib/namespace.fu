@@ -1,0 +1,17 @@
+
+(herald
+ --name =namespace
+ --package =funes-lib
+ --description "Namespaces."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:value))
+
+;; value namespace
+(defun value (name)
+ (cdr (envget name)))
+
+(defset value (name v)
+ (envset name v)
+ v)
+

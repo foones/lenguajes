@@ -1,0 +1,65 @@
+; vim:ft=funes
+
+(import binder
+  bindings)
+
+(unless (member (os-type) '(=os-generic))
+ (throw '&sistema-no-soportado "El sistema no soporta <curses.h>"))
+
+;; 
+(bindings _curses
+  (=include "<curses.h>")
+  (=link "curses")
+
+  (=code "#define BKGD_CHTYPE(X) (' ' | (X))")
+
+  (=c-type short "short" int)
+  (=c-type attr-t "attr_t" int)
+  (=c-type Window "WINDOW *" ptr)
+  (=c-type chtype "chtype" int)
+
+  (=c-function clear "clear" () void)
+  (=c-function initscr "initscr" () void)
+  (=c-function cbreak "cbreak" () void)
+  (=c-function noecho "noecho" () void)
+  (=c-function nodelay "nodelay" (Window bool) void)
+  (=c-function start-color "start_color" () void)
+  (=c-function keypad "keypad" (Window bool) void)
+  (=c-function endwin "endwin" () void)
+  (=c-function getch "getch" () int)
+  (=c-function mvprintw "mvprintw" (int int string) void)
+  (=c-function printw "printw" (string) void)
+  (=c-function init-pair "init_pair" (short int int) void)
+  (=c-function color-pair "COLOR_PAIR" (int) short)
+  (=c-function attron "attron" (int) void)
+  (=c-function bkgdset "bkgdset" (chtype) void)
+  (=c-function bkgd-chtype "BKGD_CHTYPE" (short) chtype)
+  (=c-function curs-set "curs_set" (int) void)
+  (=c-variable stdscr "stdscr" Window)
+
+  (=c-constant Err "ERR" int)
+
+  (=c-constant Black "COLOR_BLACK" int)
+  (=c-constant Blue "COLOR_BLUE" int)
+  (=c-constant Green "COLOR_GREEN" int)
+  (=c-constant Cyan "COLOR_CYAN" int)
+  (=c-constant Red "COLOR_RED" int)
+  (=c-constant Magenta "COLOR_MAGENTA" int)
+  (=c-constant Brown "COLOR_YELLOW" int)
+
+  (=c-constant LightGray "COLOR_WHITE" int)
+  (=c-constant LightBlue "COLOR_BLUE" int)
+  (=c-constant LightGreen "COLOR_GREEN" int)
+  (=c-constant LightCyan "COLOR_CYAN" int)
+  (=c-constant LightRed "COLOR_RED" int)
+  (=c-constant LightMagenta "COLOR_MAGENTA" int)
+  (=c-constant Yellow "COLOR_YELLOW" int)
+  (=c-constant White "COLOR_WHITE" int)
+
+  (=c-constant KeyEsc "KEY_SUSPEND" int)
+  (=c-constant KeyUp "KEY_UP" int)
+  (=c-constant KeyLeft "KEY_LEFT" int)
+  (=c-constant KeyRight "KEY_RIGHT" int)
+  (=c-constant KeyDown "KEY_DOWN" int)
+)
+

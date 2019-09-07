@@ -1,0 +1,29 @@
+
+(herald
+ --name =foo
+ --package =funes-lib
+ --description "Poor man's OO."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:new :method :class)
+ --export-names (:$init))
+
+(defun new (clase . parms)
+ (let ((i (copy clase)))
+	
+	(catch '&key-error
+		 (call i.$init parms))
+	i))
+
+(macro method (nombre parms . body)
+ (when (null parms)
+	 (throw
+		 '&method-error
+		 "El metodo debe tener un parametro implicito"))
+ `(defun ,nombre ,(cdr parms)
+		(le ,(car parms) (second (environment))
+			,@body)))
+
+(macro class rest
+ `(defmodule ,@rest))
+

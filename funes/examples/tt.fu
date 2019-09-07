@@ -1,0 +1,12 @@
+(import spel :defspel)
+
+(defspel f (|Reference(x) y)
+ (set x (+ x y))
+ ;(set y 10)
+ 4)
+
+
+(let ((l 1))
+ (pr (f l 9))
+ (pr l))
+

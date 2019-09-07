@@ -1,0 +1,360 @@
+
+(herald
+ --name =binder
+ --package =funes-lib
+ --description "Binding generator for Funes / C."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:bindings))
+
+;;;;
+;;;; Usage:
+;;;;
+;;;; (bindings module-name
+;;;;    [ (type-of-binding . arguments) ]* )
+;;;;
+;;;; Where type-of-binding is one of:
+;;;;
+;;;;   =include-dirs
+;;;;        [ path ]*
+;;;;        path is one of the directories where the C compiler
+;;;;        will look for header files.
+;;;;
+;;;;   =include
+;;;;        [ header ]*
+;;;;        header is the name of the C header
+;;;;        eg.
+;;;;          (=include "<stdio.h>")
+;;;;        or
+;;;;          (=include "<stdio.h>" "\"my_header.h\"")
+;;;;
+;;;;   =link-dirs
+;;;;        [ path ]*
+;;;;        path is one of the directories where the C compiler
+;;;;        will look for library files.
+;;;;          (*.a for static libraries,
+;;;;           *.so or *.dll for dynamic libraries)
+;;;;
+;;;;   =link
+;;;;        [ library ]*
+;;;;        library is the name of the (static or dynamic)
+;;;;        library against the binding will be linked.
+;;;;        eg.
+;;;;          (=link "m")
+;;;;        will link with "libm"
+;;;;        The libraries should be in the path.
+;;;;
+;;;;   =code
+;;;;        [ string ]*
+;;;;        low-level. The binding file will include textually
+;;;;        the listed strings. Useful to define small macros.
+;;;;        eg. 
+;;;;          (=code "#define MAX(X, Y)	((X)>(Y))?(X):(Y)")
+;;;;
+;;;;   C bindings:
+;;;;
+;;;;   The basic types are:
+;;;;   
+;;;;      Binder         Funes           C
+;;;;
+;;;;      int            <int>           int
+;;;;      char           <char>          char
+;;;;      string         <str>           char *
+;;;;      bool           #t or #f        char/int     
+;;;;      float          <float>         float
+;;;;      double         <float>         double
+;;;;      object         -               RES *      (native Funes object)
+;;;;      void           -               void       (just for return types)
+;;;;      ptr            -               void *
+;;;;
+;;;;   - ptr should be used for mantaining internal pointers
+;;;;     to C objects. Currently, the implementation is UNSAFE.
+;;;;
+;;;;
+;;;;   =c-type
+;;;;        [ funes-name c-name original-type ]
+;;;;        Defines an alias for an already existent type.
+;;;;        The new type behaves exactly like the original type,
+;;;;        but: it has a different Funes name (more clear)
+;;;;        and also makes the C compiler happy by casting it
+;;;;        into the corresponding C type.
+;;;;        eg.
+;;;;          (=c-type Window-ptr "WINDOW *" ptr)
+;;;;
+;;;;   =c-struct
+;;;;        funes-name c-name [ slot-definition ]*
+;;;;        Defines a new type corresponding to the C struct
+;;;;        named c-name. Each slot definition is of the form:
+;;;;        (funes-name c-name type)
+;;;;        A C structure is represented in Funes with a vector.
+;;;;
+;;;;   =c-function
+;;;;        funes-name c-name ( [ arg-type ]* ) return-type
+;;;;        Defines a binding to the C function named c-name.
+;;;;
+;;;;   =c-funes-function
+;;;;        funes-name c-name mandatory-args optional-args takes-rest?
+;;;;        Defines a binding to the C function named c-name,
+;;;;        which takes funes objects.
+;;;;        mandatory-args and optional-args are the number of
+;;;;        mandatory and optional arguments, respectively.
+;;;;        takes-rest? should be #t if the last argument to the
+;;;;        function is the tail of the arguments passed.
+;;;;
+;;;;   =c-variable
+;;;;        funes-name c-name type
+;;;;        Defines a procedure named funes-name with an associated
+;;;;        setter, that is used to get and set the value of the
+;;;;        C (global) variable named c-name.
+;;;;
+;;;;   =c-constant
+;;;;        funes-name c-name type
+;;;;        Defines a constant named funes-name corresponding to
+;;;;        the C constant named c-name.
+
+(def $include-dirs
+ (list "$(do $funes-gc-path)/include" "$(do $funes-imp-path)/include"))
+(def $link-dirs
+ (list "$(do $funes-imp-path)"))
+
+(macro with-out-file (var filename . body)
+  `(le ,var (open ,filename "w")
+		 ,@body
+		 (close ,var)))
+
+(def make-temp-name
+		 (let ((c 0))
+			 (fun (pre)
+						"$(do pre)$(++ c)")))
+
+(defstruct c-handle
+ c-constructor
+ c-accessor)
+
+(def $tipos
+ (db
+	'funes-lib::int (make-c-handle "fu_int" "safe_VAL_INT")
+	'funes-lib::char (make-c-handle "fu_char" "safe_VAL_CHAR")
+	'funes-lib::float (make-c-handle "FU_SINGLE_FLOAT" "safe_VAL_SINGLE_FLOAT")
+	'funes-lib::double (make-c-handle "FU_DOUBLE_FLOAT" "safe_VAL_DOUBLE_FLOAT")
+	'funes-lib::string (make-c-handle "fu_str" "safe_VAL_STR")
+	'funes-lib::void (make-c-handle "VOID_RES" #u)
+	'funes-lib::ptr (make-c-handle "FU_PTR" "VAL_PTR")
+	'funes-lib::bool (make-c-handle "FU_BOOL" "VAL_BOOL")
+	'funes-lib::object (make-c-handle "" "")))
+
+(defun constructor (t)
+ (le t (get-symbol t (find-package "funes-lib"))
+  (c-handle-c-constructor (cdr (get $tipos t)))))
+
+(defun accessor (t)
+ (le t (get-symbol t (find-package "funes-lib"))
+  (c-handle-c-accessor (cdr (get $tipos t)))))
+
+(defun argumento (arg-type value)
+ "$(accessor arg-type)($value)")
+
+(defun resultado (ret-type value)
+	"\treturn $(constructor ret-type)($value);")
+
+(defun compilar-cfun (fu-name c-name arg-types ret-type)
+	(let ((aux-name (make-temp-name "aux"))
+				(arg-names (map (fun (x) (make-temp-name "var")) arg-types)))
+
+		(list fu-name
+					"fu_make_proc($aux-name, $(len arg-types), 0, 0)"
+					(cat
+						"RES *$aux-name($@", "(map (fun (x) "RES *$x") arg-names)) {\n"
+						(let ((argumentos (map argumento arg-types arg-names)))
+							(resultado ret-type "$c-name($@", "(do argumentos))"))
+						"\n}\n\n")))) 
+
+(defun compilar-fufun (fu-name c-name --fixed 0 --optional 0 --rest #f)
+	(list fu-name
+				"fu_make_proc($c-name, $fixed, $optional, $(if rest 1 0))"
+				""))
+
+(defun equises (slots)
+	"\"$@""(map (fun (x) "x") slots)\"")
+
+(defun compilar-c-struct (out-f fu-name c-name . slots)
+ (let ((mk "fu_MK_$c-name")
+       (ac "fu_AC_$c-name")
+       (slot-types  (map first slots))
+       (slot-names  (map second slots))
+       (i 0))
+
+  (out out-f
+   (cat
+    ;; constructor (C -> Funes)
+    "RES *$mk(struct $c-name *x) {\n"
+    "\treturn fu_vector($(equises slots),"
+    (call join ", "
+     (map (fun (sn st)
+           "$(constructor st)(x->$sn)")
+      slot-names slot-types))
+    ");\n}\n\n"
+
+    ;; accessor (Funes -> C)
+    "struct $c-name *$ac(RES *x) {\n"
+    "\tstruct $c-name *y;\n"
+    "\tif (!VECTOR_NO_UNIFORME_P(x))"
+    "\t\tfu_throw(fu_exception_symbol(\"wrong-type-arg\"),\n"
+    "\t\tfu_str(\"foreign_binding -- se esperaba: 'struct $c-name'\"));\n"
+    "\ty = NEW(struct $c-name);\n"
+    (call join ""
+     (map (fun (sn st)
+           "\ty->$sn = $(accessor st)(fu_get_vector(x, fu_int($(1- (++ i)))));\n")
+      slot-names slot-types))
+    "\treturn y;\n"
+    "}\n\n"))
+
+    (le fu-name (get-symbol fu-name (find-package "funes-lib"))
+     (set (get $tipos fu-name)
+      (make-c-handle mk ac)))))
+
+(defun compilar-c-type (fu-alias c-alias fu-name)
+ (le fu-alias (get-symbol fu-alias (find-package "funes-lib"))
+  (set (get $tipos fu-alias)
+   (make-c-handle
+    (constructor fu-name)
+    ; cast
+    "($c-alias)$(accessor fu-name)"))))
+
+(defun compilar-constante (fu-name c-name type)
+		(list fu-name
+					"$(constructor type)($c-name)"
+					""))
+
+(defun compilar-variable (fu-name c-name type)
+	(let ((aux-init (make-temp-name "aux"))
+				(aux-g (make-temp-name "aux"))
+				(aux-s (make-temp-name "aux"))
+				(v1 (make-temp-name "var"))
+				(v2 (make-temp-name "var")))
+		(list fu-name
+					"$aux-init()"
+					(cat
+						;; get
+						"RES *$aux-g() {\n"
+						"\treturn $(constructor type)($c-name);\n"
+						"}\n\n"
+						;; set
+						"RES *$aux-s(RES *$v2) {\n"
+						"\t$c-name = $(accessor type)($v2);"
+						"\treturn $v2;"
+						"}\n\n"
+					  ;; init
+					  "RES *$aux-init() {\n"
+						"\tRES *$v1 = fu_make_proc($aux-g, 0, 0, 0);\n"
+						"\tfu_setter_set($v1, fu_make_proc($aux-s, 1, 0, 0));\n"
+						"\treturn $v1;\n"
+						"}\n\n"))))
+
+(defun compilar-binding (out-f tipo . resto)
+ (if
+	(eq tipo =c-function) (call compilar-cfun resto)
+	(eq tipo =c-constant) (call compilar-constante resto)
+	(eq tipo =c-variable) (call compilar-variable resto)
+	(eq tipo =c-funes-function) (call compilar-fufun resto)
+	(eq tipo =c-struct)
+	 (do
+	  (call compilar-c-struct out-f resto)
+    #f)
+	(eq tipo =c-type)
+	 (do
+	  (call compilar-c-type resto)
+    #f)
+	; no hace falta compilar los siguientes:
+	(eq tipo =include) #f
+	(eq tipo =link) #f
+	(eq tipo =sources) #f
+	(eq tipo =include-dirs) #f
+	(eq tipo =link-dirs) #f
+	(eq tipo =code) #f
+	(err '&bad-argument "unknown binding type")))
+
+(defun safe-op (op verif tipo)
+	(cat
+		"$tipo safe_$op(RES *x) {\n"
+		"\tif (!$verif(x)) fu_throw(fu_exception_symbol(\"wrong-type-arg\"),\n"
+		"\t\tfu_str(\"foreign_binding -- se esperaba: '$(do tipo)'\"));\n"
+		"\treturn $op(x);\n"
+		"}\n\n"))
+
+(defun output-helper-defines (f)
+  (out f "#define VOID_RES(X)	X, T\n")
+  (out f "#define FU_SINGLE_FLOAT(X)	fu_float((double) X)\n")
+  (out f "#define VAL_SINGLE_FLOAT(X)	(float) VAL_FLOAT(X)\n")
+  (out f "#define FU_DOUBLE_FLOAT(X)	fu_float(X)\n")
+  (out f "#define VAL_DOUBLE_FLOAT(X)	VAL_FLOAT(X)\n\n")
+  (out f "#define FU_BOOL(X)	(X) != NIL\n")
+  (out f "#define VAL_BOOL(X)	((X) ? T : NIL)\n")
+  (out f "#define FU_PTR(X)	((RES *)((long)(X) | 1))\n")
+  (out f "#define VAL_PTR(X) ((void *)((long)(X) & ~1))\n")
+  (out f "\n")
+	(out f (safe-op "VAL_INT" "INT_P" "int"))
+	(out f (safe-op "VAL_CHAR" "CHAR_P" "char"))
+	(out f (safe-op "VAL_SINGLE_FLOAT" "FLOAT_P" "float"))
+	(out f (safe-op "VAL_DOUBLE_FLOAT" "FLOAT_P" "double"))
+	(out f (safe-op "VAL_STR" "STR_P" "char *"))
+	(out f "\n"))
+
+(defun bind (package-name includes code . defs)
+	(with-out-file f "$(do package-name).c"
+
+		 (out f "#include \"Fu.h\"\n")
+		 (each i includes
+					 (out f "#include $(do i)\n"))
+		 (output-helper-defines f)
+		 (each c code
+					 (out f "$(do c)\n"))
+         (le nombres (map (fun (d)
+                           (le r (call compilar-binding f d)
+                            (when r (out f (third r)))
+                            r))
+                      defs)
+
+				 (out f "RES *fu_lib_init(RES *args) {\n")
+				 (out f "\tRES *h = fu_make_hash(fu_int(11));\n")
+				 (each n nombres
+					 (when n
+						 (out f "\tfu_set_hash_eq(h, fu_local_symbol(\"$(first n)\"),\n")
+						 (out f "\t\t$(second n));\n")))
+				 (out f "\treturn h;\n")
+				 (out f "}\n"))))
+
+(defun make-makefile (package-name libraries incldirs linkdirs sources)
+	(let ((cflags-include "$@" "(map (fun (d) "-I$d")
+																	 (cat $include-dirs incldirs))")
+				(cflags-link "$@" "(map (fun (d) "-L $d")
+																(cat $link-dirs linkdirs))")
+				(libs "$@" "(map
+									   (fun (l) "-l$l")
+										 (cons "funes" libraries))"))
+
+		(with-out-file f "Make_$(do package-name)"
+			 (out f "CC=gcc\n")
+			 (out f "CFLAGS=$(do cflags-include) $(do cflags-link) -fPIC\n\n")
+			 (out f "$(do package-name).$(do $funes-shared-lib-extension)")
+			 (out f " : $(do package-name).c\n")
+			 (out f "\t\$(CC) -shared -o $(do package-name).$(do $funes-shared-lib-extension)")
+			 (out f "   $@""(do sources) $(do package-name).c")
+			 (out f "   $libs")
+			 (out f "   \$(CFLAGS)\n"))
+		(sys "make -f Make_$(do package-name)")))
+
+(def (lookup opt defs)
+ (cdr (assoc opt defs)))
+
+(macro bindings (package-name . defs)
+ (let ((include (lookup =include defs))
+			 (link (lookup =link defs))
+			 (sources (lookup =sources defs))
+			 (incdirs (lookup =include-dirs defs))
+			 (linkdirs (lookup =link-dirs defs))
+			 (code (lookup =code defs)))
+ `(do
+		(,bind ',package-name ',include ',code ,@(map (fun (x) (list 'backquote x)) defs))
+		(,make-makefile ',package-name ',link ',incdirs ',linkdirs ',sources))))
+

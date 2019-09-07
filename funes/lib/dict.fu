@@ -1,0 +1,83 @@
+
+(herald
+ --name =dict
+ --package =funes-lib
+ --description "Simple dictionary implementation."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:<dict> :mkdict :dict-empty :dict-size :dict-keys :dict-define
+				 	 :dict-remove :dict-get :dict-copy))
+
+(defstruct (<dict>
+						=print-function (fun (d)
+																 (fmt "{$@", "(data (<dict>-elements d)
+																	 (fun (kv) "$(car kv): $(cdr kv)"))}")))
+ elements
+ eqfun
+ hashfun)
+
+(def *rehash-threshold* 10)
+
+(defun dict-size (d)
+ (dbsize (<dict>-elements d)))
+
+(defun dict-keys (d)
+ (keys (<dict>-elements d)))
+
+(defun mkdict (--initial-size 3 --eqfun eq --hashfun hash-eq)
+ (make-<dict> --elements (mkdb initial-size)
+							--eqfun eqfun --hashfun hashfun))
+
+(defun dict-empty (d)
+ (= (dbsize (<dict>-elements d)) 0))
+
+(defun dict-define (d key value)
+	(let ((ef (<dict>-eqfun d))
+				(hf (<dict>-hashfun d))
+				(es (<dict>-elements d)))
+		(set (fget ef hf es key) value)
+
+		;; rehash
+		(when (and
+						(> (dbsize es) *rehash-threshold*)
+						(> (quotient (dbsize es) (len es)) 1))
+			(frehash ef hf es (1+ (* 2 (len es)))))
+		d))
+
+(defun dict-remove (d key)
+	(let ((ef (<dict>-eqfun d))
+				(hf (<dict>-hashfun d))
+				(es (<dict>-elements d)))
+		(fdel ef hf es key)
+
+		;; rehash
+		(when (and
+						(> (dbsize es) *rehash-threshold*)
+						(> (quotient (len es) (dbsize es)) 1))
+			(frehash ef hf es (quotient (1- (len es)) 2)))
+	 d))
+
+(defun dict-get (d key --else #u)
+	(let ((ef (<dict>-eqfun d))
+				(hf (<dict>-hashfun d))
+				(es (<dict>-elements d)))
+		(le r (fget ef hf es key)
+		 (if r
+			(cdr r)
+			else))))
+
+#|
+(defun dict-copy (d)
+ (le d2 (mkdict)
+	 (each k (dict-keys d)
+		 (dict-define d2 k (dict-get d k)))
+	 d2))
+|#
+
+(defun dict-copy (d)
+ (make-<dict>
+  (copy (<dict>-elements d))
+	(<dict>-eqfun d)
+	(<dict>-hashfun d)))
+  
+

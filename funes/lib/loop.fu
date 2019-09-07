@@ -1,0 +1,36 @@
+
+(herald
+ --name =loop
+ --package =funes-lib
+ --description "Looping constructs."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:forever :until :repeat :meach :read-loop))
+
+(macro forever body
+ `(while #t ,@body))
+
+(macro until (cond . body)
+ `(while (not ,cond) ,@body))
+
+(macro repeat (times . body)
+ (with-gensyms (var)
+	`(to ,var (,times) ,@body)))
+
+(macro meach (bindings . body)
+ `(mapc
+	 (fun ,(map first bindings) ,@body)
+	 ,@(map second bindings)))
+
+(macro emap (var val . body)
+ `(map (fun (,var) ,@body) ,val))
+
+(macro read-loop (var stream pred res . body)
+ (with-gensyms (aux gstream gpred)
+ `(let ((,gstream ,stream)
+		    (,gpred ,pred))
+	 (nlet ,aux ((,var (read ,gstream)))
+				 (if (,gpred ,var)
+					 ,res
+					 (do ,@body (,aux (read ,gstream))))))))
+

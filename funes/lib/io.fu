@@ -1,0 +1,38 @@
+
+(herald
+ --name =io
+ --package =funes-lib
+ --description "I/O utilities."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:with-file :in-from :out-to))
+
+(import special :sle)
+(import _std :stdin :stdout)
+
+(macro with-file (var filename opt . body)
+ (le mode (if
+					  (has-option opt =out)
+						  "w"
+					  (has-option opt =in)
+						  "r"
+						(err '&bad-argument "Modo de apertura desconocido"))
+
+	(with-gensyms (r)
+		`(le ,var (open ,filename ,mode)
+			(le ,r (try (do ,@body) (throw _exc _errstr))
+			 (close ,var)
+			 ,r)))))
+
+(macro in-from (filename . body)
+ (with-gensyms (f)
+	`(,with-file ,f ,filename =in
+	  (,sle (,stdin) ,f
+		 ,@body))))
+
+(macro out-to (filename . body)
+ (with-gensyms (f)
+	`(,with-file ,f ,filename =out
+	  (,sle (,stdout) ,f
+		 ,@body))))
+

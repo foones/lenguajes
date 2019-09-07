@@ -1,0 +1,9 @@
+(import foones #t)
+
+
+(defmethod Map (f ((car (cons <list> 10)) l))
+ (map f l))
+
+(pr
+	(Map (fun (x) (* x 2))
+			 '(1 2 3)))

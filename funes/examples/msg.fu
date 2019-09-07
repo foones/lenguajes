@@ -1,0 +1,21 @@
+(import libprocess #t)
+
+(defprocess CS (servidor)
+	(while #t
+		 (receive 'ask (sender x)
+				 (! sender 'answer (servidor x)))))
+
+(defprocess cli (i)
+ (! serv-mult2 'ask self i)
+	(while #t
+	 (receive 'answer (r)
+			(pr "$i |-> $r"))))
+
+(defun mult2 (x)
+ (* x 2))
+
+(do
+	(def serv-mult2 (spawn CS mult2))
+	(to i (0 4)
+			(spawn cli i)))
+

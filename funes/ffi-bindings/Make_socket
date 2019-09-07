@@ -1,0 +1,5 @@
+CC=gcc
+CFLAGS=-I/home/pablo/programas/lenguajes/funes/gc/include -I/home/pablo/programas/lenguajes/funes/fu9/include -L /home/pablo/programas/lenguajes/funes/fu9 -fPIC
+
+socket.so : socket.c
+	$(CC) -shared -o socket.so    socket.c   -lfunes   $(CFLAGS)

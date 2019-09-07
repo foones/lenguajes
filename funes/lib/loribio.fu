@@ -1,0 +1,184 @@
+
+(herald
+ --name =loribio
+ --package =funes-lib
+ --description "Wrapper for character based I/O libraries."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:color :clear :putxystr :putstr :init :cleanup :quit
+					 :with-inkey :wait-for-key :Key :Color)
+ --export-names (:Black :Blue :Green :Cyan :Red :Magenta :Brown
+								 :LightGray :LightBlue :LightGreen :LightCyan
+								 :LightRed :LightMagenta :Yellow :White
+								 :Esc :Up :Down :Left :Right))
+
+(import util
+	:when-def)
+(import comptime
+	:compile-when)
+
+(compile-when (eq (os-type) =os-windows)
+	 (import windows._conio)
+	 
+	 (defmodule Color
+		 (def Black windows._conio.Black)
+		 (def Blue windows._conio.Blue)
+		 (def Green windows._conio.Green)
+		 (def Cyan windows._conio.Cyan)
+		 (def Red windows._conio.Red)
+		 (def Magenta windows._conio.Magenta)
+		 (def Brown windows._conio.Brown)
+		 (def LightGray windows._conio.LightGray)
+		 (def LightBlue windows._conio.LightBlue)
+		 (def LightGreen windows._conio.LightGreen)
+		 (def LightCyan windows._conio.LightCyan)
+		 (def LightRed windows._conio.LightRed)
+		 (def LightMagenta windows._conio.LightMagenta)
+		 (def Yellow windows._conio.Yellow)
+		 (def White windows._conio.White))
+
+	(defun color (--fg #u --bg #u)
+		(when-def fg
+				(windows._conio.fg-color fg))
+		(when-def bg
+				(windows._conio.bg-color bg)))
+
+	(defun clear (--bg #u --fg #u)
+		(color fg bg)
+		(windows._conio.cls))
+
+	(defun putxystr (x y s)
+	 (windows._conio.cputsxy x y s))
+
+	(def putstr pr1)
+
+	(defun init ()
+		(windows._conio.set-cursor-type ;windows._conio.NoCursor
+		 100))
+
+	(defun cleanup ()
+		(clear Color.Black Color.LightGray)
+		(windows._conio.set-cursor-type windows._conio.NormalCursor))
+
+	(defun _getcode (getfun)
+		(le r (getfun)
+				(if (or (eq r 0) (eq r 224))
+					(+ 256 (getfun))
+					r)))
+
+	(macro with-inkey (k . body)
+				 `(when (eq (,windows._conio.kbhit) 1)
+						(le ,k (,_getcode ,windows._conio.getch)
+								,@body)))
+
+	(macro wait-for-key (k . body)
+				 `(le ,k (,_getcode ,windows._conio.getch)
+							(case ,k
+								,@body)))
+
+	(defmodule Key
+		 (def Esc 27)
+		 (def Up (+ 256 (ord \H)))
+		 (def Down (+ 256 (ord \P)))
+		 (def Left (+ 256 (ord \K)))
+		 (def Right (+ 256 (ord \M)))))
+
+(compile-when (eq (os-type) =os-generic)
+  (import generic._curses)
+
+	(defmodule Key
+		 (def Esc generic._curses.KeyEsc)
+		 (def Up generic._curses.KeyUp)
+		 (def Down generic._curses.KeyDown)
+		 (def Left generic._curses.KeyLeft)
+		 (def Right generic._curses.KeyRight))
+
+	 (defmodule Color
+		 (def Black generic._curses.Black)
+		 (def Blue generic._curses.Blue)
+		 (def Green generic._curses.Green)
+		 (def Cyan generic._curses.Cyan)
+		 (def Red generic._curses.Red)
+		 (def Magenta generic._curses.Magenta)
+		 (def Brown generic._curses.Brown)
+		 (def LightGray generic._curses.LightGray)
+		 (def LightBlue generic._curses.LightBlue)
+		 (def LightGreen generic._curses.LightGreen)
+		 (def LightCyan generic._curses.LightCyan)
+		 (def LightRed generic._curses.LightRed)
+		 (def LightMagenta generic._curses.LightMagenta)
+		 (def Yellow generic._curses.Yellow)
+		 (def White generic._curses.White))
+
+	(def *color-pair* (generic._curses.color-pair 0))
+	(def *color-bg* Color.Black)
+	(def *color-fg* Color.White)
+	(def color
+			 (let ((ultimo-par 0)
+						 (pares '()))
+					 (fun (--fg #u --bg #u)
+						(if (eq fg #u) 
+						  (set fg *color-fg*)
+						  (set *color-fg* fg))
+						(if (eq bg #u) 
+						  (set bg *color-bg*)
+						  (set *color-bg* bg))
+						(le cfb (cons fg bg)
+							(le r (assoc cfb pares list=)
+							 (if r
+							 ; estaba
+								 (set *color-pair* (cdr r))
+							 ; no estaba
+							 (do
+								 (generic._curses.init-pair (++ ultimo-par) fg bg)
+								 (le cp (generic._curses.color-pair ultimo-par)
+										 (set pares (acons cfb cp pares))
+										 (set *color-pair* cp)))))))))
+
+	(defun clear (--bg #u --fg #u)
+	  (color fg bg)
+	  (generic._curses.bkgdset (generic._curses.bkgd-chtype *color-pair*))
+		(generic._curses.clear))
+
+	(defun init ()
+		(generic._curses.initscr)
+		(generic._curses.cbreak)
+		(generic._curses.noecho)
+		(generic._curses.start-color)
+		(generic._curses.curs-set 0)
+		(generic._curses.nodelay (generic._curses.stdscr) #t)
+		(generic._curses.keypad (generic._curses.stdscr) #t))
+
+	(defun putxystr (x y s)
+	 (generic._curses.attron *color-pair*)
+	 (generic._curses.mvprintw y x s))
+
+	(defun putstr (s)
+	 (generic._curses.attron *color-pair*)
+	 (generic._curses.printw s))
+
+	(defun cleanup ()
+		 (generic._curses.endwin))
+
+	(macro with-inkey (k . body)
+				 `(do
+						(,generic._curses.nodelay (,generic._curses.stdscr) #t)
+						(le ,k (,generic._curses.getch)
+								(when (not (eq ,k ,generic._curses.Err))
+									,@body))))
+
+	(macro wait-for-key (k . body)
+				 `(do
+						(,generic._curses.nodelay (,generic._curses.stdscr) #f)
+						(le ,k (,generic._curses.getch)
+								(while (eq ,k ,generic._curses.Err)
+											 (set ,k (,generic._curses.getch)))
+								(case ,k
+									,@body)))))
+
+(defun quit ()
+   (cleanup)
+	 (exit))
+
+(init)
+

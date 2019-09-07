@@ -1,0 +1,27 @@
+
+(herald
+ --name =lists
+ --package =funes-lib
+ --description "List utilities."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --exports (:filter :remove-if :remove-if-not :nconc))
+
+(defun filter (pred l)
+ (nlet aux ((l l) (acc '()))
+	(if
+		(null l) (xrev acc)
+		(aux
+		  (cdr l)
+			(if (pred (car l))
+				(cons (car l) acc)
+			  acc)))))
+
+(def remove-if-not filter)
+
+(defun remove-if (pred l)
+ (filter (fun (x) (not (pred x))) l))
+
+(defun nconc (a b)
+ (do (set (cdr (last a)) b) a))
+

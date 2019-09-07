@@ -1,0 +1,60 @@
+
+(herald
+ --name =multimeth
+ --package =funes-lib
+ --description "Simple multimethod implementation."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:defgeneric :defmeth))
+
+(defstruct (<generic>
+						=get (fun (self . arguments)
+							     (le f (buscar self arguments)
+										(if f (call f arguments)
+										 (throw '&generic-no-aplicable
+											  "la funcion generica no admite los tipos dados")))))
+	datos)
+
+(defstruct tipos/func
+ tipos
+ func
+ long)
+
+(definer defgeneric
+	(fun () (make-<generic> --datos '())))
+
+(def (agregar g ts func)
+ (push (<generic>-datos g) (make-tipos/func ts func (len ts))))
+
+(def (buscar g objs)
+ (le lobjs (len objs)
+		 (catch 'ret
+						(each tf (<generic>-datos g)
+									(when
+										(and
+											(= (tipos/func-long tf) lobjs)
+											(all #t (map (fun (x y) (x y))
+																	 (tipos/func-tipos tf)
+																	 objs)))
+										(throw 'ret (tipos/func-func tf))))
+						#f)))
+
+(defun tiene-tipo? (x)
+	(and (consp x) (not (eq (car x) #argset))))
+
+(defun valor (x)
+	(if (tiene-tipo? x)
+		(first x)
+		x))
+
+(defun tipo (x)
+	(if (tiene-tipo? x)
+		(second x)
+		#t))
+
+(macro defmeth (generic arguments . body)
+ `(,agregar ,generic
+	 (list ,@(map tipo arguments))
+	 (fun ,(map valor arguments)
+		,@body)))
+

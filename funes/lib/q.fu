@@ -1,0 +1,50 @@
+
+(herald
+ --name =q
+ --package =funes-lib
+ --description "A simple queue implementation."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:<q> :mkq :emptyq :enq :deq :q->list :qfirst :qlast))
+
+(defstruct (<q>
+						=print-function (fun (q) "[$@" "(<q>-fst q)]"))
+ fst
+ lst)
+
+(defun mkq ()
+ (make-<q> --fst '() --lst '()))
+
+(defun emptyq (q)
+ (null (<q>-fst q)))
+
+(defun enq (q x)
+ (if (null (<q>-fst q))
+	(set (<q>-fst q) (set (<q>-lst q) (list x)))
+ 	(set (<q>-lst q) (set (cdr (<q>-lst q)) (list x))))
+ q)
+
+(defun deq (q)
+ (assert (not (emptyq q)))
+ (le r (car (<q>-fst q))
+	(set (<q>-fst q) (cdr (<q>-fst q)))
+	r))
+
+(defun q->list (q)
+ (<q>-fst q))
+
+(defun qfirst (q)
+ (assert (not (emptyq q)))
+ (car (<q>-fst q)))
+
+(defset qfirst (q v)
+ (assert (not (emptyq q)))
+ (set (car (<q>-fst q)) v))
+
+(defun qlast (q)
+ (assert (not (emptyq q)))
+ (car (<q>-lst q)))
+
+(defset qlast (q v)
+ (assert (not (emptyq q)))
+ (set (car (<q>-lst q)) v))

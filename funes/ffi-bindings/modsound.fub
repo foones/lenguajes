@@ -1,0 +1,11 @@
+; vim:ft=funes
+
+(import binder
+  bindings)
+
+(bindings sound
+  (=include "\"modsound.h\"")
+  (=sources "modsound.c")
+
+  (=c-function snd "sound" (float int) void))
+

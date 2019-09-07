@@ -1,0 +1,62 @@
+
+(herald
+ --name =reflect
+ --package =funes-lib
+ --description "Some reflection and environment handling utilities."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:defglobal :with-envs :with-env :with-compile-env))
+
+(import comptime :eval-when)
+(import util :prog1)
+
+(when (not (find-package =Reflection))
+	(defpackage =Reflection))
+
+(macro defglobal (var val)
+ `(set (get (car (last (environment))) ',var) ,val))
+
+(defglobal Reflection::prev-env #u)
+(defglobal Reflection::prev-compile-env #u)
+
+(macro with-envs (env compile-env . body)
+ (with-gensyms (r)
+	 `(do
+			(push Reflection::prev-env (environment))
+			(set (environment)
+			 (prog1
+ 					,env
+					(eval-when =compile
+						(push Reflection::prev-compile-env (compile-environment))
+						(set (compile-environment) ,compile-env))))
+			(prog1
+					(do ,@body)
+					(do
+						(set (environment)
+								 (pop Reflection::prev-env))
+						(eval-when =compile
+							(set (compile-environment)
+									 (pop Reflection::prev-compile-env)))
+						)))))
+
+(macro with-env (env . body)
+ (with-gensyms (r)
+	 `(do
+			(push Reflection::prev-env (environment))
+			(set (environment) ,env)
+			(car
+				(cons
+					(do ,@body)
+					(set (environment) (pop Reflection::prev-env)))))))
+
+
+(macro with-compile-env (env . body)
+	 `(do
+			(eval-when =compile
+				(push Reflection::prev-compile-env (compile-environment))
+				(set (compile-environment) ,env))
+			(car
+				(cons
+					(do ,@body)
+					(eval-when =compile
+						(set (compile-environment) (pop Reflection::prev-compile-env)))))))

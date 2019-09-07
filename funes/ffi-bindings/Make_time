@@ -1,0 +1,5 @@
+CC=gcc
+CFLAGS=-I/home/pablo/programas/lenguajes/funes//gc/include -I/home/pablo/programas/lenguajes/funes//fu9/include -L /home/pablo/programas/lenguajes/funes//fu9 -fPIC
+
+time.so : time.c
+	$(CC) -shared -o time.so   modtime.c time.c   -lfunes   $(CFLAGS)

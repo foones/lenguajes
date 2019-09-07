@@ -1,0 +1,597 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>Referencia de funes</title>
+  <link rel="StyleSheet" href="css.css" type="text/css">
+  <link rel="index" href="index.html">
+  <link rel="author" href="vanidad.html">
+  <link rel="contents" href="mapa.html">
+  <link rel="copyright" href="copying.html">
+  <link rel="help" href="contacto.html">
+  <link rel="up" href="cs.html">
+</head>
+<body>
+<h1><a name="top">Referencia de Funes</a></h1>
+<a href="index.html">Principal</a> / <a href="cs.html">Computaci&oacute;n</a>
+<h2 class="inv"><a name="indice">&Iacute;ndice</a></h2>
+<ol>
+<li><a href="#notacion">Notaci&oacute;n</a>
+<ul>
+<li><a href="#listas_de_argumentos">Listas de argumentos</a>
+<li><a href="#notacion_funciones">Funciones</a>
+</ul>
+<li><a href="#booleanos">Booleanos</a>
+<li><a href="#igualdad">Igualdad</a>
+<li><a href="#simbolos">S&iacute;mbolos</a>
+<li><a href="#numeros">N&uacute;meros</a>
+<ul>
+<li><a href="#enteros">Enteros</a>
+</ul>
+<li><a href="#caracteres">Caracteres</a>
+<li><a href="#secuencias">Secuencias</a>
+<ul>
+<li><a href="#listas">Listas</a>
+<li><a href="#vectores">Vectores</a>
+<li><a href="#vectores_no_uniformes">Vectores no uniformes</a>
+<li><a href="#cadenas">Cadenas</a>
+<li><a href="#funciones_genericas_secuencias">Funciones gen&eacute;ricas de tratamiento de secuencias</a>
+</ul>
+<li><a href="#hashes">Hashes</a>
+<li><a href="#control">Estructuras de control</a>
+<ul>
+<li><a href="#looping">Looping constructs</a>
+</ul>
+<li><a href="#funciones">Funciones</a>
+<li><a href="#entornos">Entorno e introspecci&oacute;n</a>
+<ul>
+<li><a href="#entorno">Entorno</a>
+<li><a href="#read_eval">Read / eval</a>
+</ul>
+<li><a href="#errores">Manejo de errores</a>
+<li><a href="#output">Output</a>
+<li><a href="#archivos">Manejo de archivos</a>
+<li><a href="#finalizacion">Finalizaci&oacute;n</a>
+</ol>
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="notacion">Notaci&oacute;n</a></h2>
+<a href="#top"><small>Arriba</small></a>
+<h3><a name="listas_de_argumentos">Listas de argumentos</a></h3>
+<p>Los argumentos opcionales se encierran entre corchetes [].</p>
+<p>Los argumentos "rest" se ponen despu&eacute;s de un punto.</p>
+<h3><a name="notacion_funciones">Funciones</a></h3>
+<p><font class="ref">constructor</font> : funci&oacute;n que crea un objeto.</p>
+
+<p><font class="ref">accessor</font> : funci&oacute;n que devuelve un valor.</p>
+
+<p><font class="ref">setter</font> : funci&oacute;n que establece un valor.</p>
+
+<p><font class="ref">accessor+setter</font> : funci&oacute;n que devuelve un valor y puede establecerlo usando <b>set</b>.</p>
+
+<p><font class="ref">predicado</font> : funci&oacute;n que devuelve <b>#t</b> o <b>#f</b>.</p>
+
+<p><font class="ref">coerci&oacute;n</font> : funci&oacute;n que transforma un objeto
+de un tipo en un objeto asociado de otro tipo.</p>
+
+<hr noshade>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="booleanos">Booleanos</a></h2>
+<a href="#top"><small>Arriba</small></a>
+<p>Valores booleanos son <b>#t</b> y <b>#f</b>, que representan respectivamente
+los valores can&oacute;nicos de verdad y falsedad. <b>#f</b> tambi&eacute;n
+cumple la funci&oacute;n de lista vac&iacute;a; otra notaci&oacute;n para
+este valor es <b>()</b>. Los valores booleanos se autoeval&uacute;an.</p>
+
+<p>(<font class="ref">not</font> <i>x</i>), (<font class="ref">null</font> <i>x</i>)
+<font class="tp">predicado</font> : devuelve <b>#t</b> si <i>x</i> es <b>#f</b>.
+Devuelve <b>#f</b> si no. Nota: <b>not</b> y <b>null</b> son equivalentes.</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="igualdad">Igualdad</a></h2>
+<a href="#top"><small>Arriba</small></a>
+
+<p>(<font class="ref">eq</font> <i>a</i> <i>b</i>)
+<font class="tp">predicado</font> : devuelve <b>#t</b> si <i>a</i> y <i>b</i> son el mismo
+objeto (i.e. apuntan al mismo lugar de la memoria) y <b>#f</b> si no. Nota: <b>eq</b>
+devuelve <b>#t</b> para dos objetos que representen enteros con el mismo valor
+num&eacute;rico por cuestiones de eficiencia de implementaci&oacute;n. This feature
+<b>may</b> be relied upon.</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="simbolos">S&iacute;mbolos</a></h2>
+<a href="#top"><small>Arriba</small></a>
+<p>Los s&iacute;mbolos son nombres. Como regla general, dos s&iacute;mbolos con el
+mismo nombre son <b>eq</b>. Los s&iacute;mbolos se eval&uacute;an al valor al que
+est&eacute;n bindeados en el entorno corriente.</p>
+
+<p>(<font class="ref">gensym</font>)
+<font class="tp">funci&oacute;n</font> : devuelve un s&iacute;mbolo para
+el cual se garantiza que no es <b>eq</b> a ning&uacute;n otro s&iacute;mbolo.</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="numeros">N&uacute;meros</a></h2>
+<a href="#top"><small>Arriba</small></a>
+<p>Hasta el momento hay s&oacute;lo soporte (y poco) para enteros.
+Los n&uacute;meros se autoeval&uacute;an.</p>
+
+<h3><a name="enteros">Enteros</a></h3>
+<p>Son simples n&uacute;meros enteros, opcionalmente precedidos
+por un menos para indicar signo.</p>
+
+<p>(<font class="ref">+</font> . <i>numeros</i>)
+<font class="tp">funci&oacute;n</font> : devuelve la suma de los n&uacute;meros.
+Si no se pasan argumentos, devuelve 0 (elemento neutro).</p>
+
+<p>(<font class="ref">-</font> . <i>numeros</i>)
+<font class="tp">funci&oacute;n</font> : si se pasa un solo argumento, devuelve
+menos el argumento. Si se pasan m&aacute;s argumentos, se devuelve el primero
+menos los restantes. Si no se pasan argumentos, devuelve 0.</p>
+
+<p>(<font class="ref">*</font> . <i>numeros</i>)
+<font class="tp">funci&oacute;n</font> : devuelve el producto de los n&uacute;meros.
+Si no se pasan argumentos, devuelve 1.</p>
+
+<p>(<font class="ref">&lt;</font> . <i>numeros</i>)
+<font class="tp">predicado</font> : devuelve <b>#t</b> si los n&uacute;meros
+est&aacute;n en relaci&oacute;n de orden "&lt;" entre s&iacute;. Si no se
+pasan argumentos, devuelve <b>#t</b>. En todo otro caso, devuelve <b>#f</b>.</p>
+
+<p>(<font class="ref">&gt;</font> . <i>numeros</i>)
+<font class="tp">predicado</font> : devuelve <b>#t</b> si los n&uacute;meros
+est&aacute;n en relaci&oacute;n de orden "&gt;" entre s&iacute;. Si no se
+pasan argumentos, devuelve <b>#t</b>. En todo otro caso, devuelve <b>#f</b>.</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="caracteres">Caracteres</a></h2>
+<a href="#top"><small>Arriba</small></a>
+<p>Representan un valor entre 0 y 255. Se notan como un caracter precedido
+de una barra. Por ejemplo \a representa al caracter `a' que es el valor
+97.</p>
+
+<p>(<font class="ref">chr</font> <i>entero</i>)
+<font class="tp">coerci&oacute;n</font> : si el <i>entero</i> est&aacute; entre
+0 y 255, devuelve el caracter asociado.</p>
+
+<p>(<font class="ref">ord</font> <i>caracter</i>)
+<font class="tp">coerci&oacute;n</font> : devuelve el valor entero asociado
+al valor del caracter <i>caracter</i>.</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="secuencias">Secuencias</a></h2>
+<a href="#top"><small>Arriba</small></a>
+<p>Se consideran secuencias a las listas y vectores, dentro de los
+cuales se encuentran las cadenas.</p>
+
+<h3><a name="listas">Listas</a></h3>
+<p>Un cons es un par de dos objetos cualesquiera, el primero de los
+cuales se denomina car y el segundo cdr. Una lista es un cons cuyo
+car es un objeto (el primer elemento de la lista) y su cdr es o bien
+otra lista o bien la lista vac&iacute;a (la lista vac&iacute;a se nota
+<b>()</b> o <b>#f</b>). Las listas se eval&uacute;an al resultado
+de aplicar su car a su cdr.</p>
+
+<p>(<font class="ref">cons</font> <i>a</i> <i>b</i>)
+<font class="tp">constructor</font> : crea un cons con car <i>a</i> y cdr <i>b</i>.</p>
+
+<p>(<font class="ref">consp</font> <i>x</i>)
+<font class="tp">predicado</font> : devuelve <b>#t</b> si <i>x</i> es un cons y
+<b>#f</b> si no.</p>
+
+<p>(<font class="ref">car</font> <i>c</i>)
+<font class="tp">accessor+setter</font> : devuelve el car de <i>c</i>.</p>
+
+<p>(<font class="ref">cdr</font> <i>c</i>)
+<font class="tp">accessor+setter</font> : devuelve el cdr de <i>c</i>.</p>
+
+<p>(<font class="ref">list</font> . <i>args</i>)
+<font class="tp">constructor</font> : crea una lista con los elementos dados en <i>args</i>.</p>
+
+<p>(<font class="ref">list*</font> . <i>args</i>)
+<font class="tp">constructor</font> : crea una lista con los elementos dados en <i>args</i>,
+pero el &uacute;ltimo cons de la lista contiene al &uacute;ltimo elemento de <i>args</i> como cdr.</p>
+
+<p>(<font class="ref">nth</font> <i>lista</i> <i>n</i>)
+<font class="tp">accessor+setter</font> : devuelve el <i>n</i>-&eacute;simo elemento de la lista <i>lista</i>.</p>
+
+<p>(<font class="ref">ntl</font> <i>lista</i> <i>n</i>)
+<font class="tp">accessor+setter</font> : devuelve el <i>n</i>-&eacute;simo cdr de la lista <i>lista</i>.</p>
+
+<p>(<font class="ref">last</font> <i>lista</i>)
+<font class="tp">accessor</font> : devuelve el &uacute;ltimo cons de la lista <i>lista</i>.</p>
+
+<p>(<font class="ref">member</font> <i>elemento</i> <i>lista</i> [<i>predicado</i>])
+<font class="tp">funci&oacute;n</font> : devuelve el primer cons de la lista <i>lista</i> cuyo
+car sea igual a <i>elemento</i>. Si no se especifica un <i>predicado</i>, la funci&oacute;n de
+comparaci&oacute;n es <b>eq</b>. Si se especifica, se utiliza dicha funci&oacute;n.</p>
+
+<p>(<font class="ref">assoc</font> <i>elemento</i> <i>lista</i> [<i>predicado</i>])
+<font class="tp">funci&oacute;n</font> : devuelve el primer elemento de la lista <i>lista</i>
+que satisfaga que es un cons y su car es igual a <i>elemento</i>. Si no se especifica un
+<i>predicado</i>, la funci&oacute;n de comparaci&oacute;n es <b>eq</b>. Si se especifica,
+se utiliza dicha funci&oacute;n.</p>
+
+<p>(<font class="ref">range</font> [<i>inicial</i>] <i>final</i> [<i>step</i>])
+<font class="tp">constructor</font> : crea una lista de enteros comenzada en el
+n&uacute;mero <i>inicial</i>, hasta el n&uacute;mero <i>final</i> (no inclusive),
+incrementando por el valor de <i>step</i>. Si no se especifica un n&uacute;mero
+<i>inicial</i>, por defecto es 0. Si no se especifica un <i>step</i>, por
+defecto es 1. Nota: el <i>step</i> puede ser negativo, lo cual tiene sentido s&oacute;lo
+si el valor <i>final</i> es menor que el valor <i>inicial</i>.</p>
+
+<p>(<font class="ref">iota</font> <i>n</i> [<i>inicial</i> <i>step</i>])
+<font class="tp">constructor</font> : crea una lista de <i>n</i> enteros
+comenzada en el n&uacute;mero <i>inicial</i>, incrementando por el valor
+de <i>step</i>. Si no se especifica un n&uacute;mero <i>inicial</i>, por
+defecto es 0. Si no se especifica un <i>step</i>, por defecto es 1.</p>
+
+<h3><a name="vectores">Vectores</a></h3>
+<p>Se consideran vectores a secuencias de longitud fija ya sea con
+elementos de cualquier tipo, o con elementos de un tipo uniforme.
+Entre los vectores de tipo uniforme hasta el momento hay soporte
+para cadenas, que contienen &uacute;nicamente caracteres. Los
+vectores se autoeval&uacute;an.</p>
+
+<p>(<font class="ref">vref</font> <i>vec</i> <i>n</i>)
+<font class="tp">accessor+setter</font> : devuelve el <i>n</i>-&eacute;simo
+elemento del vector <i>vec</i>.</p>
+
+<h3><a name="vectores_no_uniformes">Vectores no uniformes</a></h3>
+<p>(<font class="ref">vec</font> . <i>args</i>)
+<font class="tp">constructor</font> : crea un vector con los elementos dados en <i>args</i>.</p>
+
+<p>(<font class="ref">mkvec</font> <i>n</i> [<i>elemento-inicial</i>])
+<font class="tp">constructor</font> : crea un vector de longitud <i>n</i>
+conteniendo el <i>elemento-inicial</i> en todos sus elementos. Si no
+se especifica un <i>elemento-inicial</i>, &eacute;ste es por defecto
+<b>#f</b>.</p>
+
+<h3><a name="cadenas">Cadenas</a></h3>
+
+<p>(<font class="ref">str</font> . <i>args</i>)
+<font class="tp">coerci&oacute;n</font> : devuelve una cadena
+que contiene la representaci&oacute;n impresa de sus argumentos.
+(Si se da m&aacute;s de un argumento, las representaciones
+se concatenan).</p>
+
+<p>(<font class="ref">num-&gt;str</font> <i>n&uacute;mero</i> [<i>base</i>] [<i>plus</i>] [<i>space</i>] [<i>special</i>] [<i>large</i>])
+<font class="tp">coerci&oacute;n</font> : devuelve una cadena
+que contiene la representaci&oacute;n impresa del n&uacute;mero
+<i>n&uacute;mero</i> en la <i>base</i> dada. La <i>base</i> debe
+ser un entero entre 2 y 36; su valor por defecto es 10.
+Los valores de <i>plus</i>, <i>space</i>, <i>special</i> y <i>large</i>
+son <b>#f</b> por defecto. Si <i>plus</i> es verdadero, se precede
+el n&uacute;mero por un + si es positivo. Si <i>space</i> es verdadero,
+se precede el n&uacute;mero por un espacio si es positivo. Si
+<i>special</i> es verdadero, se antecede al n&uacute;mero por
+un especificador de base (nada si es decimal, "#x" si es hexadecimal,
+"#o" si es octal, "#b" si es binario y "#&lt;<i>n&uacute;mero</i>&gt;"
+si es otra base). Si <i>large</i> es verdadero, toda letra que
+apareciere en la representaci&oacute;n escrita del n&uacute;mero
+se escribe en may&uacute;sculas.</p>
+
+<p>(<font class="ref">fmt</font> <i>cadena-de-formato</i> . <i>args</i>)
+<font class="tp">funci&oacute;n</font> : devuelve la cadena <i>cadena-de-formato</i>
+reemplazando las combinaciones especiales por su valor asociado.
+Siendo v el valor de los sucesivos argumentos dados en <i>args</i>,
+las combinaciones especiales son "%%" con valor asociado "%",
+"%s" cuyo valor asociado es la representaci&oacute;n impresa de v,
+"%S" cuyo valor asociado es la representaci&oacute;n de v,
+"%i" cuyo valor es la representaci&oacute;n del entero v en
+base decimal, "%b" en binario, "%o" en octal, "%x" en hexadecimal.
+Adem&aacute;s, entre "%" y el caracter de control se pueden insertar
+caracteres flags: "#" indica que la representaci&oacute;n del
+n&uacute;mero lleva la flag <i>special</i>, "+" indica que lleva
+la flag <i>plus</i>, " " indica que lleva la flag <i>space</i>.
+Adem&aacute;s, si el caracter de control num&eacute;rico est&aacute;
+en may&uacute;sculas, la representaci&oacute;n del n&uacute;mero
+lleva la flag <i>large</i>.</p>
+
+<h3><a name="funciones_genericas_secuencias">Funciones gen&eacute;ricas de tratamiento de secuencias</a></h3>
+<p>Estas funciones act&uacute;an sobre toda clase de secuencia,
+incluyendo listas, vectores y cadenas.</p>
+
+<p>(<font class="ref">cat</font> . <i>seqs</i>)
+<font class="tp">funci&oacute;n</font> : devuelve el resultado de
+concatenar las secuencias dadas en <i>seqs</i>, que deber&iacute;an ser
+del mismo tipo.</p>
+
+<p>(<font class="ref">len</font> <i>seq</i>)
+<font class="tp">funci&oacute;n</font> : devuelve la longitud de la
+secuencia <i>seq</i>.</p>
+
+<p>(<font class="ref">xrev</font> <i>seq</i>)
+<font class="tp">funci&oacute;n</font> : devuelve el resultado de
+invertir la secuencia <i>seq</i>. Esta funci&oacute;n puede alterar
+el contenido de la secuencia original.</p>
+
+<p>(<font class="ref">copy</font> <i>seq</i>)
+<font class="tp">funci&oacute;n</font> : devuelve una copia de
+la secuencia <i>seq</i>.</p>
+
+<p>(<font class="ref">elt</font> <i>n</i> <i>seq</i>)
+<font class="tp">accessor+setter</font> : devuelve el <i>n</i>-&eacute;simo
+elemento de la secuencia <i>seq</i>. Adem&aacute;s, si <i>seq</i> es
+un hash, devuelve el elemento de <i>seq</i> con clave <i>n</i>.</p>
+
+<p>(<font class="ref">index</font> <i>elt</i> <i>seq</i> [<i>predicado</i>])
+<font class="tp">funci&oacute;n</font> : devuelve el primer &iacute;ndice
+para el cual el elemento <i>elt</i> aparece en la secuencia <i>seq</i>.
+Si no se especifica un <i>predicado</i>, la funci&oacute;n de comparaci&oacute;n
+es <b>eq</b>. Si se especifica, se utiliza dicha funci&oacute;n.</p>
+
+<p>(<font class="ref">map</font> <i>funci&oacute;n</i> <i>seq</i>)
+<font class="tp">funci&oacute;n</font> : devuelve una lista que contiene
+el resultado de aplicar la funci&oacute;n <i>funci&oacute;n</i> a cada
+elemento de la secuencia <i>seq</i>.</p>
+
+<p>(<font class="ref">mapc</font> <i>funci&oacute;n</i> <i>seq</i>)
+<font class="tp">funci&oacute;n</font> : aplica la funci&oacute;n
+<i>funci&oacute;n</i> a cada elemento de la secuencia <i>seq</i>;
+devuelve <i>seq</i>. Nota: la funci&oacute;n es id&eacute;ntica
+a <b>map</b> salvo por su resultado; <i>mapc</i> se utiliza cuando
+no interesa la lista resultante sino los efectos de aplicar la
+funci&oacute;n; por eficiencia.</p>
+
+<p>(<font class="ref">maplist</font> <i>funci&oacute;n</i> <i>seq</i>)
+<font class="tp">funci&oacute;n</font> : si <i>seq</i> es una lista,
+devuelve una lista que contiene el resultado de aplicar la funci&oacute;n
+<i>funci&oacute;n</i> a los sucesivos cdrs de <i>seq</i>. Si <i>seq</i>
+es otra secuencia, <b>maplist</b> se comporta de forma id&eacute;ntica
+a <b>map</b>.</p>
+
+<p>(<font class="ref">mapl</font> <i>funci&oacute;n</i> <i>seq</i>)
+<font class="tp">funci&oacute;n</font> : Tiene los mismos efectos
+que <b>maplist</b>, pero en lugar de devolver la lista resultante,
+devuelve <i>seq</i>. La relaci&oacute;n <b>mapl</b> / <b>maplist</b>
+es an&aacute;loga a la de <b>mapc</b> / <b>map</b>.</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="hashes">Hashes (arrays asociativos)</a></h2>
+<a href="#top"><small>Arriba</small></a>
+<p>Los hashes son vectores utilizados como mappings de claves a valores.
+Se autoeval&uacute;an.</p>
+
+<p>(<font class="ref">db</font> . <i>args</i>)
+<font class="tp">constructor</font> : crea un hash de 211 compartimentos
+tomando alternadamente de <i>args</i> las claves y valores del hash.</p>
+
+<p>(<font class="ref">mkdic</font> [<i>n</i>])
+<font class="tp">constructor</font> : crea un hash de <i>n</i> compartimentos.</p>
+
+<p>(<font class="ref">get</font> <i>hash</i> <i>clave</i>)
+<font class="tp">accessor+setter</font> : devuelve el valor del hash <i>hash</i> asociado
+a la clave por igualdad de punteros (<b>eq</b>).</p>
+
+<p>(<font class="ref">hget</font> <i>hash</i> <i>clave</i>)
+<font class="tp">accessor+setter</font> : devuelve el valor del hash <i>hash</i> asociado
+a la clave por igualdad de cadenas. Se espera que todas las claves del hash
+sean cadenas.</p>
+
+<p>(<font class="ref">fget</font> <i>eqfun</i> <i>hashfun</i> <i>hget</i> <i>clave</i>)
+<font class="tp">accessor+setter</font> : devuelve el valor del hash <i>hash</i>
+asociado a la clave. Se accede al hash con el predicado de igualdad <i>eqfun</i>
+que debe recibir dos argumentos y la funci&oacute;n <i>hashfun</i> que toma
+un elemento y un entero n, y devuelve un valor entero entre 0 y n que corresponde
+al hash del elemento.</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="control">Estructuras de control</a></h2>
+<a href="#top"><small>Arriba</small></a>
+
+<p>(<font class="ref">if</font> . <i>cuerpo</i>)
+<font class="tp">forma especial</font> : eval&uacute;a condicionalmente
+el cuerpo. El cuerpo est&aacute; dado en la forma: condici&oacute;n-1 valor-1 ...
+condici&oacute;n-n valor-n [cl&aacute;usula else]. Eval&uacute;a las condiciones y
+devuelve el primer valor para el cual la condici&oacute;n sea verdadera. Si ninguna
+condici&oacute;n es verdadera y hay cl&aacute;usula else, devuelve su valor.</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h3><a name="looping">Looping constructs</a></h3>
+<a href="#top"><small>Arriba</small></a>
+
+<p>(<font class="ref">while</font> <i>condición</i> . <i>cuerpo</i>)
+<font class="tp">forma especial</font> : eval&uacute;a el cuerpo mientras
+la condici&oacute;n eval&uacute;e a un valor verdadero.</p>
+
+<p>(<font class="ref">each</font> <i>identificador</i> <i>seq</i> . <i>cuerpo</i>)
+<font class="tp">macro</font> : bindea el <i>identificador</i> a los sucesivos elementos
+de <i>seq</i> y para cada instancia eval&uacute;a el <i>cuerpo</i>. Ej. (<b>each</b> x '(a b c) (<b>pr</b> x))</p>
+
+<p>(<font class="ref">to</font> <i>identificador</i> <i>rango</i> . <i>cuerpo</i>)
+<font class="tp">macro</font> : bindea el <i>identificador</i> a los enteros en
+el <i>rango</i> dado en la forma ([inicial] final [step]) y para cada instancia eval&uacute;a
+el <i>cuerpo</i>. Ej. (<b>to</b> i (1 10) (<b>pr</b> i))</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="funciones">Funciones</a></h2>
+<a href="#top"><small>Arriba</small></a>
+
+<p>Son funciones todos aquellos objetos destinados a ser llamados con
+argumentos.</p>
+
+<p>(<font class="ref">fun</font> <i>lista-args</i> . <i>cuerpo</i>)
+<font class="tp">forma especial</font> : devuelve una funci&oacute;n que toma
+los argumentos como est&eacute;n especificados en <i>lista-args</i>.
+Devuelve el valor de evaluar el cuerpo en un nuevo entorno en el cual
+los identificadores de <i>lista-args</i> est&aacute;n bindeados a los
+valores pasados en la llamada. Las funciones creadas con <b>fun</b> tienen
+scope l&eacute;xico (es decir, las variables libres en <i>cuerpo</i> se
+refieren al entorno en el que la funci&oacute;n fue definida).</p>
+
+<p>(<font class="ref">dyn</font> <i>lista-args</i> . <i>cuerpo</i>)
+<font class="tp">forma especial</font> : devuelve una funci&oacute;n
+din&aacute;mica. Es similar a <b>fun</b>, pero las funciones
+devueltas por <b>dyn</b> tienen scope din&aacute;mico (las variables
+libres en <i>cuerpo</i> se refieren al entorno en el que la funci&oacute;n
+es llamada).</p>
+
+<p>(<font class="ref">defun</font> <i>nombre</i> <i>lista-args</i> . <i>cuerpo</i>)
+<font class="tp">macro</font> : equivalente a (<b>def</b> <i>nombre</i> (<b>fun</b>
+<i>lista-args</i> . <i>cuerpo</i>))</p>
+
+<p>(<font class="ref">defdyn</font> <i>nombre</i> <i>lista-args</i> . <i>cuerpo</i>)
+<font class="tp">macro</font> : equivalente a (<b>def</b> <i>nombre</i> (<b>dyn</b>
+<i>lista-args</i> . <i>cuerpo</i>))</p>
+
+<p>(<font class="ref">macro</font> <i>nombre</i> <i>lista-args</i> . <i>cuerpo</i>)
+<font class="tp">macro</font> : crea una <b>fun</b> con argumentos <i>lista-args</i>
+y cuerpo <i>cuerpo</i> que ser&aacute; expandida durante la compilaci&oacute;n. Se
+espera que los macros no reciban ni devuelvan valores sino expresiones (aunque
+t&eacute;cnicamente las expresiones son valores).</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="entornos">Entorno e introspecci&oacute;n</a></h2>
+<a href="#top"><small>Arriba</small></a>
+
+<h3><a name="entorno">Entorno</a></h3>
+<p>(<font class="ref">env</font>)
+<font class="tp">funci&oacute;n</font> : devuelve el entorno actual.</p>
+
+<h3><a name="read_eval">Read / eval</a></h3>
+
+<p>(<font class="ref">read</font> [<i>puerto</i>])
+<font class="tp">funci&oacute;n</font> : lee una s-expression del puerto <i>puerto</i>. Si
+no se especifica un puerto, por defecto es <b>*stdin*</b>.</p>
+
+<p>(<font class="ref">stread</font> <i>cadena</i>)
+<font class="tp">funci&oacute;n</font> : lee una s-expression de la cadena <i>cadena</i>.</p>
+
+<p>(<font class="ref">eval</font> <i>expresi&oacute;n</i>)
+<font class="tp">funci&oacute;n</font> : devuelve el resultado de evaluar la <i>expresi&oacute;n</i>.</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="errores">Manejo de errores</a></h2>
+<a href="#top"><small>Arriba</small></a>
+
+<p>(<font class="ref">err</font> <i>excepci&oacute;n</i> [<i>valor</i>])
+<font class="tp">funci&oacute;n</font> : lanza la excepci&oacute;n <i>excepci&oacute;n</i>,
+que puede ser cualquier objeto, pero por convenci&oacute;n es un s&iacute;mbolo
+comenzado por ampersand (&amp;); con el <i>valor</i> asociado. Si no se especifica
+un <i>valor</i>, por defecto es el objeto <b>#&lt;undef&gt;</b>.</p>
+
+<p>(<font class="ref">handle</font> <i>excepciones</i> <i>handler</i> <i>thunk</i>)
+<font class="tp">funci&oacute;n</font> : llama a la funci&oacute;n <i>thunk</i>, que no debe
+tomar argumentos. Si durante la ejecuci&oacute;n de <i>thunk</i> se produce una excepci&oacute;n,
+<b>handle</b> trata de atraparla y llama a la funcion <i>handler</i> con dos argumentos:
+la excepci&oacute;n atrapada, y el valor asociado a esa excepci&oacute;n. Si
+<i>excepciones</i> es <b>#t</b>, <b>handle</b> atrapa todas las excepciones. Si
+<i>excepciones</i> eval&uacute;a a un &aacute;tomo, <b>handle</b> atrapa las
+excepciones iguales (<b>eq</b>) a ese objeto. Si <i>excepciones</i> eval&uacute;a
+a una lista, <b>handle</b> atrapa s&oacute;lo las excepciones contenidas en esa lista
+(comparadas con <b>eq</b>).</p>
+
+<p>(<font class="ref">catch</font> <i>excepciones</i> . <i>cuerpo</i>)
+<font class="tp">macro</font> : eval&uacute;a el cuerpo. Si no se producen
+excepciones, se devuelve el valor de <i>cuerpo</i>.  Si durante su evaluaci&oacute;n
+se produce una excepci&oacute;n contemplada en <i>excepciones</i>, se devuelve
+el valor lanzado junto con la excepci&oacute;n. Si se produce una excepci&oacute;n
+no contemplada, &eacute;sta y su valor asociado se vuelven a lanzar.</p>
+
+<p>(<font class="ref">try</font> <i>expresi&oacute;n</i> . <i>try-case</i>)
+<font class="tp">macro</font> : eval&uacute;a la expresi&oacute;n. Si no se producen
+excepciones, se devuelve el valor de <i>expresi&oacute;n</i>. Si durante su
+evaluaci&oacute;n se produce una excepci&oacute;n se la compara con las
+cl&aacute;usulas de <i>try-case</i> dadas en la forma: excepciones-1 valor-1 ... excepciones-n
+valor-n [cl&aacute;usula-else]. <b>try</b> devuelve el primer valor-i para el cual
+la excepci&oacute;n est&eacute; contemplada en excepciones-i. Si excepci&oacute;n no
+est&aacute; contemplada en ning&uacute;na cl&aacute;usula excepciones-i</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="output">Output</a></h2>
+<a href="#top"><small>Arriba</small></a>
+
+<p>(<font class="ref">pr</font> <i>objeto</i> [<i>puerto</i>])
+<font class="tp">funci&oacute;n</font> : imprime la representaci&oacute;n impresa
+del <i>objeto</i> en el puerto, seguido de un linefeed. Por defecto
+el valor del puerto es <b>*stdout*</b>.</p>
+
+<p>(<font class="ref">pr1</font> <i>objeto</i> [<i>puerto</i>])
+<font class="tp">funci&oacute;n</font> : imprime la representaci&oacute;n impresa
+del <i>objeto</i> en el puerto. Por defecto el valor del puerto es <b>*stdout*</b>.</p>
+
+<p>(<font class="ref">wr</font> <i>objeto</i> [<i>puerto</i>])
+<font class="tp">funci&oacute;n</font> : imprime la representaci&oacute;n
+del <i>objeto</i> en el puerto, seguido de un linefeed. Por defecto
+el valor del puerto es <b>*stdout*</b>.</p>
+
+<p>(<font class="ref">wr1</font> <i>objeto</i> [<i>puerto</i>])
+<font class="tp">funci&oacute;n</font> : imprime la representaci&oacute;n
+del <i>objeto</i> en el puerto. Por defecto el valor del puerto es <b>*stdout*</b>.</p>
+
+<p>(<font class="ref">out</font> <i>puerto</i> <i>objeto</i>)
+<font class="tp">funci&oacute;n</font> : imprime la representaci&oacute;n impresa
+del <i>objeto</i> en el puerto.</p>
+
+<p>(<font class="ref">cr</font> [<i>puerto</i>])
+<font class="tp">funci&oacute;n</font> : imprime un carriage return
+en el puerto. Por defecto el valor del puerto es <b>*stdout*</b>.</p>
+
+<p>(<font class="ref">lf</font> [<i>puerto</i>])
+<font class="tp">funci&oacute;n</font> : imprime un linefeed
+en el puerto. Por defecto el valor del puerto es <b>*stdout*</b>.</p>
+
+<p>(<font class="ref">crlf</font> [<i>puerto</i>])
+<font class="tp">funci&oacute;n</font> : imprime carriage return
+seguido de linefeed en el puerto. Por defecto el valor del puerto es
+<b>*stdout*</b>.</p>
+
+<p>(<font class="ref">prf</font> <i>formato</i> . <i>args</i>)
+<font class="tp">macro</font> : equivalente a (<b>pr1</b>
+(<b>fmt</b> <i>formato</i> . <i>args</i>)).</p>
+
+<p>(<font class="ref">wrf</font> <i>formato</i> . <i>args</i>)
+<font class="tp">macro</font> : equivalente a (<b>wr1</b>
+(<b>fmt</b> <i>formato</i> . <i>args</i>)).</p>
+
+<p>(<font class="ref">outf</font> <i>puerto</i> <i>formato</i> . <i>args</i>)
+<font class="tp">macro</font> : equivalente a (<b>out</b> <i>puerto</i>
+(<b>fmt</b> <i>formato</i> . <i>args</i>)).</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="archivos">Manejo de archivos</a></h2>
+<a href="#top"><small>Arriba</small></a>
+
+<p>(<font class="ref">load</font> <i>nombre-archivo</i>)
+<font class="tp">funci&oacute;n</font> : lee del archivo <i>nombre-archivo</i>
+y eval&uacute;a todas sus expresiones en el entorno corriente. Devuelve el
+&uacute;ltimo valor evaluado.</p>
+
+<p>(<font class="ref">import</font> <i>nombre-archivo</i>)
+<font class="tp">funci&oacute;n</font> : lee del archivo <i>nombre-archivo</i>
+y eval&uacute;a todas sus expresiones en un nuevo entorno. Devuelve dicho
+entorno.</p>
+
+<p>(<font class="ref">run</font> <i>nombre-archivo</i>)
+<font class="tp">funci&oacute;n</font> : lee del archivo <i>nombre-archivo</i>
+y eval&uacute;a todas sus expresiones en un nuevo entorno. Devuelve el
+&uacute;ltimo valor evaluado.</p>
+
+<p>(<font class="ref">use</font> <i>s&iacute;mbolo</i>)
+<font class="tp">macro</font> : equivalente a (<b>def</b> <i>s&iacute;mbolo</i> (<b>import</b>
+archivo)) siendo archivo la cadena del nombre del s&iacute;mbolo concatenada con la
+extensi&oacute;n ".fu".</p>
+
+<p>(<font class="ref">fread</font> <i>nombre-archivo</i>)
+<font class="tp">funci&oacute;n</font> : lee del archivo <i>nombre-archivo</i>
+y devuelve una lista de todas sus expresiones (no evaluadas).</p>
+
+<a href="#top"><small>Arriba</small></a>
+<h2 class="inv"><a name="finalizacion">Finalizaci&oacute;n</a></h2>
+<a href="#top"><small>Arriba</small></a>
+
+<p>(<font class="ref">exit</font> [<i>entero</i>])
+<font class="tp">funci&oacute;n</font> : termina la ejecuci&oacute;n del
+programa devolviendo el valor del <i>entero</i>. Por defecto, el <i>entero</i>
+es 0.</p>
+
+<p>(<font class="ref">die</font> [<i>mensaje</i> <i>entero</i>])
+<font class="tp">funci&oacute;n</font> : termina la ejecuci&oacute;n del
+programa imprimiendo el <i>mensaje</i> y devolviendo el valor del <i>entero</i>.
+Por defecto, el <i>entero</i> es 1.</p>
+
+<a href="#top"><small>Arriba</small></a>
+<hr noshade>
+
+</body>
+</html>

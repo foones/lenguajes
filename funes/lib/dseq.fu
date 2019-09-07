@@ -1,0 +1,107 @@
+(herald
+ --name =dseq
+ --package =funes-lib
+ --description "Dictionary, optimized for keys which are lists."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:<dseq> :mkdseq :dseq-empty :dseq-define :dseq-remove :dseq-get
+	 				 :mk-dseq-cursor :dseq-cursor-next :dseq-cursor-value))
+
+;; Diccionario optimizado para trabajar con claves
+;; que son listas de elementos.
+
+;; Actualmente implementado con un trie.
+
+(import dict #t)
+
+(defstruct (<dseq> =print-function (fun (d) "<dseq>"))
+ node
+ eqfun
+ hashfun) 
+
+(defun mkdseq (--eqfun eq --hashfun hash-eq)
+ (make-<dseq>
+	 --node (mknode eqfun hashfun)
+	 --eqfun eqfun
+	 --hashfun hashfun))
+
+(defun dseq-empty (d)
+ (node-empty (<dseq>-node d)))
+
+(defun dseq-define (d k v)
+ (node-set (<dseq>-eqfun d) (<dseq>-hashfun d) (<dseq>-node d) k v))
+
+(defun dseq-remove (d k)
+ ;; lo borro solamente cuando estaba
+ (when (node-get (<dseq>-node d) k)
+	 (node-del (<dseq>-node d) k)))
+
+(defun dseq-get (d k --else #u)
+ (le r (node-get (<dseq>-node d) k)
+	(if r
+		(car r)
+		else)))
+
+;; un nodo es una lista:
+;; si el valor no esta definido
+;;    ( dict )
+;; si el valor esta definido
+;;    ( dict valor )
+;;
+;; el dict es un diccionario de elementos en nodos
+
+(defun mknode (eqfun hashfun)
+ (cons (mkdict --eqfun eqfun --hashfun hashfun) '()))
+
+;; un nodo esta vacio
+;; si el diccionario esta vacio
+;; y el nodo no tiene guardado un valor
+(defun node-empty (n)
+ (and (dict-empty (car n))
+	    (not (cdr n))))
+
+(defun node-set (eqfun hashfun node k v)
+	(if (null k)
+		(set (cdr node) (list v))
+		(let ((d (car node))
+					(k1 (car k)))
+			(def prox (dict-get d k1 #f))
+			(when (eq prox #f)
+				(set prox (mknode eqfun hashfun))
+				(dict-define d k1 prox))
+			(node-set eqfun hashfun prox (cdr k) v))))
+
+(defun node-get (node k)
+	(if (null k)
+		(cdr node)
+		(le prox (dict-get (car node) (car k) #f)
+				(if prox
+					(node-get prox (cdr k))
+					#f))))
+
+(defun node-del (node k)
+  ;; precondicion: debe estar!
+	(if (null k)
+		(set (cdr node) '())
+		(le prox (dict-get (car node) (car k) #f)
+				(assert prox)
+				(node-del prox (cdr k))
+				;; puedo borrar el nodo "prox"
+				;; cuando el nodo es vacio
+				(when (node-empty prox)
+					(dict-remove (car node) (car k))))))
+
+;;;
+
+(defun mk-dseq-cursor (d)
+	(<dseq>-node d))
+
+(defun dseq-cursor-next (n k1)
+ (le prox (dict-get (car n) k1 #f)
+		(if prox
+			prox
+			#f)))
+
+(defun dseq-cursor-value (n)
+	(cdr n))
+

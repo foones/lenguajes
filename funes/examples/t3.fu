@@ -1,0 +1,24 @@
+(import loop forever)
+(import libprocess #t)
+
+(defmodule Key
+ (def Esc 0)
+ (def Up 1)
+ (def Down 2)
+ (def Left 3)
+ (def Right 4))
+
+(defprocess p ()
+	 (pr "$Key")
+	 (forever
+		 (case (read)
+			 Key.Left (pr "L")
+			 Key.Right (pr "R")
+			 Key.Up (pr "U")
+			 (ord \q) (quit)
+			 )
+		 ;(clear)
+		 (pr "$Key")))
+
+(spawn p)
+

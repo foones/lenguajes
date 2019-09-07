@@ -1,0 +1,155 @@
+(assert
+	(catch '&assertion-error
+				 (assert #f)
+				 #f))
+
+(assert
+ (eq (let 1 1) 1))
+
+(assert
+ (eq (let (a) a) #u))
+
+(assert (not (let ())))
+
+(assert
+ (eq (let ((a 1))
+			(let ((a 2))
+			 (let ((a 3))
+				a)))
+	3))
+
+(let ((a 2) (b 1) (c 3))
+	(let ((a b) (b a) (d 4))
+	 (let ((e 5))
+		(assert (eq a 1))
+		(assert (eq b 2))
+		(assert (eq c 3))
+		(assert (eq d 4))
+		(assert (eq e 5)))))
+
+(let ((l (nlet aux ((x 5))
+							 (if (eq x 0)
+								 '()
+								 (cons x (aux (- x 1)))))))
+	(assert (eq 5 (len l)))
+	(each i (list 0 1 2 3 4)
+				(assert (eq (- 5 i) (nth l i)))))
+
+(let ((y 3))
+	(defun f (x) (* x y))
+	(assert (eq (let ((y 0)) (f 2)) 6)))
+
+(let ((y 0))
+	(defdyn f (x) (* x y))
+	(assert (eq (let ((y 3)) (f 2)) 6)))
+
+(let ((lista '(1))
+			(el-primero #u))
+	(defset el-primero (x y) (set (x 0) y))
+	(set (el-primero lista) 'xx)
+	(assert (eq (lista 0) 'xx)))
+
+(deftype <int-o-char> `(union ,<int> ,<char>))
+(assert (<int-o-char> 10))
+(assert (<int-o-char> \b))
+(assert (not (<int-o-char> #f)))
+(assert (not (<int-o-char> "hola")))
+
+(let ((x 2))
+	(def m (module (def x (* x 2))))
+	(assert (eq x 2))
+	(assert (eq m.x 4)))
+
+(assert (eq (run fib 10) 55))
+
+(defstruct persona
+ nombre
+ apellido)
+
+(def p (make-persona --nombre 'Pablo --apellido 'Barenbaum))
+(assert (eq p.nombre 'Pablo))
+(assert (eq p.apellido 'Barenbaum))
+
+(def (even? x) (eq (% x 2) 0))
+
+(assert
+ (eq
+	(choose x '(1 2 3 4)
+	 (if (not (even? x))
+		(fail))
+	  x) 2))
+
+(tag outer
+		 (tag inner
+					(retfrom outer)
+					(assert #f))
+		 (assert #f))
+
+(let ((x 1))
+	(tag outer
+			 (tag inner
+						(retfrom inner)
+						(assert #f))
+			 (set x 10))
+	(assert (eq x 10)))
+
+(assert
+	(eq (tag cosa (return 10) 20) 10))
+
+(assert
+	(eq (tag cosa (retfrom cosa 10) 20) 10)) 
+
+(assert
+	(eq (tag outer (tag cosa (retfrom cosa 10) 20) 30) 30))
+
+(assert
+	(eq (tag outer (tag cosa (retfrom outer 10) 20) 30) 10))
+	
+(assert
+ (eq
+	(case 1
+		1  'uno
+		10 'diez)
+	'uno))
+
+(assert
+ (eq
+	(case 10
+		1  'uno
+		10 'diez)
+	'diez))
+
+(assert
+ (eq
+	(case 3
+		1  'uno
+		10 'diez)
+ #f))
+
+(assert
+ (eq
+	(case 1
+		1  'uno
+		10 'diez
+	  'otro)
+ 'uno))
+
+(assert
+ (eq
+	(case 10
+		1  'uno
+		10 'diez
+	  'otro)
+ 'diez))
+
+(assert
+ (eq
+	(case 3
+		1  'uno
+		10 'diez
+	  'otro)
+ 'otro))
+
+(assert (eq (case 1) #f))
+(assert (eq (case 1 'cosa) 'cosa))
+

@@ -1,0 +1,13 @@
+(def funes::y 37)
+
+(defpackage =pedo --uses (=funes))
+(in-package =pedo)
+
+
+(defstruct ss
+ + y :z)
+
+(def a (make-ss "va" "vb" "vc"))
+
+(set a.+ 10)
+

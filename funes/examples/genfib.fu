@@ -1,0 +1,17 @@
+(import generator #t)
+
+(defgen fibo ()
+ (def a 0)
+ (def b 1)
+ (def tmp #f)
+ (yield a)
+ (yield b)
+ (while #t
+	(set tmp (+ a b))
+	(set a b)
+	(set b tmp)
+	(yield a)))
+
+(def f (fibo))
+(to i (0 20)
+		(pr (f)))

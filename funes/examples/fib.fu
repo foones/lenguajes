@@ -1,0 +1,7 @@
+(def n (first (args)))
+
+(nlet fib ((n n) (a 0) (b 1))
+	(if (eq n 0)
+		a
+		(fib (1- n) b (+ a b))))
+

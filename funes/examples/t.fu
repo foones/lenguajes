@@ -1,0 +1,17 @@
+(import multimeth #t)
+
+(defgeneric a)
+
+(defmeth a ((x <int>) (y <int>))
+ (+ x y))
+
+(defmeth a ((x <str>) (y <str>))
+ (cat x y))
+
+(defmeth a ((x <float>) (y <float>))
+ (f+ x y))
+
+(pr (a 3 4))
+(pr (a "ho" "ch"))
+(pr (a 100.0 12.0))
+

@@ -1,0 +1,35 @@
+
+(herald
+ --name =special
+ --package =funes-lib
+ --description "Macros for special variables."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:slet :sle :defvar))
+
+(import namespace :value)
+
+;(set (compile-value 'defvar) (compile-value 'def))
+(macro defvar (x --v #u)
+ `(do
+		(def ,x (vec ,v))
+		(symbol-macro ,x '(vref (,value ',x) 0))))
+
+(macro slet (defs . body)
+ (le olds (map (fun (x) (gensym)) defs)
+	(let ((save-old
+					(map (fun (o d) `(,o ,(first d))) olds defs))
+				(set-new
+					(map (fun (d) `(set ,(first d) ,(second d))) defs))
+				(restore-old
+					(map (fun (o d) `(set ,(first d) ,o)) olds defs)))
+	 (with-gensyms (r)
+		`(let ,save-old
+			,@set-new
+			(le ,r (do ,@body)
+					,@restore-old
+					,r))))))
+
+(macro sle (var val . body)
+ `(,slet ((,var ,val)) ,@body))
+

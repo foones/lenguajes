@@ -1,0 +1,42 @@
+; vim:ft=funes
+
+(import binder
+  bindings)
+
+(unless (member (os-type) '(=os-windows))
+ (throw '&sistema-no-soportado "El sistema no soporta <conio.h>"))
+
+ ;; Windows
+ (bindings _conio
+  (=include "<conio2.h>")
+  (=link "conio")
+
+  (=c-function cls "clrscr" () void)
+  (=c-function bg-color "textbackground" (int) void)
+  (=c-function fg-color "textcolor" (int) void)
+  (=c-function cputsxy "cputsxy" (int int string) void)
+  (=c-function getch "getch" () int)
+  (=c-function getche "getche" () int)
+  (=c-function kbhit "kbhit" () int)
+  (=c-function set-cursor-type "_setcursortype" (int) void)
+
+  (=c-constant Black "BLACK" int)
+  (=c-constant Blue "BLUE" int)
+  (=c-constant Green "GREEN" int)
+  (=c-constant Cyan "CYAN" int)
+  (=c-constant Red "RED" int)
+  (=c-constant Magenta "MAGENTA" int)
+  (=c-constant Brown "BROWN" int)
+  (=c-constant LightGray "LIGHTGRAY" int)
+  (=c-constant LightBlue "LIGHTBLUE" int)
+  (=c-constant LightGreen "LIGHTGREEN" int)
+  (=c-constant LightCyan "LIGHTCYAN" int)
+  (=c-constant LightRed "LIGHTRED" int)
+  (=c-constant LightMagenta "LIGHTMAGENTA" int)
+  (=c-constant Yellow "YELLOW" int)
+  (=c-constant White "WHITE" int)
+
+  (=c-constant NoCursor "_NOCURSOR" int)
+  (=c-constant NormalCursor "_NORMALCURSOR" int)
+  (=c-constant SolidCursor "_SOLIDCURSOR" int))
+

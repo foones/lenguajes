@@ -1,0 +1,8 @@
+(import generator #t)
+
+(defgen g1 ()
+ (each i '(1 2 3 4)
+	(yield i)))
+
+(each-gen i (g1)
+ (pr i))

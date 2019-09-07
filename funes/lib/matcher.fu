@@ -1,0 +1,46 @@
+
+(herald
+ --name =matcher
+ --package =funes-lib
+ --description "Algebraic data types and pattern matching."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:defdata :mdefun))
+
+(import foones #t)
+(import unif #t)
+(import util :last/val/res)
+
+(macro defdata (name . constructors)
+ (list* 'do 
+	`(defstruct ,name)
+	(map
+		 (fun (constructor)
+				`(do
+					 (defstruct
+						(,(car constructor)
+							=print-function
+							(fun (x)
+							 "($(do ',(car constructor))$@""(
+							    map
+	                  (fun (k) " $k")
+										(vec->list (struct-data x))
+	            ))")
+	            =extends ,name)
+						 ,@(cdr constructor))
+					 (def ,(sym (car constructor) "?") ,(car constructor))
+					 (def ,(car constructor) ,(sym "make-" (car constructor)))
+					 (del (dir) ,(sym "make-" (car constructor)))))
+		 constructors)))
+
+(macro mdefun (name types . cases)
+ (le tmpnames (map (fun (x) (gensym)) types)
+	 `(,defmethod ,name ,(map list types tmpnames)
+		 (block
+			,@(bind (list #?l #?val #?res) (last/val/res cases)
+					(map
+						(fun (v r)
+								 (list 'bind (cons 'list v) (cons 'list tmpnames)
+											 (list 'return r)))
+						val res))))))
+

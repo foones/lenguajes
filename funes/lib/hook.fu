@@ -1,0 +1,72 @@
+
+(herald
+ --name =hook
+ --package =funes-lib
+ --description "Support for function hooks and decorators."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:hook-around :hook-before :hook-after
+	         :result-decorator :around-decorator))
+
+(import util :dbind)
+(import reader :reader-macro)
+(import info #t)
+
+(reader-macro \@ (decorator definition)
+ `(hook-around ,definition ,decorator))
+
+|doc "Wraps the function named [name] with the [wrapper],
+as if (set [name] ([wrapper] [name])). Notice that the
+name is evaluated once (it should not be a bare symbol)."
+(macro hook-around (name wrapper)
+ (with-gensyms (n)
+	`(le ,n ',name
+     (envset ,n (,wrapper (cdr (envget ,n))))
+		 ,n)))
+
+|doc "Before the function [name] is invoked, the [body]
+is executed with [parms] bound to the arguments passed
+to the function."
+(macro hook-before (name parms . body)
+ (with-gensyms (old p)
+	`(hook-around ,name
+	  (fun (,old)
+		 (fun ,p
+			(,dbind ,parms ,p
+				 ,@body)
+		  (call ,old ,p))))))
+
+|doc "After the function [name] is invoked, the [body]
+is executed with [parms] bound to the arguments passed
+to the function."
+(macro hook-after (name parms . body)
+ (with-gensyms (old r p)
+	`(hook-around ,name
+	  (fun (,old)
+		 (fun ,p
+			(,dbind ,parms ,p
+			 (le ,r (call ,old ,p)
+				 ,@body
+				 ,r)))))))
+
+|doc "Decorates a function [f] so that it becomes a decorator.
+[f] takes the result of the function it decorates and returns
+the final result."
+(defun result-decorator (f)
+	; f pasa a decorar el resultado de g
+	(fun (g)
+	  (fun parms
+			(f (call g parms)))))
+
+|doc "Returns a decorator which calls [before] before executing
+the decorated function, and [after] after executing it. The
+arguments passed to the function are also passed to [before] and
+[after]."
+(defun around-decorator (before after)
+ (fun (g)
+	(fun parms
+	   (call before parms)
+		 (le r (call g parms)
+	   	 (call after parms)
+			 r))))
+

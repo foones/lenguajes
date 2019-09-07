@@ -1,0 +1,45 @@
+
+(herald
+ --name =array
+ --package =funes-lib
+ --description "Multidimensional array implementation."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:mkarray :mkarray-init :aref :array-dimension :array-rank))
+
+(defstruct array
+ dimension
+ multiplicadores
+ values)
+
+(defun mkarray dims
+ (call mkarray-init #f dims))
+
+(defun mkarray-init (element . dims)
+	(make-array
+		--dimension dims
+		--multiplicadores (le d (copy dims)
+												(if (singlep d)
+													(set d '())
+													(set (ntl d (- (len d) 2)) '()))
+												(cons 1 d))
+		--values (mkvec (call * dims) element)))
+
+(defun array-rank (a)
+ (len (array-dimension a)))
+
+(defun calc-pos (a pos)
+	(call + (map * (array-multiplicadores a) pos)))
+
+(defun en-rango (a pos)
+ (all #t (map < pos (array-dimension a))))
+
+(defun aref (a . pos)
+  (assert (en-rango a pos))
+	(vref (array-values a) (calc-pos a pos)))
+
+(defset aref (a . pos/v)
+ (assert (en-rango a pos/v))
+ (le v (car (last pos/v))
+	(set (vref (array-values a) (calc-pos a pos/v)) v)))
+

@@ -1,0 +1,23 @@
+(import libprocess #t)
+
+(defprocess Ping ()
+ (while #t
+		(receive 'hola (sender)
+				 (pr "Ping:: el pong #$sender.k me habla")
+				 (! sender 'response))
+		(receive 'chau ()
+				 (pr "alguien me saluda."))))
+
+(defprocess Pong (k)
+  (set self.k k)
+	(! ping 'hola self)
+	(while #t
+		 (receive 'response ()
+			 (pr "Pong #$(do self.k):: el ping me responde!!!")
+			 (! ping 'chau))))
+
+(do
+	(def ping (spawn Ping))
+	(to i (0 4)
+			(spawn Pong i)))
+

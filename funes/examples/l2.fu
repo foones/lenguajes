@@ -1,0 +1,8 @@
+(import spel :defspel)
+
+(defspel lay (|Reference(x))
+ (set x 10))
+
+(def l (cons 1 2))
+(lay (car l))
+(pr l)

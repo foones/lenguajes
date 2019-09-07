@@ -1,0 +1,17 @@
+(import comptime :smacrole)
+(import reflect :with-compile-env)
+
+(def ka #t)
+
+;(smacrole x '(pr "chau")
+		(eval-when =compile
+				(set ka (compile-environment)))
+;)
+(def x 30)
+
+(smacrole x '(pr "hola")
+		x
+		x
+		(with-compile-env ka
+				(pr x))
+		x)

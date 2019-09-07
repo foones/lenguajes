@@ -1,0 +1,163 @@
+
+(herald
+ --name =spel
+ --package =funes-lib
+ --description "Spels allow redefining how its parameters behave. Includes the implementation of copy & restore, and lazy parameters."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:defspel :def-param-type)
+ --export-names (:Normal :Reference :Lazy))
+
+;; usage:
+
+;; (defspel NAME (ARG1 ... ARGN) . BODY)
+;;
+;; Where each ARGi is either a symbol
+;; or a qualified symbol (actually an
+;; instance of <spell-parameter>).
+;;
+;; Examples:
+;;
+;; (defspel f (x y)
+;;   (set x (+ x y)))
+;;
+;; => modifies x locally.
+;;
+;; (defspel f (|Reference(x) y)
+;;   (set x (+ x y)))
+;;
+;; => copy & restore the value of x notice
+;; that it could be a generalized variable
+;; (any settable form)
+;;
+;; (defspel if2 (cond |Lazy(x) |Lazy(y))
+;;   (if cond x y))
+;;
+;; => works just as "if"; x and y
+;; are evaluated only when necessary.
+;;
+
+(import reflect :with-env :with-compile-env)
+(import reader :reader-macro)
+(import comptime :smacrole)
+(import util :prog1)
+
+(def $cenv '())
+(defun cenv-push () (push $cenv (compile-environment)))
+(defun cenv-pop () (pop $cenv))
+(defun caller-cenv () (car $cenv))
+
+(defun body-spel (parms body genv gvar)
+ (le parms (map make-parameter parms)
+	 `(list 'do
+		  '(eval-when =compile (,cenv-push))
+		  (list 'prog1
+				(list
+						 (list 'fun '(,genv)
+									 ,(nlet loop ((ps parms) (vs gvar))
+													(if
+														(null ps)
+															(list 'cons ''do (list 'quote body))
+														(consp ps)
+															(list wrap
+																		(car ps)
+																		(list 'quote genv)
+																		(car vs)
+																		(loop (cdr ps) (cdr vs)))
+														=else=
+															(list wrap
+																		(car ps)
+																		(list 'quote genv)
+																		(car vs)
+																		(list 'cons ''do (list 'quote body)))
+														)))
+						 (list environment))
+		 '(eval-when =compile (,cenv-pop))))))
+
+(macro defspel (nombre parms . body)
+ (with-gensyms (genv)
+	(le gvar (map (fun (x) (gensym)) parms)
+		`(macro ,nombre ,gvar
+			 ,(body-spel parms body genv gvar)))))
+
+(defstruct <spel-parameter>
+ function
+ arguments)
+
+(defun make-parameter (p)
+ (if (<sym> p)
+	 (Normal p)
+	 (do
+		(assert (<spel-parameter> p))
+		(call (<spel-parameter>-function p)
+					(<spel-parameter>-arguments p)))))
+
+(macro def-param-type (type-name params wrapper-params . wrapper)
+ (with-gensyms (gall)
+	 `(do
+		 ;; funcion
+		 (defun ,type-name ,params
+			(fun ,wrapper-params ,@wrapper))
+		 ;; reader-macro
+		 (reader-macro ',type-name (,gall)
+				 (make-<spel-parameter>
+					,type-name
+					,gall)))))
+
+(defun wrap (x . r) (call x r))
+
+;;; Parameter types
+
+;; a parameter type is defined in the following way:
+;;
+;; (def-param-type TYPE-NAME
+;;		    (PARAMETERS ...)
+;;        (VALUE . BODY)
+;;
+;;   ...)
+;;
+;; - TYPE-NAME is the name of the new qualifier.
+;; - PARAMETERS are the qualified names. In the simplest
+;;   case there is only one parameter (the symbol).
+;; - CALLER-ENV will be bound to the environment that
+;;   called the spel.
+;; - VALUE will be bound to the value passed to the spel.
+;; - BODY will be bound to the body of the spel.
+;;
+
+(def-param-type Normal (symbol) (caller-env value . body)
+	`(le ,symbol
+			 		(with-env ,caller-env
+						 ,value)
+			 ,@body))
+
+(def-param-type Reference (symbol) (caller-env value . body)
+  (with-gensyms (result dir-var)
+		 `(le ,symbol
+			 			(with-env ,caller-env
+			  			,value)
+					(le ,result (do ,@body)
+							(set ((car ,caller-env) ',dir-var) (second (environment)))
+			 				(with-env ,caller-env
+									(set ,value (,dir-var ',symbol)))
+							(del (car ,caller-env) ',dir-var)
+							,result))))
+
+(reader-macro \& (x) |Reference(x))
+
+(defstruct <lazy-value> promise)
+
+(def-param-type Lazy (symbol) (caller-env value . body)
+ (with-gensyms (lazy-value)
+	 `(le ,lazy-value
+				(,make-<lazy-value> (fun ()
+														  (with-compile-env (,caller-cenv)
+															 (with-env ,caller-env
+																	 ,value))))
+			(smacrole ,symbol
+			             '(if (,<lazy-value> ,lazy-value)
+										    (set ,lazy-value
+														 ((,<lazy-value>-promise ,lazy-value)))
+												,lazy-value)
+					,@body))))
+

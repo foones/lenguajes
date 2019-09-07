@@ -1,0 +1,49 @@
+; vim:ft=funes
+
+(import binder
+  bindings)
+ 
+(bindings socket
+
+ (=include "<sys/types.h>" "<sys/socket.h>" "<netdb.h>")
+
+ (=code "RES *get_addr(char *node) {
+  		struct addrinfo *res = NEW(struct addrinfo);
+		if (getaddrinfo(node, NULL, NULL, &res) != 0)
+			return NIL;
+		else
+			return FU_PTR(res->ai_addr);
+	}")
+
+
+ (=c-type sockaddr "struct sockaddr *" ptr)
+ (=c-constant sizeof-sockaddr "sizeof(struct sockaddr)" int)
+
+ (=c-function socket "socket" (int int int) int)
+ (=c-function bind "bind" (int sockaddr int) int)
+ (=c-function get-addr "get_addr" (string) object)
+
+#|
+ ;; domains
+ (=c-constant PfUnix "PF_UNIX" int)
+ (=c-constant PfLocal "PF_LOCAL" int)
+ (=c-constant PfInet "PF_INET" int)
+
+ ;; types
+ (=c-constant SockStream "SOCK_STREAM" int)
+ (=c-constant SockDgram "SOCK_DGRAM" int)
+ (=c-constant SockSeqpacket "SOCK_SEQPACKET" int)
+
+ ;; errors
+ (=c-constant Eprotonosupport "EPROTONOSUPPORT" int)
+ (=c-constant Eafnosupport "EAFNOSUPPORT" int)
+ (=c-constant Enfile "ENFILE" int)
+ (=c-constant Emfile "EMFILE" int)
+ (=c-constant Eacces "EACCESS" int)
+ (=c-constant Enobufs "ENOBUFS" int)
+ (=c-constant Enomem "ENOMEM" int)
+ (=c-constant Einval "EINVAL" int)
+|#
+ 
+ )
+ 

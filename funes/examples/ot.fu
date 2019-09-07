@@ -1,0 +1,11 @@
+(import reflect :with-envs)
+
+(defun definirele (e c)
+  (def hache 100)
+	(set ((car e) 'anterior) (dir))
+	(with-envs e c
+			(def l (anterior 'hache))))
+
+(def l 50)
+(definirele (environment) (compile-environment))
+(pr l)

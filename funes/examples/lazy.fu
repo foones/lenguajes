@@ -1,0 +1,38 @@
+(import spel :defspel)
+
+;; lazy streams
+
+(defstruct (<lazy-cons>
+						=print-function (fun (s) "#<lazy-cons>"))
+ data)
+
+(defspel lcons (|Lazy(x) |Lazy(y))
+ (make-<lazy-cons>
+	(fun (m)
+	 (if (eq m =car)
+		 x
+		 y))))
+
+(defun lcar (x)
+ ((<lazy-cons>-data x) =car))
+
+(defun lcdr (x)
+ ((<lazy-cons>-data x) =cdr))
+
+(defun lmap (f x)
+	(if (null x)
+		'()
+		(lcons (f (lcar x))
+					 (lmap f (lcdr x)))))
+
+(defun lnth (sss n)
+	(if (= n 0)
+		(lcar sss)
+		(lnth (lcdr sss) (1- n))))
+
+(def Nat (lcons 0 (lmap 1+ Nat)))
+(def Nat2 (lmap (fun (x) (* x 2)) Nat))
+
+(pr (lnth Nat2 9))
+
+

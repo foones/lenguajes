@@ -1,0 +1,13 @@
+(import foones #t)
+
+(defgeneric-macro devolver)
+
+(defmethod devolver (((eq-to 'imprimir) m) a)
+ `(pr ',a))
+
+(defmethod devolver (((eq-to 'enlistar) m) x)
+ `(pr (list ',x)))
+
+(devolver imprimir papa)
+(devolver enlistar pepe)
+

@@ -1,0 +1,46 @@
+(import foones #t)
+(import functional #t)
+
+;; save old int functions that we're going to scratch with generics
+(def _int_+ +)
+(def _int_- -)
+(def _int_* *)
+
+(defmethod operate (i f (<int> x) (<int> y))
+ (i x y))
+
+(defmethod operate (i f (<int> x) (<float> y))
+ (f (int->float x) y))
+
+(defmethod operate (i f (<float> x) (<int> y))
+ (f x (int->float y)))
+
+(defmethod operate (i f (<float> x) (<float> y))
+ (f x y))
+
+(def + (curry operate _int_+ f+))
+(def - (curry operate _int_- f-))
+(def * (curry operate _int_* f*))
+
+(defmethod Map (f (<list> l))
+ (map f l))
+
+(defstruct <arbol>
+ izq
+ raiz
+ der)
+
+(def bin make-<arbol>)
+
+(defmethod Map (f (<arbol> a))
+ (bin
+	(Map f (<arbol>-izq a))
+	(f (<arbol>-raiz a))
+	(Map f (<arbol>-der a))))
+
+(pr (Map (curry _int_+ 3)
+		 (bin (bin '() 2 '())
+			    3
+					(bin '() 4 '()))))
+
+

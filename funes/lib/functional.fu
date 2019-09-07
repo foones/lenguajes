@@ -1,0 +1,19 @@
+
+(herald
+ --name =functional
+ --package =funes-lib
+ --description "Functional programming tools."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:curry :compose :foldr))
+
+(defun curry (f . xs)
+ (fun rest (call f (cat xs rest))))
+
+(defun compose (f g)
+ (fun rest (f (call g rest))))
+
+(defun foldr (f z l)
+ (if (null l)
+	z
+	(f (car l) (foldr f z (cdr l)))))

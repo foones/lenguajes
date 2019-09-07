@@ -1,0 +1,33 @@
+
+(herald
+ --name =info
+ --package =funes-lib
+ --description "Support for documentation in code."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:get-doc :apropos)
+ --export-names (:doc))
+
+(import dict #t)
+(import reader #t)
+
+(def @documentation (mkdict))
+
+(reader-macro 'doc (info form)
+ `(,dict-define ,(do @documentation) ,form ,info))
+
+(defun get-doc (obj)
+ (dict-get @documentation obj #f))
+
+(defun apropos (obj)
+  (lf)
+	(le t (type-of obj)
+			(pr "Type: $t")
+			(when (eq t <struct>)
+				(pr "Instance of: $(struct-type obj)")))
+	(le d (get-doc obj)
+			(when d
+				(pr d)))
+  #t)
+
+

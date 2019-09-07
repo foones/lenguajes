@@ -1,0 +1,56 @@
+
+(herald
+ --name =sset
+ --package =funes-lib
+ --description "Simple set implementation."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:<sset> :mksset :sset-empty :sset-size :sset-elements
+					 :sset-add :sset-remove))
+
+(defstruct (<sset>
+						=print-function (fun (s)
+																 "{$@" "(sset-elements s)}"))
+ elements
+ eqfun
+ hashfun)
+
+(def *rehash-threshold* 10)
+
+(defun sset-size (s)
+ (dbsize (<sset>-elements s)))
+
+(defun sset-elements (s)
+ (keys (<sset>-elements s)))
+
+(defun mksset (--initial-size 3 --eqfun eq --hashfun hash-eq)
+ (make-<sset> --elements (mkdb initial-size)
+							--eqfun eqfun --hashfun hashfun))
+
+(defun sset-empty (s)
+ (= (dbsize (<sset>-elements s)) 0))
+
+(defun sset-add (s x)
+	(let ((ef (<sset>-eqfun s))
+				(hf (<sset>-hashfun s))
+				(es (<sset>-elements s)))
+		(set (fget ef hf es x) #t)
+		(when (and
+						(> (dbsize es) *rehash-threshold*)
+						(> (quotient (dbsize es) (len es)) 1))
+			(frehash ef hf es (1+ (* 2 (len es)))))
+		s))
+
+(defun sset-remove (s x)
+	(let ((ef (<sset>-eqfun s))
+				(hf (<sset>-hashfun s))
+				(es (<sset>-elements s)))
+		(fdel ef hf es x)
+
+		;; rehash
+		(when (and
+						(> (dbsize es) *rehash-threshold*)
+						(> (quotient (len es) (dbsize es)) 1))
+			(frehash ef hf es (quotient (1- (len es)) 2)))
+		s))
+

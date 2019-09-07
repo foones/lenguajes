@@ -1,0 +1,11 @@
+(defun f (text sem-1 sem-2)
+	(while #t
+		 (sem-p sem-1)
+		 (pr text)
+		 (sem-v sem-2)))
+
+(do
+  (sem-init 'x 1)
+  (sem-init 'y 0)
+	(spawn-closure f '(a x y))
+	(spawn-closure f '(b y x)))

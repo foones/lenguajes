@@ -1,0 +1,15 @@
+; vim:ft=funes
+
+(import binder
+  bindings)
+ 
+(bindings _std
+
+  (=c-constant Null "NULL" ptr)
+
+  (=c-variable stdin "Std_Input" object)
+  (=c-variable stdout "Std_Output" object)
+  (=c-variable stderr "Std_Error" object)
+  
+)
+

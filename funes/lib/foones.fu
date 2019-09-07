@@ -1,0 +1,146 @@
+
+(herald
+ --name =foones
+ --package =funes-lib
+ --description "A better multimethod implementation."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:defgeneric :defmethod :compute-applicable-methods
+	         :eq-to :defgeneric-macro))
+
+(import dseq #t)
+(import dict #t)
+(import generator #t)
+(import memo :defmemoized)
+(import comptime :macrify)
+
+(defstruct <generic>
+	methods)
+
+(defun make-generic ()
+	(make-<generic>
+	 --methods (mkdseq)))
+
+(def $all-generics (mkdict))
+
+(defun add-method (generic types function)
+	(dseq-define (<generic>-methods generic) types function))
+
+(defun fixed-types-lookup-method (generic types)
+	(dseq-get (<generic>-methods generic) types #f))
+
+(defmemoized eq-to (x)
+  (type `(satisfies ,(fun (y) (eq x y)))))
+
+(defgen stype-supers-preorder (s)
+	;; preorder of the stype hierarchy tree
+	; most specific: the stype itself
+	(yield s)
+	; least specific: preorder of the super-stypes
+	; respecting left-to-right the order of declaration
+	; in the structure definition
+	(nlet loop ((ss (stype-super s)))
+		(when (not (null ss))
+		(each-gen superstype* (stype-supers-preorder (car ss))
+			(yield superstype*))
+		(loop (cdr ss)))))
+
+(defgen object-types (o)
+  ; the most specific type is the object itself
+  (yield (eq-to o))
+	(le t (type-of o)
+			; when the object is a struct,
+			; return the preorder of its stypes
+			(when (eq t <struct>)
+				(each-gen s (stype-supers-preorder (struct-type o))
+					(yield s)))
+			(yield t)
+
+			; special cases we want to consider
+			(case t
+				<int> (yield <number>)
+				<float> (yield <number>)
+				<null> (do (yield <list>)
+								   (yield <seq>))
+				<cons> (do (yield <list>)
+								   (yield <seq>))
+				<vec> (yield <seq>)
+				<str> (do (yield <vec>)
+								  (yield <seq>))
+				<closure> (yield <function>)
+				<proc> (yield <function>))
+
+			; least specific: <any>
+			(yield <any>)))
+
+#|
+(defgen compute-applicable-methods (generic objects)
+	(nlet loop ((tipos-de-prueba '()) (objects objects))
+	 (if (null objects)
+		(le r (fixed-types-lookup-method generic (rev tipos-de-prueba))
+			(when r
+			 (yield r)))
+		(do
+			(each-gen t (object-types (car objects))
+				(loop (cons t tipos-de-prueba) (cdr objects)))))))
+|#
+
+(defgen compute-applicable-methods (generic objects)
+	(nlet loop ((cursor (mk-dseq-cursor (<generic>-methods generic)))
+							(objects objects))
+	 (if (null objects)
+		 (when cursor
+			 (yield (car (dseq-cursor-value cursor))))
+		(do
+			(each-gen t (object-types (car objects))
+			  (le prox (dseq-cursor-next cursor t)
+				 (when prox
+					(loop prox (cdr objects)))))))))
+
+(defun most-specific-applicable-method (generic objects)
+ ((compute-applicable-methods generic objects)))
+
+;;
+
+(macro defgeneric (generic-name)
+ (with-gensyms (parms evaluated-parms m1 generic)
+ `(do
+	 (,dict-define ,$all-generics ',generic-name (,make-generic))
+	 (def ,generic-name
+		(le ,generic (,dict-get ,$all-generics ',generic-name)
+			(fun ,parms
+				 (le ,m1 (,most-specific-applicable-method ,generic ,parms)
+					 (if (not ,m1)
+						 	(throw '&generic-no-aplicable
+								(cat
+									"la funcion generica $(do ',generic-name) "
+									"no admite los tipos dados"))
+							 (call ,m1 ,parms)))))))))
+
+(defun tiene-tipo? (x)
+	(and (consp x) (not (eq (car x) #argset))))
+
+(defun valor (x)
+	(if (tiene-tipo? x)
+		(second x)
+		x))
+
+(defun tipo (x)
+	(if (tiene-tipo? x)
+		(first x)
+		<any>))
+
+(macro defmethod (generic-name parms . body)
+ 	`(do 
+		 (if (not (,dict-get ,$all-generics ',generic-name #f))
+			 (defgeneric ,generic-name))
+		 (,add-method (,dict-get ,$all-generics ',generic-name #f)
+									(list ,@(map tipo parms))
+									(fun ,(map valor parms)
+											 ,@body))))
+
+(macro defgeneric-macro (generic-name)
+ `(do
+	 (defgeneric ,generic-name)
+	 (,macrify ',generic-name ,generic-name)))
+

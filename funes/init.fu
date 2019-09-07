@@ -1,0 +1,580 @@
+;;;;
+;;;; init.fu
+;;;;
+;;;; Funes initialization.
+;;;;
+;;;; For Funes to work correctly, there should be an environment
+;;;; variable FUNES_PATH pointing to this directory.
+;;;;
+;;;; bash:
+;;;;   export FUNES_PATH=<funes-path>
+;;;;
+;;;; Windows:
+;;;;   set FUNES_PATH=<funes-path>
+;;;;
+
+(funes::set (funes::package) (funes::find-package =funes))
+
+(def @pack-used-packages '())
+(def @pack-using-packages '())
+(def @pack-exports
+ '(
+;;; Builtines
+	 ;; special forms
+	 quote if fun do def set dyn while or thunk call set/cont
+	 call/cont spawn-closure _sem_init _sem_p _sem_v _sem_val
+	 _sem_set
+
+	 ;; tipos
+	 <sym> <vec> <special-form> <proc> <closure> <port> <reader>
+	 <stype> <struct> <type> <float> <cont> <package> <int>
+	 <char> <cons> <null> <t> <eof> <undef> <macro> <str> <hash>
+	 <any> <number> <list> <seq> <function>
+   ;; especificadores de tipos 
+	 union intersection complement satisfies enum container product
+	 ;; funciones
+	 cons acons car cdr + - * expt = < <= > >= % remainder quotient
+	 f+ f- f* fexpt f< f> f/ float-ceil float-floor int->float
+	 fenv environment set-macro-flag
+	 dir envdef envset envget read set-reader-macro set-reader-funapply
+	 eval stread eq input dynl null not err throw handle map mapc
+	 maplist mapl mapt list list* vec mkvec consp ord chr
+	 package mkpackage find-package package-name package-symbols
+	 symbol-name symbol-package gensym sym key mksym get-symbol intern
+	 unintern shadow
+	 str fmt num->str cat join len rev xrev elt copy index slice
+	 any all not-any not-all mklist nth ntl member assoc last
+	 range iota vref get hget fget del rehash hdel hrehash fdel
+	 frehash hash-eq db mkdb data db->vec keys dbsize list->vec
+	 list->str vec->list mkstype stype-accessor stype-constructor
+	 stype-slots stype-super mkstruct struct-type struct-data
+	 struct-copy slot-value slot-value-set make load args
+	 open close exists fread fwrite flines sys getenv die exit out pr pr1 wr wr1
+	 cr lf crlf rand choice typep type type-of check os-type setter inlined
+	 compile-value compile-environment compile-dir
+	 ;; macros
+	 macro symbol-macro and backquote unquote unquote-splicing try to defstruct
+;;; Definidas aca
+	 ;; constantes
+	 $funes-base-dir $funes-shared-lib-extension $funes-imp-path $funes-gc-path
+	 $funes-search-path
+
+	 ;; variables
+	 $features
+
+	 ;; funciones
+	 first second third fourth singlep fail return 1+ 1-
+	 outf prf wrf list= sym-to-string in-package has-option
+	 pack-get
+
+	 ;; macro
+	 assert with-gensyms catch let le nlet module definer
+	 defun defdyn defthunk deftype defmodule defset
+	 each when unless case fcase retfrom block tag choose
+	 push pop ++ -- use-env import run use-package defpackage
+	 herald export
+))
+
+;;
+
+(def $funes-base-dir (getenv "FUNES_PATH"))
+
+(if
+ (eq (os-type) =os-windows)
+	 (def $funes-shared-lib-extension "dll")
+ (eq (os-type) =os-generic)
+	 (def $funes-shared-lib-extension "so"))
+
+;;;
+
+(def $funes-imp-path "$(do $funes-base-dir)/fu9")
+
+(def $funes-gc-path "$(do $funes-base-dir)/gc")
+
+(def $funes-search-path
+ (list
+		"."
+		 "$(do $funes-base-dir)/lib"
+		 "$(do $funes-base-dir)/libs"
+		 "$(do $funes-base-dir)/mods"))
+
+;;;
+
+(def (_def_name x) (if (consp x) (car x) x))
+(def (_def_value x) (if (consp x) (car (cdr x)) #u))
+
+(def first car)
+(def (second x) (nth x 1))
+(def (third x) (nth x 2))
+(def (fourth x) (nth x 3))
+
+(def (singlep x)
+ (and (consp x) (null (cdr x))))
+
+(macro assert (expr)
+ `(if (not ,expr)
+		(throw '&assertion-error "assert -- assertion failed: $(do ',expr)")))
+
+;;; Utilidades para macros
+
+(macro with-gensyms (names . body)
+ `(let ,(map (fun (n) (list n '(gensym))) names)
+	 ,@body))
+
+(def _tmp #u)
+
+;;; Excepciones
+
+(macro catch (excepcion . body)
+ `(handle ,excepcion
+	  (fun (e v) v)
+		(fun () ,@body)))
+
+;;; Generales
+
+(macro let (defs . body)
+ `((fun ,(map _def_name defs) ,@body)
+	 ,@(map _def_value defs)))
+
+(macro le (n d . body)
+ `(let ((,n ,d)) ,@body))
+
+(macro nlet (name defs . body)
+ `(let (,name)
+		(set ,name (fun ,(map _def_name defs) ,@body))
+		(,name ,@(map _def_value defs))))
+
+(macro module body
+ `(let ()
+		,@body
+		(dir)))
+
+;;; Definiciones
+
+(def (_define name constructor args)
+ `(do
+	 (def ,name (,constructor ,@args))
+	 ',name))
+
+(macro definer (definer-name constructor)
+ (with-gensyms (g-name g-args)
+	 `(macro ,definer-name (,g-name . ,g-args)
+			(_define ,g-name ,constructor ,g-args))))
+
+(definer defun 'fun)
+(definer defdyn 'dyn)
+(definer defthunk 'thunk)
+(definer deftype type)
+(definer defmodule 'module)
+
+(macro defset (f args . body)
+ `(set (setter ,f)
+	 (fun ,args ,@body)))
+
+;;; Control constructs
+
+(macro each (var seq . body)
+ `(mapc (fun (,var) ,@body) ,seq))
+
+(macro when (cond . body)
+ `(if ,cond
+	 (do ,@body)))
+
+(macro unless (cond . body)
+ `(when (not ,cond) ,@body))
+
+(macro case (valor . cases)
+	`(fcase ,eq ,valor ,@cases))
+
+(macro fcase (f valor . cases)
+ (with-gensyms (func elem)
+	 `(let ((,func ,f) (,elem ,valor))
+		 ,(cons
+				'if
+				(xrev
+				 (nlet aux ((c cases) (acc '()))
+					 (if
+						(null c) acc
+						(singlep c) (cons (first c) acc)
+						(aux (ntl c 2)
+								 (list* (second c) (list func elem (first c)) acc)))))))))
+
+;;; Choose
+
+(def (fail --x #u) (throw =failure= x))
+
+(def (return . args)
+	(call throw =success= args))
+
+(macro retfrom (name . rest)
+ `(throw ',name ,@rest))
+
+(macro block body
+ `(catch =success=
+	  ,@body))
+
+(macro tag (name . body)
+ `(catch (list ',name =success=)
+	  ,@body))
+
+;; (choose var choices . body)
+;;
+;; Bindea la variable var al primer valor en
+;; choices tal que la ejecucion del cuerpo (body)
+;; es exitosa.
+;;
+;; La busqueda se hace por backtracking.
+;; La ejecucion del cuerpo es exitosa si en ningun momento
+;; se invoca la funcion "fail".
+;;
+;; Ej.
+;; (choose x '(1 2 3 4 5)
+;;   (choose y '(6 7 8 9 10)
+;;     (if (not (eq (* x x) y)) (fail))
+;;     (list x y)))
+;;
+;; Elige un "x" y un "y" tales que (eq (* x x) y)
+;; y devuelve (list x y); en este caso (3 9).
+(macro choose (var choices . body)
+ (with-gensyms (gchoices gaux)
+	`(block
+			(nlet ,gaux ((,gchoices ,choices))
+				 (if (null ,gchoices)
+						(fail)
+						(do
+							(catch =failure=
+								 (return
+									 (le ,var (car ,gchoices)
+											 ,@body)))
+							(,gaux (cdr ,gchoices))))))))
+
+;;; Listas
+
+(macro push (var val)
+ `(set ,var (cons ,val ,var)))
+
+(macro pop (var)
+ (with-gensyms (v x)
+	 `(le ,v ,var
+			(le ,x (car ,v)
+				(set ,var (cdr ,v))
+				,x))))
+
+;;; Features
+
+(def $features '())
+
+(when (eq (os-type) =os-windows)
+ (push $features =win32))
+
+; hardcodeados e implementation-dependent
+(push $features =threads)
+(push $features =compiler)
+
+;;; Aritmeticas
+
+(def (1+ x) (+ x 1))
+
+(def (1- x) (- x 1))
+
+(macro ++ (var)
+ `(set ,var (+ ,var 1)))
+
+(macro -- (var)
+ `(set ,var (- ,var 1)))
+
+;;; I/O
+
+(def (outf port format . args)
+ (out port (call fmt format args)))
+
+(def (prf format . args)
+ (pr1 (call fmt format args)))
+
+(def (wrf format . args)
+ (wr1 (call fmt format args)))
+
+;;; Jerarquias
+
+;; Las jerarquias son listas de simbolos armadas
+;; de una manera particular.
+;;
+;; Notacion:
+;;
+;;   jerarquia ::= simbolo
+;;               | jerarquia.simbolo
+;;
+;; Semantica:
+;;
+;; (F simbolo)           => simbolo
+;; (F jerarquia.simbolo) => `(,(F jerarquia) ',simbolo)
+;;
+(def (jerarquia-aplanar j)
+ (nlet aux ((j j) (jacc '()))
+	 (if (consp j)
+		 (aux (car j) (cons (second (second j)) jacc))
+		 (cons j jacc))))
+
+(def (jerarquia-archivo j)
+ "$@"/"(jerarquia-aplanar j)")
+
+(macro defjerarquia (j valor)
+ (with-gensyms (genv gentorno)
+	 (le js (jerarquia-aplanar j)
+			 (cat
+				 `(le ,gentorno (dir))
+				 (nlet aux ((js js) (cmds '()))
+							 (if (singlep js)
+								 (xrev (cons `(set (get ,gentorno ',(car js)) ,valor) cmds))
+								 (aux
+									 (cdr js)
+									 (cons
+										 `(le ,genv (get ,gentorno ',(car js))
+													(if (null ,genv)
+														(set ,gentorno
+															 (cdr (set (get ,gentorno ',(car js)) (db))))
+														(set ,gentorno (cdr ,genv))))
+										 cmds))))))))
+;;; Listas
+
+(def (list= l1 l2)
+ (if
+	(not (consp l1))
+	  (eq l1 l2)
+	(or (not (consp l2)) (not (eq (car l1) (car l2))))
+    #f
+	=else=
+	  (list= (cdr l1) (cdr l2))))
+
+;;; Modulos
+
+(def (_archivo j --path "." --extension "fu")
+ "$(do path)/$(jerarquia-archivo j).$extension")
+
+(def (_import_nombre modulo nombre)
+ `(def ,nombre (get ,modulo ',nombre)))
+
+
+;;
+;; (use-env modulo . nombres)
+;;
+;; Trae los nombres del modulo.
+;;
+;; Posibles nombres:
+;; - lista de simbolos (sin quotear)
+;;   Ej.
+;;     (defmodule modulo
+;;       (def a 1) (def b 2) (def c 3))
+;;     (use-env modulo b c)
+;;
+;; - =all-symbols
+;;   Trae todos los simbolos.
+;;   Ej.
+;;     (use-env modulo =all-symbols)
+;;
+;; - #t o =exported-symbols
+;;   Trae todos los simbolos exportados mediante
+;;   la clausula (@env --exports ...)
+;;   Si no se utilizo dicha clausula, se traen
+;;   todos los simbolos (equivale a =all-symbols).
+;;   Ej.
+;;     (defmodule m
+;;       (@env --exports (b c))	
+;;       (def a 1) (def b 2) (def c 3))
+;;     (use-env modulo #t)
+(macro use-env (modulo . nombres)
+	(with-gensyms (m1 m2 k symb paquete lista)
+		(le lista-nombres
+		 		(if
+						(and (singlep nombres) (eq (car nombres) =all-symbols))
+						`(keys ,m2)
+						(and (singlep nombres)
+								 (member (car nombres) '(#t =exported-symbols)))
+						`(try
+							 (,m2 '@env-exports)
+							 '&key-error
+							 (keys ,m2))
+						`',nombres)
+				`(let ((,m1 (dir)) (,m2 ,modulo))
+					 (let ((,paquete
+									 (try (,m2 '@env-package)
+												'&key-error (package)))
+								 (,lista ,lista-nombres))
+							 (each ,k ,lista
+										 (le ,symb (get-symbol ,k ,paquete)
+												 (set (,m1 ,symb)
+															(,m2 ,symb))))
+							 ,lista)))))
+
+
+(def $packages-in-use '())
+(def $loaded-files (mkdb))
+(macro import (modulo . nombres)
+ `(do
+		(push $packages-in-use (package))
+		(defjerarquia ,modulo
+			 (choose path $funes-search-path
+						(try
+							(le $filename (_archivo ',modulo --path path)
+							  (def _tmp (hget $loaded-files $filename))
+								(if _tmp
+								 (car (cons (cdr _tmp)
+														(del (dir) '_tmp)))
+								 (do
+									 (load $filename)
+									 (car (cons
+													(cdr (set (hget $loaded-files $filename) (dir)))
+													(del (dir) '_tmp))))))
+							&system-error
+								(try
+									(dynl (str (_archivo ',modulo --path path
+												 --extension $funes-shared-lib-extension)))
+								&system-error
+									(fail)))))
+		 (set _tmp (use-env ,modulo ,@nombres))
+		 (set (package) (pop $packages-in-use))
+		 _tmp))
+
+(macro run (nombre . args)
+ `(let ()
+		(load (_archivo ',nombre) ,@args)))
+
+;;; auxiliares simbolos
+
+(defun sym-to-string (x)
+ (if
+	(<str> x) x
+	(<sym> x) (symbol-name x)))
+
+;;; Packages
+
+(defun shadow (s --p (package))
+ (unintern s p)
+ (intern s p))
+
+(defun pack-get (p s)
+ (le x (get (car (last (environment))) (get-symbol s p))
+	(assert (consp x))
+	(cdr x)))
+
+(defset pack-get (p s v)
+	(set (get (car (last (environment))) (get-symbol s p)) v))
+
+(defun _use-package (source-pack dest-pack names)
+	(le dicc (package-symbols source-pack)
+			(le nombres
+					(try
+						(if
+							(and (singlep names) (eq (car names) =all-symbols))
+								(throw 'todos)
+							(or (and (singlep names)
+											 (member (car names) '(=exported-symbols #t)))
+							    (null names))
+								(le e (hget dicc "@pack-exports")
+										(when (null e) (throw 'todos))
+										(try (eval (cdr e))
+												 '&unbound-variable (throw 'todos)))
+							names)
+						'todos
+							(keys dicc))
+
+					(le simbolos
+								(map (fun (n) (cdr (hget dicc (sym-to-string n)))) nombres)
+						(assert (all #t simbolos))
+						(each n simbolos
+									(shadow n dest-pack))
+						simbolos)
+				(push (pack-get dest-pack =@pack-used-packages) source-pack)
+				(push (pack-get source-pack =@pack-using-packages) dest-pack))))
+
+(macro use-package (pack-name . names)
+ (with-gensyms (p)
+	 `(le ,p (find-package ,pack-name)
+		 (when (not (member ,p (pack-get (package) =@pack-used-packages)))
+				(,_use-package  ,p (package) '(,@names))
+				#t))))
+
+(defun in-package (name)
+	 (le r (find-package name)
+		 (if r
+			(set (package) r)
+			(throw '&package-error "in-package -- el paquete no existe"))))
+
+(defun _defpackage (package-name --use '())
+	(le p (mkpackage package-name)
+			(set (pack-get p =@pack-used-packages) '())
+			(set (pack-get p =@pack-using-packages) '())
+			(set (pack-get p =@pack-exports) '())
+			(each pack use
+				(_use-package (find-package pack) p '(=exported-symbols)))
+			#t))
+
+(macro defpackage rest
+ (call _defpackage rest))
+
+(defun _export (pack names)
+ (le dicc (package-symbols pack)
+	(each n names
+		(push (pack-get pack =@pack-exports) n)
+		(each dest-pack (pack-get pack =@pack-using-packages)
+			(shadow (get-symbol n) dest-pack)))))
+
+(macro export names
+	;`(eval-when =compile (,_export (package) ',names) ',names)
+	(_export (package) names)
+)
+
+;;;
+
+(def (_env
+		 	 --name #u 
+			 --description #u
+			 --author #u
+			 --version #u
+			 --package (package-name (package))
+			 --export '()
+			 --export-names '()
+			 --use '())
+ (le p (find-package package)
+	 (let ((env-export-names (map (fun (x) (get-symbol x p)) export))
+				 (pack-export-names
+					(map (fun (x) (key (symbol-name x)))
+					 (cat export export-names))))
+
+	 `(do
+			(def @env-name ,name)
+			(def @env-description ,description)
+			(def @env-author ,author)
+			(def @env-version ,version)
+			(def @env-exports ',env-export-names)
+			(def @env-package ,p)
+			;; packages
+			(in-package ,package)
+			;; export
+			(,_export ,p ',pack-export-names)
+			;; use-package
+			,@(mapc (fun (pack)
+									(list '_use-package
+												(list 'find-package pack)	   ; source
+												p														 ; dest
+												''(=exported-symbols)))
+						 use)))))
+
+(macro herald rest
+ (call _env rest))
+
+(defun has-option (opt o)
+	(or (eq opt o) (and (consp opt) (member o opt))))
+
+
+;;; Packages
+
+(defpackage =funes-lib --use (=funes))
+
+;;; User package
+
+(defpackage =fu-user --use (=funes =funes-lib))
+(in-package =fu-user)
+
+(symbol-macro bye '(exit))
+

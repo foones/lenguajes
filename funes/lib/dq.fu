@@ -1,0 +1,89 @@
+
+(herald
+ --name =dq
+ --package =funes-lib
+ --description "A double queue implementation."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:<dq> :mkdq :dq-empty
+	 					:dq-push-front :dq-push-back :dq-pop-front :dq-pop-back
+						:dq-first :dq-last :dq->list :dq-append :dq-length))
+
+(defstruct (<dq> =print-function (fun (dq) "[$@" "(dq->list dq)]"))
+ cant-elems
+ fst
+ lst)
+
+(defun mkdq ()
+ (make-<dq> 0 '() '()))
+
+(defun dq-empty (dq)
+ (null (<dq>-fst dq)))
+
+(defun dq-push-front (q x)
+ (++ (<dq>-cant-elems q))
+ (if (null (<dq>-fst q))
+	(set (<dq>-fst q)
+			 (set (<dq>-lst q)
+						(cons x (cons '() '()))))
+	(le nuevo-nodo (cons x (cons '() (<dq>-fst q)))
+		(set (car (cdr (<dq>-fst q))) nuevo-nodo)
+		(set (<dq>-fst q) nuevo-nodo)))
+ q)
+
+(defun dq-push-back (q x)
+ (++ (<dq>-cant-elems q))
+ (if (null (<dq>-fst q))
+	(set (<dq>-fst q)
+			 (set (<dq>-lst q)
+						(cons x (cons '() '()))))
+	(le nuevo-nodo (cons x (cons (<dq>-lst q) '()))
+		(set (cdr (cdr (<dq>-lst q))) nuevo-nodo)
+		(set (<dq>-lst q) nuevo-nodo)))
+ q)
+
+(defun dq-pop-front (q)
+ (-- (<dq>-cant-elems q))
+ (le r (car (<dq>-fst q))
+	(set (<dq>-fst q) (cdr (cdr (<dq>-fst q))))
+	(if (null (<dq>-fst q))
+	 (set (<dq>-lst q) '())
+	 (set (car (cdr (<dq>-fst q))) '()))
+	r))
+
+(defun dq-pop-back (q)
+ (-- (<dq>-cant-elems q))
+ (le r (car (<dq>-lst q))
+	(set (<dq>-lst q) (car (cdr (<dq>-lst q))))
+	(if (null (<dq>-lst q))
+	 (set (<dq>-fst q) '())
+	 (set (cdr (cdr (<dq>-lst q))) '()))
+	r))
+
+(defun dq-first (q)
+ (car (<dq>-fst q)))
+
+(defun dq-last (q)
+ (car (<dq>-lst q)))
+
+(defun dq->list (q)
+ (nlet loop ((lst (<dq>-fst q)) (acc '()))
+	(if (null lst)
+	 (xrev acc)
+	 (loop (cdr (cdr lst))
+				 (cons (car lst) acc)))))
+
+(defun dq-append (q1 q2)
+  (set (<dq>-cant-elems q1)
+	     (+ (<dq>-cant-elems q1) (<dq>-cant-elems q2)))
+	; los conecto "<->"
+	(if (dq-empty q1)
+	  (set (<dq>-fst q1) (<dq>-fst q2))
+	  (set (cdr (cdr (<dq>-lst q1))) (<dq>-fst q2)))
+	(if (dq-empty q2)
+	  (set (<dq>-lst q2) (<dq>-lst q1))
+	  (set (car (cdr (<dq>-fst q2))) (<dq>-lst q1)))
+  (set (<dq>-lst q1) (<dq>-lst q2))
+	q1)
+
+(def dq-length <dq>-cant-elems)

@@ -1,0 +1,29 @@
+
+(herald
+ --name =memo
+ --package =funes-lib
+ --description "Memoization."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:memoize :defmemoized))
+
+(import dseq #t)
+(import info #t)
+
+|doc
+"Returns a function g that caches f's results
+so that
+  (and (eqfun X1 Y1) ... (eqfun Xn Yn))
+	=>
+	  (eq (g X1 ... Xn) (g Y1 ... Yn))"
+(defun memoize (f --eqfun eq --hashfun hash-eq)
+	(le cache (mkdseq eqfun hashfun)
+		(fun parms
+			 (or (dseq-get cache parms #f)
+			     (car (dseq-define cache parms (call f parms)))))))
+
+|doc
+"Defines a memoized function."
+(macro defmemoized (name . rest)
+  `(def ,name
+		(,memoize (fun ,@rest))))

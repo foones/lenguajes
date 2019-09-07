@@ -1,0 +1,16 @@
+(import dseq #t)
+
+(def d (mkdseq))
+(dseq-define d '(a) 10)
+(dseq-define d '(a b) 20)
+(dseq-define d '(a c) 30)
+(dseq-define d '(a d e) 40)
+
+(pr (mk-dseq-cursor d))
+(pr (dseq-cursor-value (mk-dseq-cursor d)))
+(def d-a (dseq-cursor-next (mk-dseq-cursor d) 'a))
+(pr (dseq-cursor-value d-a))
+(def d-b (dseq-cursor-next (mk-dseq-cursor d) 'b))
+(pr d-b)
+;(pr (dseq-cursor-value d-ab))
+

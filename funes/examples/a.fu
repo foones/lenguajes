@@ -1,0 +1,7 @@
+;(use-package =funes-lib)
+(import loop #t)
+
+(pr funes-lib::forever)
+(pr funes-lib::@pack-exports)
+(pr forever)
+

@@ -1,0 +1,50 @@
+
+(herald
+ --name =comptime
+ --package =funes-lib
+ --description "Compile time macros."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:compile-when :eval-when :compilet :smacrolet :smacrole
+	 			   :macroexpand1 :macrify))
+
+;;; Compile-time macros
+
+(macro compile-when (cond . then) 
+ (when (eval cond) `(do ,@then)))
+
+(macro eval-when (situation . rest)
+ (le form `(do ,@rest)
+   (when (has-option situation =compile)
+		 (eval form))
+	 (if (has-option situation =execute)
+		form
+    #t)))
+
+;; crea un nuevo entorno de compilacion
+(macro compilet body
+ (with-gensyms (r)
+	`(do
+		 (,eval-when =compile
+			 (push (compile-environment) (mkdb 3)))
+		 (le ,r (do ,@body)
+			    (eval-when =compile
+						(pop (compile-environment)))
+					,r))))
+
+(macro smacrolet (ss/vs . body)
+ `(,compilet
+	  ,@(map (fun (s/v) (cons 'symbol-macro s/v)) ss/vs)
+		,@body))
+
+(macro smacrole (s v . body)
+ `(,smacrolet ((,s ,v)) ,@body))
+
+(macro macroexpand1 (form)
+ (if (and (consp form) (<macro> (compile-value (car form))))
+	 `(call ,(car form) ',(cdr form))
+	 form))
+
+(defun macrify (name func)
+ (set-macro-flag func)
+ (set (compile-value name) func))

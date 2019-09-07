@@ -1,0 +1,38 @@
+
+(herald
+ --name =libsort
+ --package =funes-lib
+ --description "Sort utilities."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:sort :xsort :compare-by))
+
+;; muy oscuro pero no consea nada
+(defun mergesort (lista long cmp)
+ (nlet aux ((lista lista) (long long))
+			 (if
+				 (<= long 1) lista
+				 (do
+					 (def l (quotient long 2))
+					 (def s (ntl lista (1- l)))
+					 (def l2 (cdr s))
+					 (set (cdr s) '())
+					 (nlet merge ((l1 (aux lista l))
+												(l2 (aux l2 (- long l)) '())
+												(macc '()))
+								 (if
+									 (null l1) (le r (xrev macc) (set (cdr macc) l2) r)
+									 (null l2) (le r (xrev macc) (set (cdr macc) l1) r)
+									 (cmp (car l1) (car l2))
+									   (merge (cdr l1) l2 (do (set (cdr l1) macc) l1))
+									 (merge l1 (cdr l2) (do (set (cdr l2) macc) l2))))))))
+						 
+(defun xsort (l --cmp <)
+ (mergesort l (len l) cmp))
+
+(defun sort (l --cmp <)
+ (mergesort (copy l) (len l) cmp))
+
+(defun compare-by (k --pred <)
+ (fun (x y) (pred (k x) (k y))))
+

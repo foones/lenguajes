@@ -1,0 +1,19 @@
+
+(herald
+ --name =call-cc
+ --package =funes-lib
+ --description "Implementation of call/cc in Funes."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:call/cc :let/cc))
+
+(macro call/cc (f)
+ (with-gensyms (k v)
+	 `(call/cont
+			(fun (,k)
+			  (set/cont ,k
+					 (,f (fun ,v
+								(set/cont ,k (car ,v)))))))))
+
+(macro let/cc (k . body)
+ `(,call/cc (fun (,k) ,@body)))

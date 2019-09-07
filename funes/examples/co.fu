@@ -1,0 +1,16 @@
+(import hook #t)
+
+(defun duplicador (f)
+ (fun parms
+	(* 2 (call f parms))))
+
+(defun triplicador (f)
+ (fun parms
+	(* 3 (call f parms))))
+
+#@duplicador
+#@triplicador
+(defun f (x y)
+  (+ x y))
+
+(pr (f 1 0))

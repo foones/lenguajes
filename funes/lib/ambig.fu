@@ -1,0 +1,38 @@
+
+(herald
+ --name =ambig
+ --package =funes-lib
+ --description "McCarthy's amb operator, taken from Paul Graham's On Lisp."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:amb :do-amb :pass :$amb-paths))
+
+(import call-cc #t)
+(import util #t)
+;(import special #t)
+
+(def $amb-paths '())
+
+(defun amb (op)
+	(if (null op)
+		(pass)
+		(let/cc cont
+			(push $amb-paths
+				(fun () (cont (amb (cdr op)))))
+			(car op))))
+
+(def pass #f)
+
+(macro do-amb op
+ (with-gensyms (f)
+	 (le opciones-hechas-thunk
+		     (map (fun (c) `(fun () ,c)) op)
+		 `(le ,f (,amb (list ,@opciones-hechas-thunk))
+			  (,f)))))
+
+(let/cc cont
+ (setfun pass ()
+	 (if (null $amb-paths)
+		 (cont '@)
+		 ((pop $amb-paths)))))
+

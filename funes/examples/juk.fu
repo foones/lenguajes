@@ -1,0 +1,33 @@
+(import hook #t)
+(import functional #t)
+(import spel #t)
+
+#@result-decorator
+(defun duplicador (r)
+ (* r 2))
+
+(defun n-uplicador (n)
+ (result-decorator (fun (r) (* r n))))
+
+#@(n-uplicador 3)
+#@(n-uplicador 2)
+(defun s (x y)
+ (+ x y))
+
+(pr (s 1 0))
+
+;;
+
+#@(around-decorator
+	  _(pr "invoco la funcion enesimo")
+		_(pr "termino de invocarla"))
+(defun enesimo (l n)
+ (if (eq n 0)
+	(car l)
+	(enesimo (cdr l) (1- n))))
+
+(set cdr ((around-decorator _(pr "invoco la funcion CDR") #t)
+					cdr))
+
+(enesimo '(1 2 3 4) 2)
+

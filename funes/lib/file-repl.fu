@@ -1,0 +1,52 @@
+(import loop :forever)
+(import reflect :with-env)
+(import io #t)
+
+(assert (eq (os-type) =os-windows))
+
+(def top-env (environment))
+(def $form #u)
+(def _ #u)
+(def __ #u)
+(def ___ #u)
+
+(defun sys1 (x)
+ (pr x)
+ (sys x))
+
+(defun top-eval-file->string (leer)
+ (try
+	(do
+		(mapl
+			(fun (f)
+					 (set $form (car f))
+					 (with-env top-env
+										 (set ___ __)
+										 (set __ _)
+										 (set _ (eval $form))))
+			(le r (fread leer)
+					(when (exists leer)
+						(sys1 "del $leer"))
+					r))
+		(pr "exito")
+		"ok\n$(fmt "%S" _)")
+	(do
+		(when (exists leer)
+			(sys1 "del $leer"))
+		(pr "fallo")
+		"error\nExcepcion no cachada: $(do funes::_exc)\n$(do funes::_errstr)")))
+
+(let ((leer (first (args)))
+			(escribir (second (args)))
+			(temporal (third (args))))
+
+  (pr "LEER:     `$leer'")
+  (pr "ESCRIBIR: `$escribir'")
+  (pr "TEMPORAL: `$temporal'")
+	(pr "")
+	(forever
+		(when (exists leer)
+				;(pr "$(package-name (package))> $(do $form)")
+			  (fwrite temporal (top-eval-file->string leer))
+				(sys1 "copy $temporal $escribir > nul"))))
+

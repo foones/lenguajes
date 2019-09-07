@@ -1,0 +1,63 @@
+
+(herald
+ --name =libprocess
+ --package =funes-lib
+ --description "Lightweight processes functionality."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:process :defprocess :spawn :! :receive-case :receive))
+
+(import q)
+(import util
+	:last/val/res)
+(import sem #t)
+
+;; captures "self"!
+(macro process (parms . body)
+ (with-gensyms (proc)
+	 `(le ,proc (mkdb 5)
+			(set (,proc 'func) (fun (self ,@parms) ,@body))
+			,proc)))
+
+(definer defprocess process)
+
+(defun spawn (proc . parms)
+ (le p (copy proc)
+	 (set p.messages (q.mkq))
+	 (set p.exclu (mksem 1))
+	 (spawn-closure p.func (cons p parms))
+	 p))
+
+(defun ! (p . rest)
+ (sem-acquire p.exclu)
+ (q.enq p.messages rest)
+ (sem-release p.exclu))
+
+(macro receive-case cases
+ (with-gensyms (msg)
+		 (le lvr (last/val/res cases)
+			 `(unless (,q.emptyq self.messages)
+					(le ,msg (,q.deq self.messages)
+							(call
+								(case (car ,msg)
+									,@(call cat
+													(map
+														(fun (val rest)
+																 (list (list 'quote (car val))
+																			 (list 'fun (cdr val)
+																							rest)))
+														(second lvr)
+														(third lvr))))
+								(cdr ,msg)))))))
+
+(macro receive (msg parms . body)
+ (with-gensyms (el-msg)
+	 `(do
+			(,sem-acquire self.exclu)
+			(if (and (not (,q.emptyq self.messages))
+								 (eq (car (,q.qfirst self.messages)) ,msg))
+				(le ,el-msg (cdr (,q.deq self.messages))
+						(,sem-release self.exclu)
+						(call (fun ,parms ,@body) ,el-msg)))
+				(,sem-release self.exclu))))
+

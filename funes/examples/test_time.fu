@@ -1,0 +1,10 @@
+(import time)
+
+(def primera #t)
+(while #t
+ (if (< (% (time.clock) time.ClocksPerSec) (quotient time.ClocksPerSec 2))
+	 (when primera
+		 (pr (time.fmtime "%d/%m/%Y %H:%M:%S" (time.localtime (time.time))))
+		 (set primera #f))
+	 (when (not primera)
+		 (set primera #t))))

@@ -1,0 +1,36 @@
+
+(herald
+ --name =reader
+ --package =funes-lib
+ --description "Reader macros."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:reader-macro))
+
+(import comptime :compile-when)
+
+(macro reader-macro (name parms . body)
+ (with-gensyms (x stream)
+	 `(set-reader-macro ,name
+			(fun (,x ,stream)
+					,@(map (fun (p)
+											(list 'def p (list 'read stream)))
+								 parms)
+					,@body))))
+
+(reader-macro \+ (feature action)
+	`(,compile-when
+		 (member (key (quote ,feature)) $features)
+		 action))
+
+(reader-macro \- (feature action)
+	`(,compile-when
+		 (not (member (key (quote ,feature)) $features))
+		 action))
+
+(reader-macro \_ (expr)
+ `(fun _ ,expr))
+
+(reader-macro \: (var expr)
+ `(fun (,var) ,expr))
+

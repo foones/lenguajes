@@ -1,0 +1,184 @@
+
+(herald
+ --name =prolog
+ --package =funes-lib
+ --description "Prolog implementation."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:<< :?? :with-?? :pass)
+ --export-names (:and :or :not))
+
+;; sintaxis
+;;
+;; EXPR   = <simbolo>
+;;        | #?<variable>
+;;        | ( <simbolo> EXPR1 ... EXPRn )
+;;        | ( and EXPR1 ... EXPRn )
+;;        | ( or EXPR1 ... EXPRn )
+;;        | ( not EXPR )
+;;
+;; Reglas:
+;;
+;; (<< EXPR EXPR1 ... EXPRn)
+;; i.e. "EXPR1 ... EXPRn se satisfacen => EXPR se satisface"
+;;
+;; (?? EXPR . body)
+;; trata de satisfacer EXPR
+;; para cada posible "satisfaccion", eval'ua body
+;; con las variables ligadas a las que satisficieron
+;; el objetivo. (Que claro, no?)
+;;
+;; Ej.
+;;
+;; (?? (abuelo nenuco #?x)
+;;    (pr1 "El abuelo de Nenuco es ")
+;;    (pr1 x))
+;;
+
+(import dict #t)
+(import q #t)
+(import ambig #t)
+(import unif #t)
+
+;; Regla = (Expr, Expr) 
+(def mkregla cons)
+(def regla-cabeza car)
+(def regla-cuerpo cdr)
+
+;; ConjReglas
+;; conjunto de reglas
+;; optimizado para indexar por el "car"
+;;
+;; se representa con:
+;; ( diccionario . cola )
+;;
+;; diccionario :: Var -> Cola Expr
+;; cola :: Cola Expr
+;;
+;; invariante:
+;;   las colas en los significados de "diccionario"
+;;   son disjuntas y son subsecuencias de "cola".
+
+(defun mkconjreglas ()
+ (cons (mkdict) (mkq)))
+
+(defun conjreglas-agregar (estruc r)
+ (when (consp (regla-cabeza r))
+		; actualizo el diccionario
+		; dos casos:
+		;  - esta definido (lo agrego a la cola)
+		;  - no esta definido (creo la cola)
+		(let ((diccionario (car estruc))
+          (clave (car (regla-cabeza r))))
+		(le cola-individual (dict-get diccionario clave (mkq))
+		   (dict-define diccionario clave (enq cola-individual r)))))
+ (set (cdr estruc) (enq (cdr estruc) r)))
+
+(defun conjreglas-todas (estruc)
+ (q->list (cdr estruc)))
+
+(defun conjreglas-por-clave (estruc clave)
+ (le r (dict-get (car estruc) clave #f)
+	(and r (q->list r))))
+
+;; reglas-aplicables :: ConjReglas -> Expr -> [Regla]
+;;
+;; filtra las reglas que pueden ayudarme a satisfacer un goal
+;; -> indexo por el "car" -- siempre que sea un cons
+(defun reglas-aplicables (conjreglas goal)
+  (if (consp goal)
+    (conjreglas-por-clave conjreglas (car goal))
+		(conjreglas-todas conjreglas)))
+
+;(defun reglas-aplicables (conjreglas goal) (conjreglas-todas conjreglas))
+
+;; Binding = [(Var, Expr)]
+
+;; probar-simple :: ConjRegla -> Expr -> Binding -> Maybe Binding
+;;   NO modifica el binding pasado
+;;   Esta es la funcion en la que la propiedad no es obvia.
+;;
+(defun probar-simple (reglas-conocidas goal bindings)
+	(le regla (amb (reglas-aplicables reglas-conocidas goal))
+		(def regla2 (fresh regla))
+		(def new-bindings (copy-binding bindings))
+		(le resultado (bindw new-bindings goal (regla-cabeza regla2))
+			(if resultado
+				; si encontre un match con la cabeza,
+				; trato de satisfacer el cuerpo
+				(tratar reglas-conocidas (regla-cuerpo regla2) resultado)
+				(pass)))))
+
+;; probar-and :: ConjRegla -> [Expr] -> Binding -> Maybe Binding
+(defun probar-and (reglas-conocidas goals bindings)
+ (if (null goals)
+	 bindings
+	 (le resultado (tratar reglas-conocidas (car goals) bindings)
+		 (if resultado
+				(probar-and reglas-conocidas (cdr goals) resultado)
+				(pass)))))
+
+;; probar-or :: ConjRegla -> [Expr] -> Binding -> Maybe Binding
+(defun probar-or (reglas-conocidas goals bindings)
+  (le g (amb goals)
+	  (tratar reglas-conocidas g bindings)))
+
+;; probar-not :: ConjRegla -> Expr -> Binding -> Maybe Binding
+;;
+(defun probar-not (reglas-conocidas goal bindings)
+ (le old-paths $amb-paths
+	 (set $amb-paths '())
+	 (do-amb
+			(do
+         (tratar reglas-conocidas goal bindings)
+				 (set $amb-paths old-paths)
+				 (pass))
+			(do
+				 (set $amb-paths old-paths)
+				 binding))))
+
+;; tratar :: ConjRegla -> Expr -> Binding -> Maybe Binding
+;; -- NO modifica el binding pasado, sale por induccion
+(defun tratar (reglas-conocidas goal bindings)
+ (if (consp goal)
+	 ; es un cons => analizo el car
+	 (le opr (car goal)
+		 (if
+			 (eq opr 'and)
+			 		(probar-and reglas-conocidas (cdr goal) bindings)
+			 (eq opr 'or)
+			 		(probar-or reglas-conocidas (cdr goal) bindings)
+			 (eq opr 'not)
+			 		(probar-not reglas-conocidas (second goal) bindings)
+			 ; else => el operador no es conocido
+			 (probar-simple reglas-conocidas goal bindings)))
+	 ; else => no es un cons
+   (if (eq goal #t)
+		 bindings ; si es #t listo
+	   (probar-simple reglas-conocidas goal bindings))))
+
+(def $todas-las-reglas (mkconjreglas))
+
+(macro << (cabeza . cuerpo)
+ (le condicion
+	   (if
+			 (null cuerpo)
+         #t
+			 (null (cdr cuerpo))
+			   (car cuerpo)
+			 `(and ,@cuerpo))
+ `(,conjreglas-agregar ',$todas-las-reglas
+	 	(,mkregla ',cabeza ',condicion))))
+
+(macro ?? (goal . body)
+	`(do
+		(,bind-vars (,tratar ',$todas-las-reglas ',goal (,mkbinding))
+			,@body)
+		(,pass)))
+
+(macro with-?? (name goal . body)
+	`(le ,name (,tratar ',$todas-las-reglas ',goal (,mkbinding))
+		(,bind-vars ,name
+			,@body)
+    (,pass)))
+

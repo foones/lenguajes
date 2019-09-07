@@ -1,0 +1,6 @@
+(import winmm
+ play-midi)
+
+(play-midi "e:/prueba1/tetris/bradinsky.mid" =nowait)
+(pr "sigo")
+(while #t)

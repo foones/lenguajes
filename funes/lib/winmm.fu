@@ -1,0 +1,29 @@
+
+(herald
+ --name =winmm
+ --package =funes-lib
+ --description "Wrapper for Windows multimedia functions."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:play-midi :stop-midi))
+
+(unless (member (os-type) '(=os-windows))
+ (throw '&sistema-no-soportado "El sistema no soporta `winmm'"))
+
+(import windows._winmm)
+(import _std)
+
+(defun play-midi (file --mode =no-wait --name 'fumm)
+ (windows._winmm.mci-send-string "open $file type sequencer alias $name"
+																 _std.Null 0 0)
+ (case mode
+	=wait
+	(do
+		(windows._winmm.mci-send-string "play $name wait" _std.Null 0 0)
+		(stop-midi name))
+  =no-wait
+		(windows._winmm.mci-send-string "play $name" _std.Null 0 0)))
+
+(defun stop-midi (--name 'fumm)
+	(windows._winmm.mci-send-string "close $name" _std.Null 0 0))
+

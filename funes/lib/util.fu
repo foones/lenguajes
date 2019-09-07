@@ -1,0 +1,77 @@
+
+(herald
+ --name =util
+ --package =funes-lib
+ --description "Utilities."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:when-def :optimum :maximum :minimum :last/val/res :num-dispatcher
+				 	 :setfun :prog1 :dbind))
+
+(macro when-def (x . body)
+ `(when (not (eq ,x #u))
+	 ,@body))
+
+(def (optimum l cmpfun)
+ (assert (not (null l)))
+ (nlet aux ((prim (car l)) (l (cdr l)))
+	 (if (null l)
+		 prim
+		 (if (cmpfun prim (car l))
+			 (aux prim (cdr l))
+			 (aux (car l) (cdr l))))))
+
+(def (maximum l) (optimum l >))
+(def (minimum l) (optimum l <))
+
+(defun last/val/res (cases)
+	(nlet aux ((c cases) (valores '()) (resultados '()))
+				(if
+					(null c) (list #u (xrev valores) (xrev resultados))
+					(singlep c) (list (car c) (xrev valores) (xrev resultados))
+					(aux (ntl c 2)
+							 (cons (first c) valores)
+							 (cons (second c) resultados)))))
+
+(macro num-dispatcher cases
+ (le lvr (last/val/res cases)
+	 (let ((valores (second lvr))
+				 (resultados (third lvr)))
+		 (with-gensyms (gvalores gvector gmax gmin gval gres)
+			`(le ,gvalores (list ,@valores)
+				 (let ((,gmax (,maximum ,gvalores)) (,gmin (,minimum ,gvalores)))
+					 (le ,gvector (mkvec (- ,gmax ,gmin -1))
+						 ; inicializacion
+						 (map
+							 (fun (,gval ,gres)
+									(set (vref ,gvector (- ,gval ,gmin)) ,gres))
+								,gvalores
+								(list ,@(map (fun (r) (list 'thunk r)) resultados)))
+						 ; dispatch
+							(fun (,gval)
+							 ((vref ,gvector (- ,gval ,gmin)))))))))))
+
+(macro setfun (name . rest)
+ `(set ,name (fun ,@rest)))
+
+(macro prog1 (val . rest)
+ (if (consp rest)
+	 `(car (cons ,val
+							 (do ,@rest)))
+	 val)) 
+
+(macro dbind (x y . body)
+ (if (consp x)
+	 (with-gensyms (y-aux)
+		(le ultimo (last x)
+				(le lst (cdr ultimo)
+				 (set (cdr ultimo) '())
+				 (le bindings-salvo-ultimo (map (fun (xx) `(,xx (pop ,y-aux))) x)
+						(if (null lst)
+							`(le ,y-aux ,y (let ,bindings-salvo-ultimo ,@body))
+							`(le ,y-aux ,y
+									 (let ,bindings-salvo-ultimo
+										 (le ,lst ,y-aux
+												 ,@body))))))))
+	 `(le ,x ,y ,@body)))
+

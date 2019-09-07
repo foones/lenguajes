@@ -1,0 +1,74 @@
+
+(herald
+ --name =pretty-print
+ --package =funes-lib
+ --description "Pretty print functionality."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:pp :$pp-keywords :$pp-keywords-especiales))
+
+(import string #t)
+(import special #t)
+
+(defvar $pp-keywords '(fun if))
+(defvar $pp-keywords-especiales '(do))
+
+(def (atom x) (not (consp x)))
+
+(defun pp (x)
+
+	(def (size x)
+	 (if (<sym> x) (len (symbol-name x))
+			 (<str> x) (len x)
+			 (<cons> x)
+				 (+ 3 (size (car x)) (size (cdr x)))
+			 3))
+
+	(defun bare-p (x)
+	  (if (atom x)
+		  (if (<sym> x) (pr1 (symbol-name x))
+			    (pr1 x))
+			(do
+				(pr1 "(")
+				(def primera #t)
+				(each y x
+				  (if primera
+					  (set primera #f)
+						(pr1 " "))
+					(bare-p y))
+				(pr1 ")"))))
+
+	(nlet aux ((x x) (off 0) (tab 0))
+	 (pr1 (rep " " off))
+	 (if (atom x)
+		 (bare-p x)
+		 (if (and (not (member (car x) $pp-keywords))
+					    (<= (size x) 20))
+			 (bare-p x)
+			 (case (len x)
+				 0 (pr1 "()")
+				 1 (do (pr1 "(")
+						   (aux (car x) 0 tab)
+							 (pr1 ")"))
+				 (do
+					 (pr1 "(")
+
+					 (let ((clave?    (member (car x) $pp-keywords))
+								 (especial? (member (car x) $pp-keywords-especiales)))
+						 (aux (car x) 0 tab)
+						 (when clave?
+							 (pr1 " ")
+							 (aux (second x) 0 tab))
+						 (mapc (fun (y)
+												(pr "")
+												(le t2
+														(if especial?
+															(+ tab (size (car x)) 2)
+															(+ tab 2))
+														(aux y t2 t2)))
+									 (if clave?
+										 (cdr (cdr x))
+										 (cdr x))))
+					 (pr1 ")"))))))
+	(pr ""))
+

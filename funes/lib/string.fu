@@ -1,0 +1,20 @@
+
+(herald
+ --name =string
+ --package =funes-lib
+ --description "String utilities."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:rep))
+
+(defun rep (s n)
+ (assert (> (1+ n) 0))
+ (nlet aux ((n n) (s s) (ac ""))
+	(if
+	 (eq n 0)
+	   ac
+	 (eq (% n 2) 0)
+	   (aux (quotient n 2) (cat s s) ac)
+	 =else=
+		 (aux (quotient n 2) (cat s s) (cat s ac)))))
+

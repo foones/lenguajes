@@ -1,0 +1,34 @@
+
+(herald
+ --name =generator
+ --package =funes-lib
+ --description "Implementation of Python-like generators."
+ --author "Pablo Barenbaum"
+ --version "0.1"
+ --export (:generator :defgen :each-gen)
+ --export-names (:yield))
+
+(import call-cc #t)
+
+(macro generator (parms . cuerpo)
+ (with-gensyms (el-gen ret val k)
+ `(fun ,parms
+	 (defun ,el-gen ()
+		(,let/cc ,ret
+		 (defun yield ,val
+			(,let/cc ,k
+			 (set ,el-gen ,k)
+			 (,ret (car ,val))))
+		 ,@cuerpo))
+	 (fun () (call ,el-gen ())))))
+
+(macro each-gen (v gen . cuerpo)
+ (with-gensyms (g loop)
+	`(le ,g ,gen
+		 (nlet ,loop ((,v (,g)))
+			(when ,v
+				,@cuerpo
+				(,loop (,g)))))))
+
+(definer defgen generator)
+
