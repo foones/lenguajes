@@ -10,6 +10,9 @@ Lenguaje de implementación: Haskell.
 [Cucaracha](cucaracha/) 2016 - Lenguaje imperativo que compila a assembler sin hacer nunca malloc (usa únicamente el stack).
 Lenguaje de implementación: Haskell. Lenguaje objeto: ASM x86_64 (nasm).
 
+[Qriollo](qriollo/) 2015 - Lenguaje funcional tipado.
+Lenguaje de implementación: Haskell. Lenguaje objeto: C/Python.
+
 [Funes](funes/) ~2004-2007 - Lenguaje tipo Lisp con clausuras léxicas, tail call optimization, macros, call/cc.
 Lenguaje de implementación: C. Lenguaje objeto: VM ad hoc interpretada.
 
