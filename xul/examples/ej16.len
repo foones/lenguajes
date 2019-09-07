@@ -1,0 +1,16 @@
+# Ahora le agrego funciones al tipo...
+
+# Los tipos son hashes.
+
+persona = new Hash();
+
+fun persona.hablar {
+    print "hola";
+}
+
+# Ahora creo elementos de tipo persona.
+
+Nenuco = new persona();
+Roque = new persona();
+
+print "Hasta ahora, no hace nada!!";

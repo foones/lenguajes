@@ -1,0 +1,13 @@
+# Tambien se pueden crear con 'new' cosas de un tipo
+# que yo quiera !!:
+
+# Los tipos son hashes.
+
+persona = new Hash();
+
+# Ahora creo elementos de tipo persona.
+
+Nenuco = new persona();
+Roque = new persona();
+
+print "Hasta ahora, no hace nada!!";

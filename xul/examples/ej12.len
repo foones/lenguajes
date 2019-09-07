@@ -1,0 +1,10 @@
+# Una forma de crear una cadena vacía:
+
+texto1 = "";
+
+# Otra forma de crear una cadena vacía:
+
+texto2 = new Str();
+
+print "Primera: " + texto1;
+print "Segunda: " + texto2;

@@ -1,0 +1,5 @@
+# Una boludez con numeros
+
+print "%s\n" % 20 + 18;
+print "%s\n" % 2 * (5 + 1);
+print "%s\n" % 10 / (2 * 2 + 1);

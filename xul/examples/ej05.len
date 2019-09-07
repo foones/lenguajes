@@ -1,0 +1,5 @@
+gustos = ('frutilla', 'chocolate', 'granizado', 'limon');
+
+for x in gustos {
+	print x;
+}

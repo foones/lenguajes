@@ -1,0 +1,9 @@
+# También puedo hacer funciones para un hash...
+
+module persona {
+        fun hablar {
+            print "hola";
+        }
+}
+
+persona.hablar();

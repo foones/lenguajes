@@ -1,0 +1,5 @@
+# Un poquito más de cadenas.
+
+print "Me llamo \"Pablo\".\nComer frutillas es divertido.\n";
+nombre = "Nenuco";
+print "El se llama " + nombre + ".\n";

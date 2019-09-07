@@ -1,0 +1,22 @@
+# Ahora le agrego funciones al tipo...
+
+# Los tipos son hashes.
+
+module persona {
+
+    fun hablar {
+	print "hola";
+    }
+}
+
+# Ahora creo elementos de tipo persona.
+
+Nenuco = new persona();
+Roque = new persona();
+
+# Y ahora, sí, puedo llamar a las funciones del
+# tipo que le corresponde al elemento, con una
+# flechita ->
+
+Nenuco->hablar();
+Roque->hablar();

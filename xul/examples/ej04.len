@@ -1,0 +1,5 @@
+animales = ('hormiga', 'gallo', 'oso',
+			'almeja');
+
+print animales[0];
+print animales[2];

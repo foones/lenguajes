@@ -1,0 +1,7 @@
+fun por_dos {
+	numero = shift;
+	return numero * 2;
+}
+
+print por_dos(10);
+print por_dos( por_dos( 6 ) );

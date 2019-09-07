@@ -1,0 +1,14 @@
+# Tambien se pueden crear con 'new' otras cosas:
+
+# Creo una lista (array) vacía.
+lista = new Array();
+print lista;
+print;
+
+# Creo un hash y agrego algunos valores
+roque = new Hash();
+roque.nombre = "Roque";
+roque.apellido = "Mifus";
+
+print roque;
+print;

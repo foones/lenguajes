@@ -1,0 +1,31 @@
+# Ahora pruebo con varios tipos...
+
+# Creo un tipo gallina.
+
+module gallina {
+    
+    fun hablar {
+	print "hola, soy una gallina";
+    }
+}
+
+# Creo un tipo gato.
+
+module gato {
+
+    fun hablar {
+	print "hola, soy un gato";
+    }
+}
+
+# Creo elementos de cada tipo
+
+Catalina = new gallina();
+Paulina = new gallina();
+Eulato = new gato();
+
+# Ahora llamo a las funciones
+
+Catalina->hablar();
+Paulina->hablar();
+Eulato->hablar();

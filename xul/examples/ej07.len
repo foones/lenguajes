@@ -1,0 +1,12 @@
+fun saludar_a {
+	nombre = shift;
+	if nombre == "Tepli"
+		print "Oa Terri.";
+	else
+		print "Hola " + nombre + ".";
+}
+
+saludar_a('Roque');
+saludar_a('Moniche');
+saludar_a('Tepli');
+saludar_a('Foo-lano');

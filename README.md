@@ -2,7 +2,7 @@
 Varios lenguajes de programación.
 
 [Falopa](falopa/) 2019 - Lenguaje tipado con características funcionales y lógicas.
-Lenguaje de implementación: Python.
+Lenguaje de implementación: Python. Interpretado.
 
 [Flecha](flecha/) 2018 - Lenguaje funcional no tipado, con pattern matching.
 Lenguaje de implementación: Haskell. Lenguaje objeto: máquina virtual ad hoc (Mamarracho).
@@ -21,4 +21,7 @@ Lenguaje de implementación: Common Lisp / Choclo. Lenguaje objeto: C.
 
 [Funes](funes/) ~2004-2007 - Lenguaje tipo Lisp con clausuras léxicas, tail call optimization, macros, call/cc.
 Lenguaje de implementación: C. Lenguaje objeto: VM ad hoc interpretada.
+
+[Xul](xul/) ~2003 - Lenguaje tipo Python.
+Lenguaje de implementación: C. Interpretado.
 

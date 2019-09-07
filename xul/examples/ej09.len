@@ -1,0 +1,15 @@
+# Esto es un 'hash'; NO es lo mismo
+# que una lista:
+
+agenda = (
+	'Feskito' : '4444-4444',
+	'Roque' : '4444-4443',
+	'Moniche' : '4444-4442',
+	'HelaDaia' : '4444-4441'
+);
+
+# Imprime el teléfono de Feskito
+print agenda['Feskito'] + "\n";
+
+# Imprime el teléfono de Moniche
+print agenda['Moniche'] + "\n";

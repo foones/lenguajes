@@ -1,0 +1,25 @@
+# Esto es un 'hash'; NO es lo mismo
+# que una lista:
+
+Roque = (
+	'nombre' : 'Roquerros Ratarran',
+	'apellido' : 'Mifus',
+	'telefono' : '4444-4443',
+	'direccion' : 'Caminata Azul 343'
+);
+
+# Una forma de acceder a un hash
+
+print Roque['nombre'];
+print Roque['apellido'];
+print Roque['telefono'];
+print Roque['direccion'];
+
+# Otra forma de acceder a un hash
+
+print;
+
+print Roque.nombre;
+print Roque.apellido;
+print Roque.telefono;
+print Roque.direccion;
