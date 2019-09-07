@@ -1,0 +1,9 @@
+--- Problem:
+--- The DFS evaluator does not behave as lazily as one would like.
+
+f () = f ()
+
+g x = 1
+
+main = g (f ())
+

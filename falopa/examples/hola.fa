@@ -1,0 +1,31 @@
+
+data ℕ where
+  zero : ℕ
+  suc  : ℕ → ℕ
+
+data T a where
+  Nil : T a
+  Bin : a → T a → T a → T a
+
+max zero    m       = m
+max (suc a) zero    = suc a
+max (suc a) (suc b) = suc (max a b)
+
+height Nil         = zero
+height (Bin r i d) = suc (max (height i) (height d))
+
+main = height X == suc zero
+    >> X
+ where X = _
+
+{-
+main = fresh X Y a in
+         ( (height X) == (suc a) >>
+            Y == zero >> suc (max a zero) ) == zero
+-}
+
+{-
+main = fresh X Y a b in
+         ( (height X) == (suc a)
+         >> suc zero ) == zero
+-}

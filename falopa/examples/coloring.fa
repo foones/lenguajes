@@ -1,0 +1,122 @@
+
+infixr 200 _×_
+data A × B where
+  _,_ : A → B → A × B
+
+car (a , b) = a
+cdr (a , b) = b
+
+infixr 200 _∷_
+data List a where
+  []  : List a
+  _∷_ : a → List a → List a
+
+map _ []       = []
+map f (x ∷ xs) = f x ∷ map f xs
+
+map2 _ []       = []
+map2 f (x ∷ xs) = f x ∷ map2 f xs
+
+map! _ []       = ()
+map! f (x ∷ xs) = f x >> map! f xs
+
+data Country where
+  Argentina : Country
+  Chile     : Country
+  Bolivia   : Country
+  Paraguay  : Country
+  Uruguay   : Country
+  Brasil    : Country
+  Perú      : Country
+
+countries : List Country
+countries =
+  Argentina ∷ Chile ∷ Bolivia ∷ Paraguay ∷ Uruguay ∷ Brasil ∷ Perú ∷ []
+
+vecinos : Country → List Country
+vecinos Argentina = Chile     ∷ Bolivia ∷ Paraguay ∷ Uruguay ∷ Brasil ∷ []
+vecinos Chile     = Argentina ∷ Bolivia ∷ Perú     ∷ []
+vecinos Bolivia   = Argentina ∷ Chile   ∷ Paraguay ∷ Brasil  ∷ Perú   ∷ []
+vecinos Paraguay  = Argentina ∷ Bolivia ∷ Brasil   ∷ []
+vecinos Uruguay   = Argentina ∷ Brasil  ∷ []
+vecinos Brasil    = Argentina ∷ Bolivia ∷ Paraguay ∷ Uruguay ∷ Perú   ∷ []
+vecinos Perú      = Chile     ∷ Bolivia ∷ Brasil   ∷ []
+
+data Color where
+  Red     : Color
+  Blue    : Color
+  Green   : Color
+  Cyan    : Color
+  Magenta : Color
+  Yellow  : Color
+  Black   : Color
+
+_!=_ : Color → Color → ()
+Red     != Blue    = ()
+Red     != Green   = ()
+Red     != Cyan    = ()
+Red     != Magenta = ()
+Red     != Yellow  = ()
+Red     != Black   = ()
+Blue    != Red     = ()
+Blue    != Green   = ()
+Blue    != Cyan    = ()
+Blue    != Magenta = ()
+Blue    != Yellow  = ()
+Blue    != Black   = ()
+Green   != Red     = ()
+Green   != Blue    = ()
+Green   != Cyan    = ()
+Green   != Magenta = ()
+Green   != Yellow  = ()
+Green   != Black   = ()
+Cyan    != Red     = ()
+Cyan    != Blue    = ()
+Cyan    != Green   = ()
+Cyan    != Magenta = ()
+Cyan    != Yellow  = ()
+Cyan    != Black   = ()
+Magenta != Red     = ()
+Magenta != Blue    = ()
+Magenta != Green   = ()
+Magenta != Cyan    = ()
+Magenta != Yellow  = ()
+Magenta != Black   = ()
+Yellow  != Red     = ()
+Yellow  != Blue    = ()
+Yellow  != Green   = ()
+Yellow  != Cyan    = ()
+Yellow  != Magenta = ()
+Yellow  != Black   = ()
+Black   != Red     = ()
+Black   != Blue    = ()
+Black   != Green   = ()
+Black   != Cyan    = ()
+Black   != Magenta = ()
+Black   != Yellow  = ()
+
+_∉_ : Color → List Color → ()
+_ ∉ []        = ()
+c ∉ (c' ∷ cs) = c != c' >> c ∉ cs
+
+----
+
+coloresFrescos [] acc = acc
+coloresFrescos (c ∷ cs) acc = fresh color in
+                              coloresFrescos cs ((c , color) ∷ acc)
+
+buscarColoreo : () → List (Country × Color)
+buscarColoreo () = map! coloreoOK coloreo >> coloreo
+  where coloreo : List (Country × Color)
+        coloreo = coloresFrescos countries []
+        coloreoOK c = cdr c ∉ (coloresVecinos c)
+        coloresVecinos (country , color) = map colorVecino (vecinos country)
+
+        colorVecino : Country → Color
+        colorVecino c = findColor c coloreo
+
+findColor : Country → List (Country × Color) → Color
+findColor c ((c , color) ∷ xs) = color
+findColor c (x ∷ xs)           = findColor c xs
+
+main = buscarColoreo ()

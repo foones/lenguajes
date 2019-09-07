@@ -1,0 +1,11 @@
+
+data ℕ where
+  zero : ℕ 
+  suc  : ℕ → ℕ
+
+nat : () → ℕ
+nat () = zero
+nat () = suc (nat ())
+
+main = nat ()
+

@@ -1,0 +1,17 @@
+
+infixr 300 _∷_
+data List a where
+  []  : List a
+  _∷_ : a → List a → List a
+
+infixl 350 _++_
+[]       ++ ys = ys
+(x ∷ xs) ++ ys = x ∷ (xs ++ ys)
+
+prefijo lista =
+   fresh x y in
+     x ++ y == lista
+     >> x
+
+main = prefijo (1 ∷ 2 ∷ 3 ∷ [])
+

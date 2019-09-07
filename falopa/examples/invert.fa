@@ -1,0 +1,14 @@
+
+infix 200 _⁻¹
+
+data ℕ where
+  zero : ℕ
+  suc  : ℕ → ℕ
+
+(_⁻¹ f) y = f x == y >> x
+  where x = _
+
+add ((suc ⁻¹) x) = x
+
+main = add (suc zero)
+

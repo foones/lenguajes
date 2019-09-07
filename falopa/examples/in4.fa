@@ -1,0 +1,20 @@
+
+infixr 250 _∷_
+
+data Unit where
+  unit : Unit
+
+data List a where
+  []  : List a
+  _∷_ : a → List a → List a
+
+length []       = 0
+length (x ∷ xs) = 1 + y
+  where y = length xs
+
+f x = 1 ∷ 2 ∷ x
+
+ttail (f x) = y
+  where y z = m
+          where m = z
+

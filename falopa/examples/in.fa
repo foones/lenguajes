@@ -1,0 +1,28 @@
+
+infixr 10 _→_
+infixr 10 _::_
+infixl 20 _+_
+infixl 20 _×_
+
+data ℕ where
+  zero : ℕ
+  suc  : ℕ → ℕ
+
+data Bool where
+  true  : Bool
+  false : Bool
+
+data A × B where
+  _,_ : A → B → A × B
+
+data List a where
+  []   : List a
+  _::_ : a → List a → List a
+
+length : List a → Int
+length []        = 0
+length (_ :: xs) = 1 + z
+  where
+    z : Int
+    z = length xs
+

@@ -1,0 +1,29 @@
+
+infix 200 _⁻¹
+infix 200 _∘_
+
+data Simpson where
+  Abe    : Simpson
+  Homer  : Simpson
+  Bart   : Simpson
+  Lisa   : Simpson
+  Maggie : Simpson
+
+father Homer  = Abe
+father Bart   = Homer
+father Lisa   = Homer
+father Maggie = Homer
+
+(f ∘ g) x = f (g x)
+
+grandfather = father ∘ father
+
+-- Currently not polymorphic.
+-- TODO: topologically sort definitions in a let.
+--  _⁻¹ : (a → b) → b → a
+(f ⁻¹) y = f x == y
+        >> x
+  where x = _
+
+main = (grandfather ⁻¹) Abe
+

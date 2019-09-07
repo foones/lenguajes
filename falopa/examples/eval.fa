@@ -1,0 +1,21 @@
+
+data ℕ where
+  zero : ℕ
+  suc  : ℕ → ℕ
+
+data Expr where
+  ConstE : ℕ → Expr
+  AddE   : Expr → Expr → Expr
+
+_+_ : ℕ → ℕ → ℕ
+zero  + m = m    
+suc n + m = suc (n + m)
+
+eval : Expr → ℕ
+eval (ConstE n)   = n
+eval (AddE e1 e2) = eval e1 + eval e2
+
+main = eval e == suc (suc (suc zero))
+    >> e
+  where e = _
+

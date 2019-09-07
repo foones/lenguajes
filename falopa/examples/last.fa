@@ -1,0 +1,19 @@
+
+infixl 300 _++_
+infixr 350 _∷_
+
+data List a where
+  []  : List a
+  _∷_ : a → List a → List a
+
+_++_ : List a → List a → List a
+[]     ++ ys = ys
+x ∷ xs ++ ys = x ∷ (xs ++ ys)
+
+last : List a → a
+last xs = xs == ys ++ y ∷ []
+       >> y
+  where y = _
+        ys = _
+
+main = last (1 ∷ 2 ∷ 3 ∷ [])

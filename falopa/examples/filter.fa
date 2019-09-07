@@ -1,0 +1,34 @@
+
+infixr 210 _×_
+infixr 210 _,_
+infixr 220 _++_
+infixr 250 _∷_
+
+data List a where
+  []  : List a
+  _∷_ : a → List a → List a
+
+data A × B where
+  _,_ : A → B → A × B
+
+data Bool where
+  True  : Bool
+  False : Bool
+
+if_then_else_ : Bool → a → a → a
+if True  then x else _ = x
+if False then _ else x = x
+
+[]     ++ ys = ys
+x ∷ xs ++ ys = x ∷ (xs ++ ys)
+
+filter _ []       = []
+filter p (x ∷ xs) =
+    if p x
+     then x ∷ ys
+     else ys
+  where ys = filter p xs
+
+main = filter p (1 ∷ 2 ∷ 3 ∷ [])
+  where p x = True <> False
+

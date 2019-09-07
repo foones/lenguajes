@@ -1,0 +1,63 @@
+
+data Id where
+  O : Id
+  S : Id → Id
+
+_≠_ : Id → Id → ()
+O   ≠ S _ = ()
+S _ ≠ O   = ()
+S x ≠ S y = x ≠ y
+
+-- Judgments
+infix  300 _⊢_∷_
+infix  300 _∷_∈_
+infix  300 _∉_
+
+-- Contexts
+infix  350 _,_∷_
+
+-- Terms
+infixr 400 _`_
+infix  400 \_
+infix  400 Π_._
+
+data Term where
+  Type : Term
+  var  : Id → Term
+  _`_  : Term → Term → Term
+  \_   : (Term → Term) → Term
+  Π_._ : Term → (Term → Term) → Term
+
+data Context where
+  ∅     : Context
+  _,_∷_ : Context → Id → Term → Context
+
+_∉_ : Id → Context → ()
+x ∉ ∅           = ()
+x ∉ (Γ , y ∷ _) = x ≠ y >> x ∉ Γ
+
+_∷_∈_ : Id → Term → Context → ()
+x ∷ A ∈ (Γ , x ∷ A) = ()
+x ∷ A ∈ (Γ , y ∷ _) = x ≠ y >> x ∷ A ∈ Γ
+
+⊢_ : Context → ()
+⊢ ∅         = ()
+⊢ Γ , x ∷ A = ⊢ Γ >> Γ ⊢ A ∷ Type
+
+_⊢_∷_ : Context → Term → Term → ()
+Γ ⊢ Type    ∷ Type    = ()
+Γ ⊢ var x   ∷ A       = ⊢ Γ >> x ∷ A ∈ Γ
+Γ ⊢ \ t     ∷ Π A . B = x ∉ Γ >>
+                        Γ , x ∷ A ⊢ t(x) ∷ B(x)
+  where x = _
+--Γ ⊢ t ` s   ∷ B           = Γ ⊢ t ∷ (Π x ∷ A . B) >> Γ ⊢ s
+
+check : Term → Term
+check t = ∅ ⊢ t ∷ A
+       >> A
+  where A = _
+
+main = check (\ f)
+  where
+    f x = x
+

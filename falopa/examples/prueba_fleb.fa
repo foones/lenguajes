@@ -1,0 +1,16 @@
+
+data Arr where
+  Arr : Int → Arr
+
+id : a → a
+id x = x
+
+_._ : (b → c) → (a → b) → a → c
+(f . g) x = f (g x)
+
+
+main = fresh f in
+         ((f . Arr) == id)
+       >>
+         f (Arr 3)
+

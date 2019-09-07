@@ -1,0 +1,21 @@
+
+infixr 200 _∷_
+infixr 200 _×_
+infixr 200 _,_
+
+data Int where
+
+data A × B where
+  _,_ : A → B → A × B
+
+data List a where
+  []  : List a
+  _∷_ : a → List a → List a
+
+_++_ : List a → List b → List (a × b)
+[]       ++ ys = ys
+(x ∷ xs) ++ ys = x ∷ (xs ++ ys)
+
+cons123 x = 1 ∷ 2 ∷ 3 ∷ x
+
+f x (g x) = x

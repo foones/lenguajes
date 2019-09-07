@@ -1,0 +1,52 @@
+
+data Bool where
+  True  : Bool
+  False : Bool
+
+infixr 200 _∷_
+infixr 200 _&&_
+infixr 200 _∘_
+infixr 200 _×_
+
+data List a where
+  []  : List a
+  _∷_ : a → List a → List a
+
+data A × B where
+  _,_ : A → B → A × B
+
+True  && x = x
+False && _ = False
+
+all f []       = True
+all f (x ∷ xs) = f x && all f xs
+
+_∘_ : (b → c) → (a → b) → a → c
+(f ∘ g) x = f (g x)
+
+data Expr where
+  EInt   : Int → Expr
+  _<<>>_ : Expr → Expr → Expr
+
+eval : Expr → Int
+
+eval (EInt x)   = x
+eval (e <<>> e') = eval e <> eval e'
+
+test : Int → Int → Int
+test x y = x
+
+map f []       = []
+map f (x ∷ xs) = f x ∷ map f xs
+
+---------------------------------------------
+
+----------------------------------------------
+
+_≡_ : a → a → Unit
+x ≡ y = x == y
+
+main : Int × Bool
+main = f 1 , f True
+  where f x = x
+

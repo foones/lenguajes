@@ -1,0 +1,67 @@
+
+infixr 400 _×_
+infix 500 ⟨_,_⟩
+data A × B where
+  ⟨_,_⟩ : A → B → A × B
+
+infixr 400 _∷_
+data List a where
+  []  : List a
+  _∷_ : a → List a → List a
+
+produce : List a → a
+produce (x ∷ xs) = x <> produce xs
+
+data Id where
+  "ok" : Id
+  "a"  : Id
+  "b"  : Id
+  "c"  : Id
+  "f"  : Id
+  "g"  : Id
+  "h"  : Id
+  "x"  : Id
+  "y"  : Id
+  "z"  : Id
+
+_≠_ : Id → Id → ()
+"x" ≠ "y"   = ()
+"x" ≠ "z"   = ()
+
+infix 400 λ_._
+infix 400 _`_
+data Term where
+  con    : Id → Term
+  fail   : Term
+  var    : Id → Term
+  λ_._   : Id → Term → Term
+  _`_    : Term → Term → Term
+  _&_    : Term → Term → Term
+  _|_    : Term → Term → Term
+  _[_/_] : Term → Id → Term → Term
+
+infix 450 _,_∷_
+data Env where
+  ∅     : Env
+  _,_∷_ : Id → Term → Env → Env
+
+lookup : Id → Env → Term × Env
+lookup x (x , v ∷ ρ) = ⟨ v , ρ ⟩
+lookup x (y , _ ∷ ρ) = x ≠ y >> lookup x ρ
+
+close : Term → Env → Term
+close t ∅           = t
+close t (x , s ∷ ρ) = close (t [ x / s ]) ρ
+
+infix 300 ⟦_⟧_
+⟦_⟧_ : Term → Env → List Term
+⟦ con c ⟧   _ = con c ∷ []
+⟦ var x ⟧   ρ = fresh t ρ'
+                in ⟨ t , ρ' ⟩ == lookup x ρ
+                >> ⟦ t ⟧ ρ'
+⟦ λ x . t ⟧ ρ = close (λ x . t) ρ ∷ []
+⟦ t ` s ⟧   ρ =
+  == ⟦ t ⟧ ρ -- TODO
+
+main = produce (⟦ λ "x" . var "x" ⟧ ∅)
+

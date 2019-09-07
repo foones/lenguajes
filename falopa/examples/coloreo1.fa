@@ -1,0 +1,99 @@
+
+infixr 200 _×_
+data A × B where
+  _,_ : A → B → A × B
+
+infixr 200 _∷_
+data List a where
+  []  : List a
+  _∷_ : a → List a → List a
+
+map _ []       = []
+map f (x ∷ xs) = f x ∷ map f xs
+
+map! _ []       = ()
+map! f (x ∷ xs) = f x >> map! f xs
+
+data Country where
+  Argentina : Country
+  Chile     : Country
+  Bolivia   : Country
+  Paraguay  : Country
+  Uruguay   : Country
+  Brasil    : Country
+  Perú      : Country
+
+countries : List Country
+countries =
+  Argentina ∷ Chile ∷ Bolivia ∷ Paraguay ∷ Uruguay ∷ Brasil ∷ Perú ∷ []
+
+vecinos : Country → List Country
+{-
+vecinos Argentina = Chile     ∷ Bolivia ∷ Paraguay ∷ Uruguay ∷ Brasil ∷ []
+vecinos Chile     = Argentina ∷ Bolivia ∷ Perú     ∷ []
+vecinos Bolivia   = Argentina ∷ Chile   ∷ Paraguay ∷ Brasil  ∷ Perú   ∷ []
+vecinos Paraguay  = Argentina ∷ Bolivia ∷ Brasil   ∷ []
+vecinos Uruguay   = Argentina ∷ Brasil  ∷ []
+vecinos Brasil    = Argentina ∷ Bolivia ∷ Paraguay ∷ Uruguay ∷ Perú   ∷ []
+vecinos Perú      = Chile     ∷ Bolivia ∷ Brasil   ∷ []
+-}
+vecinos Argentina = Chile     ∷ Perú      ∷ []
+vecinos Chile     = Argentina ∷ Bolivia   ∷ []
+vecinos Bolivia   = Chile     ∷ Paraguay  ∷ []
+vecinos Paraguay  = Bolivia   ∷ Uruguay   ∷ []
+vecinos Uruguay   = Paraguay  ∷ Brasil    ∷ []
+vecinos Brasil    = Uruguay   ∷ Perú      ∷ []
+vecinos Perú      = Brasil    ∷ Argentina ∷ []
+
+data Color where
+  Red     : Color
+  Blue    : Color
+  Green   : Color
+
+_!=_ : Color → Color → ()
+Red   != Blue  = ()
+Red   != Green = ()
+Blue  != Red   = ()
+Blue  != Green = ()
+Green != Red   = ()
+Green != Blue  = ()
+
+_∉_ : Color → List Color → ()
+_ ∉ []        = ()
+c ∉ (c' ∷ cs) = c != c' >> c ∉ cs
+
+----
+
+esColor : Color → ()
+esColor Red   = ()
+esColor Blue  = ()
+esColor Green = ()
+
+coloreoFresco : List Country → List (Country × Color) → List (Country × Color)
+coloreoFresco []       acc = acc
+coloreoFresco (c ∷ cs) acc = fresh col in
+                               coloreoFresco cs ((c , col) ∷ acc)
+
+buscarColoreo : () → List (Country × Color)
+buscarColoreo () =
+    map! coloreoOK coloreo >> coloreo
+  where coloreo : List (Country × Color)
+        coloreo = coloreoFresco countries []
+
+        coloreoOK : (Country × Color) → ()
+        coloreoOK (country , color) =
+           esColor color >>
+           color ∉ coloresVecinos country
+
+        coloresVecinos : Country → List Color
+        coloresVecinos country = map colorVecino (vecinos country)
+
+        colorVecino : Country → Color
+        colorVecino c = findColor c coloreo
+
+findColor : Country → List (Country × Color) → Color
+findColor c ((c , color) ∷ xs) = color
+findColor c (x ∷ xs)           = findColor c xs
+
+main = buscarColoreo ()
+

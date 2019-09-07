@@ -1,0 +1,8 @@
+
+id x = x
+
+main = g == id
+    >> f 9
+  where f = _
+        g x = f x
+

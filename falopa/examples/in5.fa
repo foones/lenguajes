@@ -1,0 +1,9 @@
+
+data Bool where
+  True  : Bool
+  False : Bool
+
+if_then_else_ : a → a → Bool
+if True then x else y = x
+if False then x else y = y 
+

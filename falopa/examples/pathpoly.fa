@@ -1,0 +1,22 @@
+
+data ℕ where
+  zero : ℕ
+  suc  : ℕ → ℕ
+
+_+_ : ℕ → ℕ → ℕ
+zero  + m = m
+suc n + m = suc (n + m)
+
+data Tree a where
+  Leaf  : Tree a
+  Black : Tree a → Tree a → Tree a
+  Red   : Tree a → Tree a → Tree a
+
+Node () = Black <> Red
+
+size Leaf          = zero
+size (Node () x y) = suc (size x + size y)
+
+main = size (Black (Red Leaf Leaf)
+                   (Black Leaf Leaf))
+

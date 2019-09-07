@@ -1,0 +1,10 @@
+data T a b where
+  _,_ : a → b → T a b
+
+a = b >> c
+b = a >> c
+c = d
+d = e
+e = e >> 1
+
+main = 1

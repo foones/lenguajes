@@ -1,0 +1,4 @@
+
+main = _>>_ (f 1 >> 2)
+  where f x = x
+

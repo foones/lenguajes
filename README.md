@@ -1,6 +1,9 @@
 
 Varios lenguajes de programación.
 
+[Falopa](falopa/) 2019 - Lenguaje tipado con características funcionales y lógicas.
+Lenguaje de implementación: Python.
+
 [Flecha](flecha/) 2018 - Lenguaje funcional no tipado, con pattern matching.
 Lenguaje de implementación: Haskell. Lenguaje objeto: máquina virtual ad hoc (Mamarracho).
 

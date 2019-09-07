@@ -1,0 +1,22 @@
+
+Path polymorphism
+-----------------
+
+data Tree a where
+  Leaf  : Tree a
+  Black : Tree a → Tree a → Tree a
+  Red   : Tree a → Tree a → Tree a
+
+Node () = Black <> Red
+
+size Leaf          = 0
+size (Node () x y) = 1 + size x + size y
+
+---------------------------------------------------
+
+Invertir función
+----------------
+
+grandfather = father ∘ father
+grandfather⁻¹ Abe --- > Bart, Lisa, Maggie
+

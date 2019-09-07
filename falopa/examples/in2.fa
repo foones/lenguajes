@@ -1,0 +1,8 @@
+
+infixr 200 _+_
+
+a = a + b + c >> a
+    <>
+    f a
+  where b = 1
+

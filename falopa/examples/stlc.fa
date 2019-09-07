@@ -1,0 +1,46 @@
+
+infix  300 _⊢_∷_
+infix  300 _∈_∷_
+infix  350 _,_
+infixr 400 _->_
+infix  400 \_
+infixl 450 _`_
+
+data ℕ where
+  zero : ℕ
+  suc  : ℕ → ℕ
+
+data Term where
+  var : ℕ → Term
+  _`_ : Term → Term → Term
+  \_  : Term → Term
+
+data Type where
+  base : Int → Type
+  _->_ : Type → Type → Type
+
+data Context where
+  ∅   : Context
+  _,_ : Context → Type → Context
+
+zero  ∈ (Γ , A) ∷ A    = ()
+suc x ∈ (Γ , _) ∷ A    = x ∈ Γ ∷ A
+Γ ⊢ var x    ∷ A       = x ∈ Γ ∷ A
+Γ ⊢ \ t      ∷ A -> B  = Γ , A ⊢ t ∷ B
+Γ ⊢ t ` s    ∷ B       = Γ ⊢ t ∷ A -> B
+                      >> Γ ⊢ s ∷ A
+  where A = _
+
+witness : Type → Term
+witness A = ∅ ⊢ t ∷ A >> t
+  where t = _
+
+infer : Term → Type
+infer t = ∅ ⊢ t ∷ A >> A
+  where A = _
+
+main = witness ((A -> B) -> (B -> C) -> A -> C)
+  where A = base 0
+        B = base 1
+        C = base 2
+

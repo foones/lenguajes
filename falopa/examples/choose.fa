@@ -1,0 +1,13 @@
+
+infix 200 _×_
+
+data _×_ A B where
+  _,_ : A → B → A × B
+
+a = 0 <> 1
+
+f a = 2
+
+--main = a , a
+main = f 0 , f 1
+

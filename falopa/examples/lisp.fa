@@ -1,0 +1,43 @@
+
+data ℕ where
+  zero : ℕ
+  suc  : ℕ → ℕ
+
+_!=_ : ℕ → ℕ → ()
+zero  != suc _ = ()
+suc _ != zero  = ()
+suc n != suc m = n != m
+
+infixr 300 _._
+infix  350 [_]
+infix  350 [_,_]
+infix  350 [_,_,_]
+infix  350 $_
+
+data Expr where
+  $_ : ℕ → Expr
+  _._  : Expr → Expr → Expr
+
+nil : Expr
+nil = $ zero
+
+[ x ]         = x . nil
+[ x , y ]     = x . [ y ]
+[ x , y , z ] = x . [ y , z ]
+
+quote = $ suc zero
+
+lookup : ℕ → Expr → Expr
+lookup n (($ n . x) . _)   = x
+lookup n (($ m . _) . env) = n != m >> lookup n env
+
+eval : Expr → Expr → Expr
+eval ($ n)                        env = lookup n env
+eval ([ quote , x ])              env = x
+eval ([ lambda , params , body ]) env = _
+
+globalEnv : Expr
+globalEnv = (nil . nil) . nil
+
+main = eval (quote . nil) globalEnv
+

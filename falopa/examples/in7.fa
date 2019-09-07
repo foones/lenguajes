@@ -1,0 +1,32 @@
+
+infix 300 _⊢_∷_
+infix 300 _∈_∷_
+infix 350 _,_∷_
+infix 400 _->_
+
+data Term where
+  var : Int → Term
+  app : Term → Term → Term
+  lam : Int → Term → Term
+
+data Type where
+  base : Int → Type
+  _->_ : Type → Type → Type
+
+data Context where
+  empty : Context
+  _,_∷_ : Context → Int → Type → Context
+
+--_∈_∷_ : Int → Context → Type → Unit
+x ∈ (Γ , x ∷ A) ∷ A = 1 == 1
+x ∈ (Γ , _ ∷ _) ∷ A = x ∈ Γ ∷ A
+
+--_⊢_∷_ : Context → Term → Type → Unit
+Γ ⊢ var x   ∷ A        = x ∈ Γ ∷ A
+Γ ⊢ lam x t ∷ A -> B   = Γ , x ∷ A ⊢ t ∷ B
+Γ ⊢ app t s ∷ B        = Γ ⊢ t ∷ A -> B
+                      >> Γ ⊢ s ∷ A
+  where A = A
+
+main = 1
+
