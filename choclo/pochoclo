@@ -1,0 +1,16 @@
+#!/bin/bash
+if [[ -f ./_prechoclo-output/pochoclo/pochoclo ]]; then
+  BARE=$(basename ${1/.ch/})
+  DIR=_pochoclo-output/$BARE/
+  mkdir -p $DIR/ && \
+  ./_prechoclo-output/pochoclo/pochoclo $1 && \
+  cp src/runtime/* $DIR/ && \
+  mv code.i $DIR/ && \
+  mv decl.i $DIR/ && \
+  gcc -o $DIR/$BARE $DIR/prog.c $DIR/choclo.c && \
+  echo Wrote $DIR/$BARE
+else
+  echo The Pochoclo compiler does not exist yet.
+  echo To bootstrap it, run:
+  echo ./prechoclo src/pochoclo/pochoclo.ch
+fi

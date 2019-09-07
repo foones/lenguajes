@@ -1,0 +1,10 @@
+#!/bin/bash
+BARE=$(basename ${1/.ch/})
+DIR=_prechoclo-output/$BARE/
+mkdir -p $DIR/ && \
+clisp src/prechoclo/prechoclo.lisp $1 && \
+cp src/runtime/* $DIR/ && \
+mv code.i $DIR/ && \
+mv decl.i $DIR/ && \
+gcc -o $DIR/$BARE $DIR/prog.c $DIR/choclo.c && \
+echo Wrote $DIR/$BARE
