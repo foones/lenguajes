@@ -1,0 +1,794 @@
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{listings}
+\usepackage{tabularx}
+\usepackage[margin=1.9cm]{geometry}
+\usepackage{amsmath}
+\usepackage{listings}
+
+\lstset{
+  escapeinside={(*@}{@*)},
+  basicstyle=\tt,
+  literate={.entrada}{\em Entrada:}8
+           {.salida}{\em Salida:}7
+           {.if}{\bf if}2
+           {.to}{\bf to}2
+           {.then}{\bf then}4
+           {.else}{\bf else}4
+           {.elseif}{\bf elseif}6
+           {.end}{\bf end}3
+           {.while}{\bf while}5
+           {.end}{\bf end}3
+           {.foreach}{\bf foreach}7
+           {.to.}{\bf to}2
+           {.downto}{\bf downto}6
+           {.function}{\bf function}8
+           {.case}{\bf case}4
+           {.new}{\bf new}3
+           {.return}{\bf return}6
+           {.throw}{\bf throw}5
+           {.for.}{\bf for}3
+           {.repeat}{\bf repeat}6
+           {.forever}{\bf forever}7
+           {\\'A}{{\'A}}1
+           {\\'E}{{\'E}}1
+           {\\'I}{{\'I}}1
+           {\\'O}{{\'O}}1
+           {\\'U}{{\'U}}1
+           {\\'a}{{\'a}}1
+           {\\'e}{{\'e}}1
+           {\\'i}{{\'i}}1
+           {\\'o}{{\'o}}1
+           {\\'u}{{\'u}}1
+}
+
+\newcommand{\TODO}[1]{\textcolor{red}{TODO: #1}}
+\newcommand{\lleca}{\textsf{Lleca}\xspace}
+\newcommand{\tok}[1]{\textcolor{red}{{\texttt{$\langle$#1$\rangle$}}}}
+\newcommand{\nonterm}[1]{\textcolor{blue}{{\em{$\langle$#1$\rangle$}}}}
+\newcommand{\produccion}[2]{
+  \item[]
+  \begin{tabularx}{\textwidth}{lrlr}
+  #1 & $\xrightarrow{\hspace{.5cm}}$ & #2
+  \end{tabularx}\\
+}
+\newcommand{\EMPTY}{$\epsilon$}
+\newcommand{\ALT}{
+  \\ & $\mid$ &
+}
+\newcommand{\first}{\texttt{FIRST}\xspace}
+\newcommand{\follow}{\texttt{FOLLOW}\xspace}
+\newcommand{\setunion}{\cup}
+\newcommand{\ST}{\mid}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\pal}{\alpha}
+\newcommand{\paltwo}{\beta}
+\renewcommand{\emptyset}{\varnothing}
+
+\begin{document}
+\begin{center}
+\textsc{{\small Parseo y Generaci\'on de C\'odigo -- $2^{\text{do}}$ semestre 2017}} \medskip \\ 
+\textsc{{\small Licenciatura en Inform\'atica con Orientaci\'on en Desarrollo de Software}} \medskip \\
+\textsc{{\small Universidad Nacional de Quilmes}} \medskip \\
+{\Large Trabajo pr\'actico 1} \medskip \\
+{\large {\bf El parser gen\'erico \lleca}} \medskip \\
+\bigskip
+Fecha de entrega: 12 de octubre
+\end{center}
+
+\tableofcontents
+
+\section{Introducci\'on}
+
+Este TP consiste en implementar un lenguaje gen\'erico de an\'alisis
+sint\'actico que llamaremos \lleca.
+El parser \lleca recibe como entrada una gram\'atica que describe
+un lenguaje. Por ejemplo, el archivo {\bf robot.ll} contiene la
+especificaci\'on de un lenguaje para controlar un robot:\\
+\begin{center}
+\begin{tabular}{|p{.5\textwidth}|}
+\hline
+{\bf robot.ll}
+\\
+\hline
+\begin{verbatim}
+programa
+| /* programa vacío */  => Fin
+| comando programa      => Secuencia($1, $2)
+
+comando
+| "AVANZAR" NUM         => CmdAvanzar($2)
+| "GIRAR" sentido       => CmdGirar($2)
+
+sentido
+| "IZQ"                 => Izquierda
+| "DER"                 => Derecha
+\end{verbatim}
+\\
+\hline
+\end{tabular}
+\end{center}
+Cada producci\'on de la gram\'atica est\'a acompa\~nada de una acci\'on.
+Las acciones se escriben despu\'es de una flecha ``\texttt{=>}''
+e indican cu\'al
+es el resultado que se debe asociar a dicha construcci\'on gramatical.
+El resultado asociado a cada construcci\'on es siempre un \'arbol.
+El parser \lleca recibe
+adem\'as como entrada un archivo fuente, por ejemplo el siguiente:
+\begin{center}
+\begin{tabular}{|p{.5\textwidth}|}
+\hline
+{\bf esquina.input}
+\\
+\hline
+\begin{verbatim}
+AVANZAR 10 GIRAR DER AVANZAR 10
+\end{verbatim}
+\\
+\hline
+\end{tabular}
+\end{center}
+El parser \lleca analiza el archivo fuente con la gram\'atica indicada,
+y produce un \'arbol como resultado.
+Por ejemplo, si se invoca al parser con la gram\'atica
+{\bf robot.ll} y el archivo fuente {\bf esquina.input},
+se obtiene como resultado el siguiente \'arbol:
+\begin{center}
+\begin{tabular}{p{.5\textwidth}}
+\begin{verbatim}
+Secuencia( CmdAvanzar(10),
+           Secuencia( CmdGirar(Derecha),
+                      Secuencia( CmdAvanzar(10),
+                                 Fin ) ) )
+\end{verbatim}
+\end{tabular}
+\end{center}
+En caso de que el archivo fuente no est\'e en el lenguaje generado
+por la gram\'atica, \lleca debe emitir un mensaje de error.
+En el contexto de este TP no es necesario que los mensajes de error sean
+descriptivos\footnote{Pero cuanto m\'as descriptivos, mejor.}; alcanzar\'a con indicar que hay un error
+de sintaxis.
+
+\section{An\'alisis l\'exico}
+
+En este apartado se describe c\'omo debe funcionar el analizador l\'exico
+o tokenizador.
+El mismo analizador l\'exico se utilizar\'a para segmentar tanto la
+gram\'atica como el archivo fuente.
+Los archivos que manipula \lleca constan de una secuencia de tokens:
+
+\begin{itemize}
+\item {\bf Identificadores}.
+      Son simplemente nombres. En distintos lenguajes y contextos
+      pueden representar diferentes cosas;
+      por ejemplo, nombres de variables o funciones.
+      Los identificadores son de la forma \texttt{[a-zA-Z\_][a-zA-Z0-9\_]*}
+      es decir, constan de:
+      \begin{itemize}
+      \item Un primer caracter que debe ser alfab\'etico (\texttt{a, ..., z, A, ..., Z}) o un gui\'on bajo (\verb|_|).
+      \item Seguido de una secuencia de $0$ o m\'as caracteres que pueden ser
+            alfab\'eticos (\texttt{a, ..., z, A, ..., Z}), d\'igitos (\texttt{0, ..., 9}) o un gui\'on bajo (\verb|_|).
+      \end{itemize}
+      Ejemplos de identificadores:
+      \begin{center}
+      \verb|x    y    foo    BAR    _    CamelCase    f_o_o    foo42|
+      \end{center}
+      Idealmente los identificadores deber\'ian ser de longitud ilimitada, pero se acepta que la implementaci\'on
+      se restrinja a identificadores de longitud entre 1 y 63.
+\item {\bf N\'umeros.}
+      Son constantes num\'ericas (enteros no negativos).
+      Son de la forma \texttt{[0-9]+} es decir, constan de una secuencia
+      de uno o m\'as d\'igitos.
+
+      Ejemplos de constantes num\'ericas:
+      \begin{center}
+      \verb|0    1    2    001    42    123456789|
+      \end{center}
+      Idealmente las constantes num\'ericas deber\'ian ser de longitud ilimitada, pero se acepta que la implementaci\'on
+      se restrinja a constantes num\'ericas entre $0$ y $2^{31} - 1$, que corresponde al m\'aximo entero positivo
+      representable en un entero de 32 bits con signo.
+\item {\bf Cadenas.}
+      Constantes de cadena ({\em strings}).
+      Empiezan con una comilla doble (\texttt{"}) y finalizan con una comilla doble (\texttt{"}).
+      Todos los caracteres comprendidos entre la primera comilla y la segunda comilla se consideran
+      el contenido del string.
+      Adem\'as, se deben aceptar las siguientes secuencias de escape:
+      \begin{itemize}
+      \item \verb|\"| -- contrabarra (\verb|\|) seguida de una comilla doble (\verb|"|): representa una \'unica comilla doble (\verb|"|).
+      \item \verb|\\| -- contrabarra (\verb|\|) seguida de contrabarra (\verb|\|): representa una \'unica contrabarra (\verb|\|).
+      \end{itemize}
+      Por ejemplo, la constante de cadena \verb|"Hola \"mundo\"."| representa un texto de longitud 13.
+
+      Idealmente las cadenas deber\'ian ser de longitud ilimitada, pero se acepta que la implementaci\'on
+      se restrinja a constantes num\'ericas de hasta 1023 caracteres.
+
+      Ejemplos de constantes de cadena:
+      \begin{center}
+      \verb|""    "a"    "b"    "abc"    "\\"    "\"a\""|
+      \end{center}
+
+\item {\bf Literales: palabras clave y s\'imbolos reservados.}
+      Llamamos {\em literales} a las palabras clave y s\'imbolos reservados del lenguaje.
+      El conjunto de palabras clave y s\'imbolos reservados depende del lenguaje.
+      Por ejemplo,
+      en un lenguaje como Python la cadena \verb|and| es una palabra clave (que representa el ``y'' l\'ogico)
+      y \verb|**| es un s\'imbolo reservado (que representa la potencia),
+      mientras que en un lenguaje como C la palabra \verb|and| es simplemente un identificador (que podr\'ia
+      ser el nombre de una variable o una funci\'on)
+      y la cadena \verb|**| se tokeniza como una secuencia de dos s\'imbolos reservados
+      (es decir, dos veces el literal \verb|*|).
+      Es por eso que el tokenizador debe ser {\em param\'etrico}.
+
+      Dicho de otro modo, cuando se crea un tokenizador, se deben proveer dos conjuntos de strings:
+      \begin{itemize}
+      \item Un conjunto $\mathcal{K}$ de {\bf palabras clave}.
+      \item Un conjunto $\mathcal{S}$ de {\bf s\'imbolos reservados}.
+      \end{itemize}
+
+      Por ejemplo, si el conjunto de palabras clave es vac\'io,
+      es decir $\mathcal{K} = \emptyset$,
+      y el conjunto de s\'imbolos reservados es
+      $\mathcal{S} = \{\verb|"+"|\}$,
+      entonces el siguiente archivo de entrada:
+      \begin{center}
+      \texttt{if++x}
+      \end{center}
+      consta de cuatro tokens:
+      \begin{enumerate}
+      \item el identificador \verb|"if"|,
+      \item el s\'imbolo reservado \verb|"+"|,
+      \item el s\'imbolo reservado \verb|"+"|,
+      \item el identificador \verb|"x"|.
+      \end{enumerate}
+
+      En cambio si el conjunto de palabras clave es $\mathcal{K} = \{\verb|"if"|\}$
+      y el conjunto de s\'imbolos reservados es $\mathcal{S} = \{\verb|"++"|\}$,
+      el mismo archivo de entrada consta de s\'olo tres tokens:
+      \begin{enumerate}
+      \item la {\bf palabra clave} \verb|"if"|,
+      \item el s\'imbolo reservado \verb|"++"|,
+      \item el identificador \verb|"x"|.
+      \end{enumerate}
+
+      El conjunto $\mathcal{K}$ de palabras clave debe contener \'unicamente palabras de la forma \verb|[a-zA-Z_][a-zA-Z0-9_]*|.
+      Por ejemplo, las siguientes podr\'ian ser palabras clave en alg\'un lenguaje:
+      \begin{center}
+      \verb`if    then    else    while    return    BEGIN    END    _`
+      \end{center}
+
+      El conjunto $\mathcal{S}$ de s\'imbolos reservados debe contener \'unicamente s\'imbolos
+      formados por cualquiera de los siguientes caracteres:
+      \begin{center}
+      \verb`(  )  [  ]  {  }  ,  ;  :  .  +  -  *  /  %  !  ?  $  @  #  |  &  =  <  >  ~  ^  \`
+      \end{center}
+      Por ejemplo, los siguientes podr\'ian ser s\'imbolos reservados en alg\'un lenguaje:
+      \begin{center}
+      \verb|+    :    ++    ->    >>    <*>    $$|
+      \end{center}
+      La \'unica excepci\'on es que un s\'imbolo reservado {\bf no} puede comenzar con \verb|/*|
+      porque dicha combinaci\'on se utiliza para delimitar comentarios.
+
+      Las palabras clave y s\'imbolos reservados se tratan de manera ligeramente distinta.
+      Cuando el tokenizador reconoce una secuencia de caracteres de la forma \verb|[a-zA-Z_][a-zA-Z0-9_]*|
+      que podr\'ian componer un identificador, verifica si se encuentra dentro del conjunto
+      de palabras clave $\mathcal{K}$ o no. Por ejemplo, si $\mathcal{K} = \{\verb|"if"|\}$,
+      el siguiente archivo de entrada:
+      \begin{center}
+        \verb|if x ifx|
+      \end{center}
+      consta de tres tokens:
+      \begin{enumerate}
+      \item la palabra clave \verb|"if"|.
+      \item el identificador \verb|"x"|.
+      \item el identificador \verb|"ifx"|.
+      \end{enumerate}
+      En cambio, en el caso de los s\'imbolos reservados, el tokenizador siempre consume el s\'imbolo m\'as largo que pueda consumir. Por ejemplo, si el lenguaje reconoce
+      tanto el s\'imbolo \verb|+| como el s\'imbolo \verb|++|,
+      es decir $\mathcal{S} = \{\verb|"+"|, \verb|"++"|\}$
+      entonces el archivo de entrada que repite cinco veces el caracter \verb|+|:
+      \begin{center}
+        \verb|+++++|
+      \end{center}
+      consta de tres tokens:
+      \begin{enumerate}
+      \item el s\'imbolo reservado \verb|"++"|.
+      \item el s\'imbolo reservado \verb|"++"|.
+      \item el s\'imbolo reservado \verb|"+"|.
+      \end{enumerate}
+      Para conseguir este comportamiento se recomienda ordenar los
+      s\'imbolos reservados de mayor a menor longitud.
+      El tokenizador comprueba, uno por uno, si hay un prefijo
+      de la entrada que coincida con alguno de los s\'imbolos
+      reservados\footnote{La soluci\'on ideal es implementarlo con un
+      aut\'omata finito o un trie,
+      pero no es necesario en el contexto de este TP.}.
+     
+\item {\bf Espacios en blanco.}
+      El tokenizador debe ignorar todos los espacios (\verb|' '|), tabs (\verb|'\t'|), retorno de carro (\verb|'\r'|) y fin de l\'inea (\verb|'\n'|).
+\item {\bf Comentarios.}
+      El tokenizador acepta comentarios comenzados con \verb|/*| es decir, una barra \verb|/| seguida de un asterisco \verb|*|
+      y finalizan cuando se encuentra la primera ocurrencia de \verb|*/|
+      es decir un asterisco \verb|*| seguido de una barra \verb|/|.
+      Notar que el tokenizador {\bf no} reconoce comentarios anidados.
+\item {\bf Notaci\'on para los s\'imbolos terminales.}
+      Escribimos:
+      \begin{itemize}
+      \item \tok{identificador} para el s\'imbolo terminal que representa un identificador.
+      \item \tok{n\'umero} para el s\'imbolo terminal que representa una constante num\'erica.
+      \item \tok{cadena} para el s\'imbolo terminal que representa una constante de de cadena.
+      \item \textcolor{red}{\texttt{"}\texttt{...}\texttt{"}} para los s\'imbolos terminales que representan literales.
+      Por ejemplo \textcolor{red}{\texttt{"}\texttt{if}\texttt{"}}
+      representa la palabra clave \verb|if|
+      y \textcolor{red}{\texttt{"}\texttt{++}\texttt{"}} representa el s\'imbolo reservado \verb|++|.
+      \end{itemize}
+\end{itemize}
+
+\subsection{Pseudoc\'odigo para el tokenizador}
+
+\begin{lstlisting}
+.function siguiente_token()
+    Saltear espacios y comentarios.
+    (*@$c$@*) := siguiente_caracter()
+    .case (*@$c$@*) es un d\'igito:
+         (*@$valor$@*) := leer una secuencia de d\'igitos de la entrada
+         .return .new TokenNum\'erico(string_to_int((*@$valor$@*)))
+    .case (*@$c$@*) es un caracter alfab\'etico o gui\'on bajo:
+         (*@$valor$@*) := leer una secuencia de caracteres alfanum\'ericos de la entrada
+         .if (*@$valor$@*) es una palabra clave
+             .return .new TokenLiteral((*@$valor$@*))
+         .else
+             .return .new TokenIdentificador((*@$valor$@*))
+         .end
+    .case (*@$c$@*) es una comilla:
+         (*@$valor$@*) := leer caracteres de la entrada hasta la siguiente comilla
+         .return .new TokenCadena((*@$valor$@*))
+    .else:
+         .foreach s\'imbolo reservado (*@$sym$@*) en orden decreciente de longitud
+             .if la entrada empieza con (*@$sym$@*)
+                 .return .new TokenLiteral((*@$sym$@*))
+             .end
+         .end
+         .throw (*@\textrm{``Error de sintaxis: caracter desconocido en la entrada''}@*)
+    .end
+.end
+\end{lstlisting}
+
+\section{Lectura de la gram\'atica}
+
+\subsection{Descripci\'on informal del lenguaje \lleca}
+
+Una vez que est\'e programado el tokenizador, se debe programar un
+analizador sint\'actico para reconocer la gram\'atica
+escrita en el lenguaje \lleca.
+
+{\bf OJO:} no confundir este paso con el paso siguiente.
+En este paso \'unicamente se lee un archivo escrito en lenguaje
+\lleca y se construye una estructura de datos para representar
+internamente la gram\'atica le\'ida.
+Este paso {\bf NO} es el parser gen\'erico para analizar cualquier
+archivo fuente sino un parser espec\'ifico para el lenguaje \lleca.
+
+\begin{itemize}
+\item
+  Una {\bf gram\'atica} escrita en el lenguaje \lleca consta de una secuencia
+  de $0$ o m\'as reglas. 
+\item
+  Cada {\bf regla} est\'a encabezada por un s\'imbolo no terminal
+  seguido de una lista de $0$ o m\'as producciones.
+\item
+  Cada {\bf producci\'on}
+  comienza con una barra vertical (\verb`"|"`),
+  seguida de la expansi\'on (lado derecho de la producci\'on)
+  y seguida de una acci\'on.
+  La acci\'on est\'a dada por una flecha (\verb`"=>"`)
+  y un t\'ermino. El t\'ermino representa el \'arbol
+  que resulta de hacer el an\'alisis sint\'actico de dicha producci\'on.
+\item
+  Cada {\bf expansi\'on} es una lista de s\'imbolos.
+  Los s\'imbolos pueden ser
+  cadenas, identificadores, o cualquiera de las palabras
+  clave \verb|"ID"|, \verb|"STRING"| o \verb|"NUM"|.
+\item
+  Un {\bf t\'ermino} es una expresi\'on recursiva que se construye
+  de alguna de las siguientes maneras:
+  \begin{itemize}
+  \item La palabra clave \verb|"_"| (gui\'on bajo).
+  \item Un identificador sin argumentos, por ejemplo, \texttt{Nil}.
+  \item Un identificador acompa\~nado de una lista de
+        argumentos encerrados entre par\'entesis y delimitados por comas,
+        por ejemplo, \texttt{f(a, b, c)}
+  \item Una constante de cadena.
+  \item Una constante num\'erica.
+  \item Una referencia a un par\'ametro, por ejemplo \verb|$3|.
+  \item Una referencia a un par\'ametro seguida de un
+        {\bf \'unico} argumento entre corchetes,
+        por ejemplo \verb|$3[f(a, b, c)]|.
+  \end{itemize}
+
+  El siguiente es un ejemplo sencillo de gram\'atica:
+  \begin{center}
+  \begin{tabular}{|p{.8\textwidth}|}
+ \hline
+  {\bf alumnos.ll}
+  \\
+  \hline
+  \begin{verbatim}
+    base_de_alumnos
+    | "begin" lista_alumnos "end" => $2
+
+    lista_alumnos
+    |                             => Nil
+    | alumno ";" lista_alumnos    => Cons($1, $3)
+
+    alumno
+    | "#" NUM ":=" STRING         => Alumno("nombre", $4, "legajo", $2)
+  \end{verbatim}
+  \\
+  \hline
+  \end{tabular}
+  \end{center}
+
+\end{itemize}
+
+\subsection{Gram\'atica del lenguaje \lleca}
+
+Las palabras clave del lenguaje lleca son:
+\begin{center}
+    \verb|_    ID    STRING    NUM|
+\end{center}
+Los s\'imbolos reservados del lenguaje lleca son:
+\begin{center}
+    \verb`|    =>    $    (    )    ,    [    ]`
+\end{center}
+A continuaci\'on se dan todas las producciones de la gram\'atica
+del lenguaje \lleca. El s\'imbolo inicial es \nonterm{gram\'atica}.
+\begin{itemize}
+\produccion{\nonterm{gram\'atica}}{
+     \EMPTY
+\ALT
+     \nonterm{regla} \nonterm{gram\'atica}
+}
+\produccion{\nonterm{regla}}{
+     \tok{identificador} \nonterm{producciones}
+}
+\produccion{\nonterm{producciones}}{
+     \EMPTY
+\ALT
+     \nonterm{producci\'on} \nonterm{producciones}
+}
+\produccion{\nonterm{producci\'on}}{
+     \textcolor{red}{\verb`"|"`} \nonterm{expansi\'on} \textcolor{red}{\verb|"=>"|} \nonterm{t\'ermino}
+}
+\produccion{\nonterm{expansi\'on}}{
+     \EMPTY
+\ALT \nonterm{s\'imbolo} \nonterm{expansi\'on}
+}
+\produccion{\nonterm{s\'imbolo}}{
+     \textcolor{red}{\verb|"ID"|}
+\ALT \textcolor{red}{\verb|"STRING"|}
+\ALT \textcolor{red}{\verb|"NUM"|}
+\ALT \tok{cadena}
+\ALT \tok{identificador}
+}
+\produccion{\nonterm{t\'ermino}}{
+     \textcolor{red}{\verb|"_"|}
+\ALT \tok{identificador} \nonterm{argumentos}
+\ALT \tok{cadena}
+\ALT \tok{n\'umero}
+\ALT \textcolor{red}{\verb|"$"|} \tok{n\'umero} \nonterm{sustituci\'on}
+}
+\produccion{\nonterm{argumentos}}{
+     \EMPTY
+\ALT \textcolor{red}{\verb|"("|} \nonterm{lista\_argumentos} \textcolor{red}{\verb|")"|}
+}
+\produccion{\nonterm{lista\_argumentos}}{
+     \EMPTY
+\ALT \nonterm{t\'ermino} \nonterm{lista\_argumentos\_cont}
+}
+\produccion{\nonterm{lista\_argumentos\_cont}}{
+     \EMPTY
+\ALT \textcolor{red}{\verb|","|} \nonterm{t\'ermino} \nonterm{lista\_argumentos\_cont}
+}
+\produccion{\nonterm{sustituci\'on}}{
+     \EMPTY
+\ALT \textcolor{red}{\verb|"["|} \nonterm{t\'ermino} \textcolor{red}{\verb|"]"|} 
+}
+\end{itemize}
+
+\subsection{Analizador sint\'actico para el lenguaje \lleca}
+
+Para analizar sint\'acticamente el lenguaje \lleca
+pueden implementar un parser manualmente, usando la t\'ecnica de
+an\'alisis sint\'actico por descenso recursivo.
+Tambi\'en pueden usar un generador de parsers para su lenguaje favorito.
+La gram\'atica que se provee arriba es LL(1).
+Si utilizan un generador de parsers que utilice otra t\'ecnica de
+an\'alisis sint\'actico como LALR(1),
+es probable que tengan que adaptar ligeramente la gram\'atica
+(por ejemplo, para eliminar la recursi\'on a derecha). 
+
+\section{Procesamiento del archivo fuente}
+
+En esta secci\'on se describe c\'omo analizar sint\'acticamente el archivo
+fuente. El parser que deben implementar est\'a basado en la t\'ecnica de
+an\'alisis sint\'actico LL(1).
+
+\subsection{C\'alculo del conjunto de palabras clave y s\'imbolos reservados}
+
+Una vez que se cuenta con una representaci\'on de la gram\'atica,
+el primer paso es determinar cu\'ales son las palabras clave y
+s\'imbolos reservados que usa dicha gram\'atica.
+Para ello se deben recorrer los s\'imbolos que aparezcan en
+las expansiones de todas las producciones.
+Todos los s\'imbolos que sean cadenas representar\'an palabras clave o
+s\'imbolos reservados.
+\medskip
+
+Por ejemplo, para la gram\'atica {\bf robot.ll}, tenemos:
+\begin{itemize}
+\item Palabras clave: $\mathcal{K} = \{\verb|"AVANZAR"|,\ \verb|"GIRAR"|,\ \verb|"IZQ"|,\ \verb|"DER"|\}$
+\item S\'imbolos reservados: $\mathcal{S} = \emptyset$.
+\end{itemize}
+\medskip
+
+Por otro lado, para la gram\'atica {\bf alumnos.ll}, tenemos:
+\begin{itemize}
+\item Palabras clave: $\mathcal{K} = \{\verb|"begin"|,\ \verb|"end"|\}$
+\item S\'imbolos reservados: $\mathcal{S} = \{\verb|"#"|,\ \verb|":="|,\ \verb|";"|\}$.
+\end{itemize}
+\medskip
+
+Observar que las cadenas que aparecen en las acciones (por ejemplo,
+\verb|"nombre"| y \verb|"legajo"| en el caso de {\bf alumnos.ll})
+no tienen por qu\'e ser palabras clave ni s\'imbolos reservados.
+
+\subsection{Construcci\'on de la tabla de an\'alisis sint\'actico LL(1)}
+
+El c\'alculo de la tabla LL(1) tiene tres pasos, que se describen en
+las cuatro secciones siguientes.
+
+\subsubsection{C\'alculo del conjunto \texttt{FIRST}}
+
+El primer paso es calcular el conjunto de {\bf primeros} \texttt{FIRST}($X$) para cada s\'imbolo terminal o no terminal $X \in \Sigma \cup N$.
+Recordar que el conjunto $\first(X)$ es un conjunto de s\'imbolos terminales y posiblemente el s\'imbolo $\eps$,
+es decir $\first(X) \subseteq \Sigma \cup \set{\eps}$.
+Un s\'imbolo terminal $a \in \Sigma$ est\'a en el conjunto $\texttt{FIRST}(X)$
+cuando $X \Rightarrow^* a\beta$ para alguna cadena $\beta \in (N \cup \Sigma)^*$.
+El s\'imbolo $\eps$ est\'a en el conjunto $\texttt{FIRST}(X)$
+cuando $X$ es anulable, es decir $X \Rightarrow^* \eps$.
+Se recuerda el pseudoc\'odigo para calcular el conjunto \texttt{FIRST}($X$) para
+cada s\'imbolo $X \in \Sigma \cup N$:
+\vspace{1cm}
+\begin{lstlisting}
+.entrada Una gram\'atica (*@$G = (N,\Sigma,P,S)$@*).
+.salida  El conjunto (*@$\first(X)$@*) para cada s\'imbolo (*@$X \in N \setunion \Sigma$@*).
+  (*@$\mathcal{F}$@*) := un diccionario (*@$\{X \mapsto \emptyset \ \ST\ X \in N \setunion \Sigma\}$@*)
+  Poner (*@$\mathcal{F}$@*)[(*@$a$@*)] := (*@\set{$a$}@*) para cada s\'imbolo terminal (*@$a \in \Sigma$@*).
+  .repeat hasta que no haya cambios
+      .foreach producci\'on (*@$(A \to X_1 \hdots X_n) \in P$@*)
+          .for. (*@$i$ = 1@*) to (*@$n$@*)
+              .if (*@$X_1, \hdots, X_{i-1}$@*) son todos s\'imbolos anulables, es decir (*@$\eps \in \mathcal{F}[X_1] \cap \hdots \cap \mathcal{F}[X_{i-1}]$@*)
+                  (*@$\mathcal{F}[A]$@*) := (*@$\mathcal{F}[A] \setunion \mathcal{F}[X_i]$@*)
+              .end
+          .end
+          .if (*@$X_1, \hdots, X_{n}$@*) son todos s\'imbolos anulables, es decir (*@$\eps \in \mathcal{F}[X_1] \cap \hdots \cap \mathcal{F}[X_{n}]$@*)
+              (*@$\mathcal{F}[A]$@*) := (*@$\mathcal{F}[A] \setunion \set{\eps}$@*)
+          .end
+      .end
+  .end
+  .return (*@$\mathcal{F}$@*)
+\end{lstlisting}
+
+El conjunto de primeros se puede generalizar para una cadena $\alpha \in (N \cup \Sigma)^*$.
+Al igual que antes, $\first(\alpha) \subseteq \Sigma \cup \set{\eps}$,
+de tal modo que un s\'imbolo terminal $a \in \Sigma$ est\'a en el conjunto $\texttt{FIRST}(\alpha)$
+si y s\'olo si $\alpha \Rightarrow^* a\beta$ para alguna cadena $\beta \in (N \cup \Sigma)^*$.
+El s\'imbolo $\eps$ est\'a en el conjunto $\texttt{FIRST}(\alpha)$
+cuando la cadena $\alpha$ es anulable, es decir $\alpha \Rightarrow^* \eps$.
+Se recuerda el pseudoc\'odigo para calcular el conjunto \texttt{FIRST}($\alpha$) para
+una cadena arbitraria $\alpha \in (\Sigma \cup N)^*$:
+\begin{lstlisting}
+.entrada Una gram\'atica (*@$G = (N,\Sigma,P,S)$@*) y una cadena (*@$X_1 \hdots X_n \in (N \cup \Sigma)^\star$@*).
+.salida  El conjunto (*@$\first(\pal)$@*).
+  Computar el diccionario (*@$\mathcal{F}$@*) que a cada s\'imbolo (*@$X \in N \setunion \Sigma$@*) le asocia (*@$\first(X)$@*).
+  (*@$\mathcal{R} := \emptyset$@*)
+  .for. (*@$i$ = 1@*) to (*@$n$@*)
+      .if (*@$X_1, \hdots, X_{i-1}$@*) son todos s\'imbolos anulables, es decir (*@$\eps \in \mathcal{F}[X_1] \cap \hdots \cap \mathcal{F}[X_{i-1}]$@*)
+          (*@$\mathcal{R}$@*) := (*@$\mathcal{R} \setunion \mathcal{F}[X_i]$@*)
+      .end
+  .end
+  .if (*@$X_1, \hdots, X_{n}$@*) son todos s\'imbolos anulables, es decir (*@$\eps \in \mathcal{F}[X_1] \cap \hdots \cap \mathcal{F}[X_{n}]$@*)
+      (*@$\mathcal{R}$@*) := (*@$\mathcal{R} \setunion \set{\eps}$@*)
+  .end
+  .return (*@$\mathcal{R}$@*)
+\end{lstlisting}
+
+
+\subsubsection{C\'alculo del conjunto \texttt{FOLLOW}}
+
+El segundo paso es calcular el conjunto de {\bf siguientes} \texttt{FOLLOW}($A$) para cada s\'imbolo no terminal $A \in N$.
+Recordar que el conjunto $\follow(A)$ es un conjunto de s\'imbolos terminales y posiblemente el s\'imbolo $\$$,
+es decir $\follow(X) \subseteq \Sigma \cup \set{\$}$.
+Un s\'imbolo terminal $b \in \Sigma$ est\'a en el conjunto $\texttt{FOLLOW}(A)$
+cuando $S \Rightarrow^* \gamma_1 A b \gamma_2$ para ciertas cadenas $\gamma_1, \gamma_2 \in (N \cup \Sigma)^*$,
+donde $S$ es el s\'imbolo inicial.
+El s\'imbolo $\$$ est\'a en el conjunto $\texttt{FOLLOW}(A)$
+cuando $S \Rightarrow^* \gamma A$ para cierta cadena $\gamma \in (N \cup \Sigma)^*$.
+Se recuerda el pseudoc\'odigo para calcular el conjunto \texttt{FOLLOW}($A$) para
+cada s\'imbolo no terminal $A \in N$:
+
+\begin{lstlisting}
+.entrada Una gram\'atica (*@$G = (N,\Sigma,P,S)$@*).
+.salida  El conjunto (*@$\follow(A)$@*) para cada s\'imbolo no terminal (*@$A \in N$@*).
+  (*@$\mathcal{W}$@*) := un diccionario (*@$\{X \mapsto \emptyset \ \ST\ X \in N \setunion \Sigma\}$@*)
+  (*@$\mathcal{W}[S]$@*) := (*@$\set{\$}$@*)
+  .foreach producci\'on y s\'imbolo no terminal (*@$A \to \pal B \paltwo$@*)
+      (*@$\mathcal{W}[B]$@*) := (*@$\mathcal{W}[B] \cup (\first(\paltwo) \setminus \set{\eps})$@*) 
+  .end
+  .while hay alg\'un cambio
+      .foreach producci\'on y s\'imbolo no terminal (*@$A \to \pal B \paltwo$@*)
+               tal que (*@$\paltwo$@*) es anulable, es decir (*@$\eps \in \first(\paltwo)$@*)
+          (*@$\mathcal{W}[B]$@*) := (*@$\mathcal{W}[B] \cup \mathcal{W}[A]$@*) 
+      .end
+  .end
+  .return (*@$\mathcal{W}$@*)
+\end{lstlisting}
+
+\subsubsection{C\'alculo de la tabla LL(1)}
+
+La tabla de an\'alisis sint\'actico LL(1) indica, dado un s\'imbolo no terminal $A \in N$
+y el siguiente s\'imbolo terminal $b \in \Sigma$, cu\'al es la producci\'on que debe
+aplicar el algoritmo.
+
+\begin{lstlisting}
+.entrada Una gram\'atica (*@$G = (N,\Sigma,P,S)$@*).
+.salida  La tabla de an\'alisis sint\'actico LL(1) para (*@$G$@*).
+Poner (*@$\mathcal{T}[A,b] := \emptyset$@*) para todo (*@$(A,b) \in N \times \Sigma$@*).
+.foreach producci\'on (*@$(A \to \pal) \in P$@*)
+    .foreach s\'imbolo terminal (*@$x \in (\first(\pal) \setminus \set{\eps})$@*)
+        (*@$\mathcal{T}[A,x]$@*) := (*@$\mathcal{T}[A,x] \cup \set{A \to \pal}$@*)
+    .end
+    .if (*@$\pal$@*) es anulable, es decir (*@$\eps \in \first(\pal)$@*)
+        .foreach s\'imbolo (*@$x \in \follow(A)$@*)
+            (*@$\mathcal{T}[A,x]$@*) := (*@$\mathcal{T}[A,x] \cup \set{A \to \pal}$@*)
+        .end
+    .end
+.end
+.return (*@$\mathcal{T}$@*)
+\end{lstlisting}
+
+Recordar que, si a alguna entrada le corresponden dos producciones distintas,
+hay un conflicto en la tabla, de tal manera que la gram\'atica no es LL(1)
+y no puede aplicarse este m\'etodo de an\'alisis sint\'actico.
+En este caso \lleca deber\'ia reportar la presencia de un conflicto en la gram\'atica.
+
+\subsection{An\'alisis sint\'actico}
+
+Este paso requiere que se hayan calculado el conjunto de palabras clave $\mathcal{K}$ y s\'imbolos reservados $\mathcal{S}$
+de la gram\'atica, y que se hayan calculado los conjuntos de s\'imbolos anulables, primeros
+y siguientes.
+El primer paso para analizar sint\'acticamente el archivo fuente es tokenizarlo con
+los conjuntos $\mathcal{K}$ y $\mathcal{S}$ ya calculados.
+A continuaci\'on se ejecuta el siguiente algoritmo recursivo \texttt{analizar}.
+Recibe como par\'ametro un s\'imbolo terminal o no terminal $X \in N \cup \Sigma$.
+De manera recursiva devuelve un \'arbol (m\'as precisamente un {\bf t\'ermino}),
+ejecutando las acciones tal como las especifica la gram\'atica.
+
+\begin{lstlisting}
+.function analizar(X)
+.entrada Un s\'imbolo terminal o no terminal (*@$X \in N \cup \Sigma$@*).
+.salida  El AST que resulta de consumir el prefijo de la entrada que
+         corresponde al s\'imbolo (*@$X$@*). Eleva un error de sintaxis en caso
+         de que la entrada no est\'a en el lenguaje.
+    .if (*@$X$@*) es un s\'imbolo terminal
+        (*@$b$@*) := siguiente_token()           // consumir un token
+        .if (*@$b \neq X$@*)
+            .throw (*@\textrm{``Error de sintaxis: se esperaba leer $X$ pero se encontr\'o $b$.''}@*)
+        .end
+        .return un \'arbol que consta \'unicamente de la hoja (*@$X$@*), con su valor asociado.
+    .else
+        (*@$b$@*) := espiar_siguiente_token()    // mirar un token sin consumirlo
+        .if (*@$\mathcal{T}[X,b] == \emptyset$@*)
+          .throw (*@\textrm{``Error de sintaxis: se esperaba leer $X$ pero se encontr\'o $b$.''}@*)
+        .end
+        Sea (*@$(X \to Y_1 \hdots Y_n)$@*) la \'unica producci\'on en el lugar (*@$\mathcal{T}[X, b]$@*) de la tabla.
+        (*@$args$ := []@*)
+        .foreach (*@$i \in [1, ..., n]$@*)
+          (*@$args$@*).agregar(analizar((*@$Y_i$@*)))
+        .end
+        .return un \'arbol que resulta de aplicar la acci\'on de la producci\'on (*@$X \to Y_1 \hdots Y_n$@*)
+                con la lista de argumentos (*@$args$@*).
+    .end
+.end
+\end{lstlisting}
+
+\subsection{Acciones}
+
+El proceso de an\'alisis sint\'actico construye recursivamente un {\bf t\'ermino}.
+Los t\'erminos son \'arboles con la siguiente estructura (especificada usando un tipo
+de datos de Haskell):
+\begin{verbatim}
+  data Termino = Agujero
+               | Cadena String
+               | Numero Int
+               | Estructura String [Termino]
+\end{verbatim}
+En la notaci\'on del lenguaje \lleca, el siguiente es un t\'ermino posible:
+\begin{verbatim}
+  foo(bar("hola", 123), baz(_))
+\end{verbatim}
+que corresponde (en notaci\'on de Haskell) al siguiente valor:
+\begin{verbatim}
+  Estructura "foo" [
+    Estructura "bar" [
+      Cadena "hola",
+      Numero 123
+    ],
+    Estructura "baz" [
+      Agujero
+    ]
+  ]
+\end{verbatim}
+
+Se describe el significado de las acciones asociadas a cada producci\'on:
+
+\begin{itemize}
+\item {\bf Gui\'on bajo (\verb|_|):} construye un t\'ermino \texttt{Agujero}.
+\item {\bf Cadena $s$:} construye un t\'ermino \texttt{Cadena $s$}.\\
+      \verb|"hola"| $\rightsquigarrow$ \verb|Cadena "hola"|
+\item {\bf N\'umero $n$:} construye un t\'ermino \texttt{Numero $n$}.\\
+      \verb|123| $\rightsquigarrow$ \verb|Numero 123|
+\item {\bf Identificador $id$ sin argumentos:} construye un t\'ermino \texttt{Estructura $id$ []}.\\
+      \verb|foo| construye el \'arbol \verb|Estructura "foo" []|
+\item {\bf Identificador $id$ con argumentos:} construye un t\'ermino \texttt{Estructura $id$ [...$argumentos$...]}.\\
+      \verb|foo(bar, baz)| construye el \'arbol \verb|Estructura "foo" [Estructura "bar" [], Estructura "baz" []]|
+\item {\bf Par\'ametro $\$n$:} devuelve el $n$-\'esimo argumento de la lista \texttt{argumentos} que resulta de la invocaci\'on 
+      recursiva del algoritmo \texttt{analizar}.\\
+      \verb|suma($1, $3)| $\rightsquigarrow$ \verb|Estructura "suma" [rec1, rec3]|\\
+      donde \texttt{rec1} e \texttt{rec3} representan los valores de los s\'imbolos \texttt{Y1} e \texttt{Y3} en la producci\'on \verb|X -> Y1 ... Yn|.
+\item {\bf Par\'ametro con sustituci\'on, $\$n[X]$ :}
+      el $n$-\'esimo argumento de la lista \texttt{argumentos} es un t\'ermino
+      que resulta de la invocaci\'on recursiva del algoritmo \texttt{analizar}.
+      Cada vez que en dicho \'arbol haya una ocurrencia de \texttt{Agujero}
+      se la debe reemplazar por el valor de \texttt{X}.
+
+      Por ejemplo, con la siguiente gram\'atica:
+      \begin{verbatim}
+      cosa
+      |          =>  _
+      | NUM cosa =>  $2[suma(_, $1)])
+      \end{verbatim}
+      La entrada \verb|30| tiene como resultado:
+      \begin{verbatim}
+        suma(_, 30)
+      \end{verbatim}
+      La entrada \verb|20 30| tiene como resultado:
+      \begin{verbatim}
+        suma(suma(_, 20), 30)
+      \end{verbatim}
+      Y la entrada \verb|10 20 30| tiene como resultado:
+      \begin{verbatim}
+        suma(suma(suma(_, 10), 20), 30)
+      \end{verbatim}
+\end{itemize}
+
+\section{Pautas de entrega}
+
+Para entregar el TP se debe enviar el c\'odigo fuente por e-mail
+a la casilla \texttt{foones@gmail.com} hasta las 23:59:59 del d\'ia
+estipulado para la entrega, incluyendo \texttt{[TP lds-est-parse]} en
+el asunto y el nombre de los integrantes del grupo en el cuerpo
+del e-mail. No es necesario hacer un informe sobre el TP, pero se espera
+que el c\'odigo sea razonablemente legible.
+Se debe incluir un README
+indicando las dependencias y el mecanismo de ejecuci\'on
+recomendado para que el programa provea la funcionalidad pedida.
+Se recomienda probar el programa con el conjunto de tests provistos.
+
+\end{document}
+

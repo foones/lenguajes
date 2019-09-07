@@ -1,0 +1,6 @@
+
+fun main() {
+    v := [1, 2, 3]
+    putNum(#v)
+    putChar(10)
+}

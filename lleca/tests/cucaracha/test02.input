@@ -1,0 +1,6 @@
+fun main() {
+  putChar(65)
+  putChar(66)
+  putChar(67)
+  putChar(10)
+}

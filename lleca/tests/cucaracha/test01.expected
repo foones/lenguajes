@@ -1,0 +1,20 @@
+Cons(
+  Function(
+    main,
+    Nil,
+    Unit,
+    Cons(
+      StmtCall(
+        putChar,
+        Cons(
+          ExprConstNum(
+            65
+          ),
+          Nil
+        )
+      ),
+      Nil
+    )
+  ),
+  Nil
+)
