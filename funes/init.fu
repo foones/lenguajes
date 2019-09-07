@@ -56,7 +56,7 @@
 	 macro symbol-macro and backquote unquote unquote-splicing try to defstruct
 ;;; Definidas aca
 	 ;; constantes
-	 $funes-base-dir $funes-shared-lib-extension $funes-imp-path $funes-gc-path
+	 $funes-base-dir $funes-shared-lib-extension $funes-imp-path
 	 $funes-search-path
 
 	 ;; variables
@@ -87,16 +87,13 @@
 
 ;;;
 
-(def $funes-imp-path "$(do $funes-base-dir)/fu9")
-
-(def $funes-gc-path "$(do $funes-base-dir)/gc")
+(def $funes-imp-path "$(do $funes-base-dir)/src")
 
 (def $funes-search-path
  (list
 		"."
 		 "$(do $funes-base-dir)/lib"
-		 "$(do $funes-base-dir)/libs"
-		 "$(do $funes-base-dir)/mods"))
+		 "$(do $funes-base-dir)/ffi-bindings"))
 
 ;;;
 

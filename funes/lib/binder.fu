@@ -113,9 +113,9 @@
 ;;;;        the C constant named c-name.
 
 (def $include-dirs
- (list "$(do $funes-gc-path)/include" "$(do $funes-imp-path)/include"))
+ (list "$(do $funes-imp-path)/include"))
 (def $link-dirs
- (list "$(do $funes-imp-path)"))
+ (list "$(do $funes-imp-path)/.."))
 
 (macro with-out-file (var filename . body)
   `(le ,var (open ,filename "w")
