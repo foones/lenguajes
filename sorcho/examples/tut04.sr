@@ -1,0 +1,14 @@
+/*
+:: Tambien se pueden usar expresiones lambda
+
+f: (x ---> * x 2).
+
+:: Y para permitir que pattern-matchee,
+:: se pueden encerrar las definiciones genericas
+:: entre los tags <gen> ... </gen>:
+
+g: <gen>
+   ([] ---> "lista vacia")
+ o ((x|xs) ---> "lista no vacia")
+   </gen>.
+*/

@@ -1,0 +1,16 @@
+/*
+:: Tambien se pueden usar guardas
+
+factorial n:
+  // = n 0: 1
+  sino:  * n (factorial (- n 1)).
+
+fibonacci a:
+  // = a 0: 0
+  // = a 1: 1
+  sino: + (fibonacci (- a 1)) (fibonacci (- a 2)).
+
+:: Notar que *tambien* se escriben dos puntos antes
+:: de las guardas.
+:: No se escribe // antes del sino.
+*/

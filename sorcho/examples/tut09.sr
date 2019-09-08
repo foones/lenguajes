@@ -1,0 +1,31 @@
+/*
+:: Para encapsular datos, se pueden encerrar
+:: definiciones en Sorcho entre los tags
+:: <capsula> ... </capsula>:
+
+nat: <capsula>
+     please: Cero o Suc n.
+
+     sumar Cero m: m.
+     sumar (Suc n) m: sumar n (Suc m).
+
+     entero2nat n:
+       // = n 0: Cero
+       sino:     Suc (entero2nat (- n 1)).
+     </capsula>.
+
+:: Despues se puede acceder a ellos mediante
+:: el Smiley operator :)
+
+:: > nat:)entero2nat 4
+:: (Suc (Suc (Suc (Suc Cero))))
+
+:: > nat:)sumar (nat:)entero2nat 2) (nat:)entero2nat 3)
+:: (Suc (Suc (Suc (Suc (Suc Cero)))))
+
+:: Obviamente tambien se puede usar el operador Yelims,
+:: asi:
+
+:: > sumar(:nat Cero(:nat (Suc(:nat Cero(:nat)
+:: (Suc Cero)
+*/

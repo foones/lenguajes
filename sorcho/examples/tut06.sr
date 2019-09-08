@@ -1,0 +1,46 @@
+:: Las maquinas estan basadas en la especificacion de
+:: Funge-98 que se incluye en la distribucion.
+:: Casi todo esta implementado, salvo
+::  i input de archivos
+::  o output de archivos
+::  h go high
+::  l go low
+::  m if high/low
+::  y informacion del sistema
+
+:: Para crear una maquina, se colocan tres palabras clave,
+:: despues el nombre de la maquina, se abre una llave,
+:: y un enter. La maquina se cierra cuando hay una llave
+:: sola cerrando una linea.
+:: En el medio se ubican los comandos en Funge-98.
+
+:: Ejemplo 1: suma 4 al argumento pasado.
+rubik hladik void maquina1 {
+4+@
+}
+
+:: > maquina1 [10]
+:: XIV
+
+:: Ejemplo 2: para un numero positivo dado,
+:: imprime todos los numeros entre ese y el
+:: cero, decrecientemente.
+rubik hladik void maquina2 {
+>:.a,#@_v
+^     -1<
+}
+
+:: > maquina2 [6]
+:: VI
+:: V
+:: IV
+:: III
+:: II
+:: I
+:: nihil
+:: nihil
+
+:: Notar que el ultimo valor impreso es el devuelto
+:: por la maquina
+
+:: El lenguaje de la maquina es el llamado Kang.

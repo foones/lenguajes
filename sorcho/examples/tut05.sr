@@ -1,0 +1,21 @@
+:: Que es lo que va afuera de los /* */    ...?
+
+:: 1) importar archivos:
+
+:: Basta con encerrar un archivo terminado en .sr
+:: entre < > para importarlo.
+<tut01.sr>
+
+:: 2) opciones:
+
+:: Probar que pasa cuando ZEN esta prendido.
+<zen>
+
+:: Probar que pasa cuando CHARLATAN esta prendido.
+<charlatan>
+
+:: ZEN y CHARLATAN se apagan con los correspondientes
+:: tags </zen> y </charlatan>
+
+:: 3) Maquinas...
+:: Ver en el siguiente tutorial.

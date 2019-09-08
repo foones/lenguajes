@@ -1,0 +1,31 @@
+:: A partir de cuatro puntos, hasta fin de linea
+:: es un comentario.
+
+
+:: Para usar el lenguaje haskellmente, hay
+:: que encerrar las definiciones entre /* ... */
+:: Esta parte del lenguaje se llama Sorcho.
+/*
+
+longitud []: 0.
+longitud (x|xs): + 1 (longitud xs).
+
+:: Notar:
+::  Las definiciones terminan con punto.
+::  Las operaciones matematicas son prefijas.
+
+*/
+
+:: Ahora llamar al interprete con este archivo como argumento
+::  f tut01.sr
+
+:: > longitud [1 2 3].
+:: III
+:: > longitud "hola".
+:: IV
+
+:: Notar:
+::  Las expresiones ingresadas deben terminar con punto.
+::  El output esta en numeros romanos.
+::  Las cadenas son listas.
+::  Las listas no llevan coma.

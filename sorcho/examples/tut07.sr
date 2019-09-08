@@ -1,0 +1,16 @@
+/*
+:: Las maquinas tambien pueden incluirse en medio del codigo
+:: Sorcho, incluyendolas entre los tags <maq> ... </maq>. Cuando
+:: se hace esto, se asume que las palabras clave usadas para
+:: definir la maquina son
+::  rubik hladik void
+
+:: Ej.:
+
+maquina2: <maq> {
+>:.a,#@_v
+^     -1<
+}
+</maq>.
+
+*/

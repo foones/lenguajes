@@ -1,0 +1,219 @@
+::
+:: Sorcho Kang v.0.99-E1000 -- Raindrop Prelude (cf. Chopin)
+::
+
+:: Diseñado para Dope Town Programming.
+:: Featuring
+::  Bunny matching (apareamiento de conejos)
+::  Lazy evaluation (evaluacion como yo)
+::  Debilmente tipificado
+
+/*
+:: Constructores para valores de verdad (Booñuelos) y listas.
+::   Troo : valor canonico de verdad.
+::   Nil : lista vacia y valor de falsedad.
+::   Mu : particula de antidesformulacion, que
+::    sirve como respuesta a preguntas como "Tiene este
+::    perro la naturaleza de Buda?" o "Ya ha dejado
+::    de pegarle a su esposa?".
+::   Cons : truye listas.
+please: Troo o Nil o Mu o Cons x y.
+
+:: Constructor Trupla (TUPLA TRUchA de TRes componentes).
+please: Trupla f m z.
+
+:: Morsa digit
+please Mit: P o R.
+
+:: Accesores a las tres componentes de una trupla.
+:: (Las tetruplas tienen un accesor adicional, pereng).
+foo (Trupla f _ _): f.
+meng (Trupla _ m _): m.
+zut (Trupla _ _ z): z.
+
+:: Para trabajar con Booñuelos
+si Troo a b: a.
+si Nil a b: b.
+
+et Nil _: Nil.
+et Troo y: y.
+
+vel Troo _: Troo.
+vel Nil y: y.
+
+aut Troo Troo: Nil.
+aut Troo Nil: Troo.
+aut Nil Troo: Troo.
+aut Nil Nil: Nil.
+
+imp Nil _: Troo.
+imp Troo Nil: Nil.
+imp Troo Troo: Troo.
+
+non Troo: Nil.
+non Nil: Troo.
+
+:: Para trabajar con listas.
+cons x y: x|y.
+car (x|_): x.
+cdr (_|y): y.
+
+caput (x|_): x.
+culus (_|xs): xs.
+
+vacua []: Troo.
+vacua (_|_): Nil.
+
+mapar f []: [].
+mapar f (Cons x xs): Cons (f x) (mapar f xs).
+
+filtrar p []: [].
+filtrar p (x|xs): si (p x)
+                     (x|(filtrar p xs))
+		     (filtrar p xs).
+
+doblal f fin []: fin.
+doblal f fin (x|xs): doblal f (f fin x) xs.
+
+cat [] ys: ys.
+cat (x|xs) ys: x|(cat xs ys).
+*/
+
+<cortazar.sr>
+
+/*
+:: Tipos dubitativos
+please Acaso: :( o Solamente x.
+
+quiza n f :(: n.
+quiza n f (Solamente x): f x.
+
+:: You say either
+:: and I say either
+:: you say neither
+:: and I say neither
+:: either, either, neither, neither
+:: let's call the whole thing off.
+::
+:: You like potatoes
+:: and I like potatoes
+:: you like tomatoes
+:: and I loke tomatoes
+:: potatoes, potatoes, tomatoes, tomatoes
+:: let's call the whole thing off.
+please Potato: Alfa jor o Omega jor.
+
+:: Compositor
+:: (Dadas f y g...)
+bach fa sol ut: fa (sol ut).
+
+voltear f x y: f y x.
+
+:: Combinadores
+i x: x.
+k a b: a.
+s a b c: (a c) (b c).
+
+:: Aproximacion de pi con error acotado por 10^0.
+pi: 4.
+
+:: Tristeza nao tem fim
+tristeza: :( | tristeza.
+
+:: El asi llamado "manejo" de errores
+crepar e: <maq> {
+E
+}
+</maq> [e].
+
+espichar e: <maq> {
+q
+}
+</maq> [e].
+
+:: Funziones matematicaz prefijaz como guztamoz loz lizperz.
++ x y: <maq> {
++@
+}
+</maq>[x y].
+
+- x y: <maq> {
+-@
+}
+</maq>[x y].
+
+* x y: <maq> {
+*@
+}
+</maq>[x y].
+
+/ x y: <maq> {
+/@
+}
+</maq>[x y].
+
+% x y: <maq> {
+%@
+}
+</maq>[x y].
+
+negar x: <maq> {
+0\-@
+}
+</maq> x.
+
+= x y: <maq> {
+-#@ #$_$$@
+}
+</maq> [Nil Troo x y].
+
+par x: = (% x 2) 0.
+impar: bach non par.
+
+mcd a b: // et (= a 0) (= b 0): crepar "mcd 0 0 no esta definido..."
+         // = r 0: b
+         sino: mcd b r
+	 <donde>
+	   r: % a b.
+	 </donde>.
+
+mcm a b: / (* a b) (mcd a b).
+
+:: Output con efectos secundarios, to
+:: achieve maximal referential obscurity
+print *: <maq> {
+.@
+}
+</maq> [:( *].
+
+pr *: <maq> {
+.a,@
+}
+</maq> [:( *].
+
+*/
+
+:: The linguistics students that the philosophy majors
+:: tutor outnumber the biology students that the chemistry
+:: majors tutor.
+
+:: Linguistics majors that philosophy majors tutor outnumber
+:: philosophy majors that linguistics majors tutor.
+
+:: Linguistics tutors that philosophy tutors tutor outnumber
+:: philosophy tutors that linguistics tutors tutor.
+
+:: Linguistics tutors philosophy tutors tutor outnumber
+:: philosophy tutors linguistics tutors tutor.
+
+:: Linguistics tutors linguistics tutors tutor outnumber
+:: philosophy tutors philosophy tutors tutor.
+
+:: Linguistics tutors linguistics tutors tutor tutor philosophy
+:: tutors philosophy tutors tutor.
+
+:: Linguistics tutors linguistics tutors tutor tutor
+:: linguistics tutors linguistics tutors tutor.
+
+:: Tutor tutors tutor tutors tutor tutor tutor tutors tutor
+:: tutors tutor.

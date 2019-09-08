@@ -1,0 +1,37 @@
+:: Entre /* */ se pueden declarar tipos con constructores.
+
+/*
+:: La definicion de tipos comienza con please, y puede
+:: llevar un nombre de tipo o no.
+
+:: Con nombre
+please Comida: Brocoli o Espinaca o Hamburguesa o Panqueques o Helado.
+
+:: Sin nombre
+please: Tira o Fleco o Atar x y o Nudo x.
+
+:: Ejemplos de cosas
+tejido1: Atar (Nudo Tira) (Atar Fleco Fleco).
+
+:: Pero los tipos no son fuertes y puedo hacer lo que
+:: quiera con los constructores.
+tejido2: Atar "hola" 271.
+
+:: Tambien puedo pattern matchar
+
+rico Brocoli: Nil.
+rico Helado: Troo.
+
+:: Notar
+::  Nil es la constante de falsedad y Troo la de verdad.
+
+tejidoALista Tira: Tira.
+tejidoALista Fleco: Fleco.
+tejidoALista (Atar x y): [(tejidoALista x) (tejidoALista y)].
+tejidoALista (Nudo x): [(tejidoALista x)].
+
+
+:: Por ejemplo,
+:: > tejidoALista tejido1
+:: [[Tira] [Fleco Fleco]]
+*/

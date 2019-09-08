@@ -1,0 +1,11 @@
+/*
+:: En una definicion puede incluirse la clausula donde
+
+:: Ej.: maximo comun divisor por el algoritmo de Euclides
+gcd a b:
+  // = r 0: b
+  sino: gcd b r
+  <donde>
+    r: % a b.
+  </donde>.
+*/
