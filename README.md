@@ -19,6 +19,9 @@ Lenguaje de implementación: Haskell. Lenguaje objeto: C/Python.
 [Choclo](choclo/) 2007 - Compilador bootstrapping de Lisp.
 Lenguaje de implementación: Common Lisp / Choclo. Lenguaje objeto: C.
 
+[Sorcho Kang](sorcho/) 2004 - Lenguaje funcional ridículo.
+Lenguaje de implementación: C. Interpretado.
+
 [Funes](funes/) ~2004-2007 - Lenguaje tipo Lisp con clausuras léxicas, tail call optimization, macros, call/cc.
 Lenguaje de implementación: C. Lenguaje objeto: VM ad hoc interpretada.
 
