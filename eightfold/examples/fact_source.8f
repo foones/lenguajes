@@ -1,0 +1,51 @@
+U=*.
+Bt::a*,b*.>a>ba=:a*,b*,xa.>bx.   # True
+Bf::a*,b*.>a>bb=:a*,b*.>a:yb.y.  # False
+f=:aU.>aa.                       # a -> a
+f2=:aU.>afa.                     # a -> a -> a
+h=:aU.f(fa).                     # church numeral
+i::aU.fa=:aU,xa.x.               # id
+0:h=:aU.>(fa)ia.                 # zero
+s:fh=:nh,aU,gfa,za.g(nagz).      # succ
+1=s(0).                          # one
+t:f2h=:nh,mh.mh(nhs)0.           # times
+2=:aU,bU,cU.>(>a>bc)c.           # type of pairs
++::aU,bU.>a>b(2ab)
+ =:aU,bU,xa,yb,cU,g(>a>bc).gxy.  # pair constructor
+-1::aU,bU.>(2ab)a                # pair projection
+  =:aU,bU,p(2ab).pa(Bt ab).
+-2::aU,bU.>(2ab)b                # pair projection
+  =:aU,bU,p(2ab).pb(Bf ab).
+
+F:fh
+ =:nh.-2hh(n(2hh)(:p(2hh).+hh(s(-1hhp))(t(s(-1hhp))(-2hhp)))(+hh 0 1)).
+
+T : U.
+Zero : T.
+Succ : > T T.
+
+?? F (s(s(s 0))) T Succ Zero.
+
+#?? +hh 0 1.
+
+#-# #F:fh=:nh.nh(t)(+cc 0 1).
+#-# 
+#-# 
+#-# 
+#-# 
+#-# ##p:gh=:nh,mh.mhs(nhs 0).          # plus
+#-# ##t:gh=:nh,mh.mh(pn)0.             # times
+#-# k=:aU,xa.>ax.                    # const
+#-# j=:aU,nh,xa,ya.na(kay)x.         # isZero
+#-# 
+#-# 
+#-# B : U.
+#-# Si : B.
+#-# No : B.
+#-# 
+#-# #?? (s (s 0)) T Succ Zero.
+#-# #?? jB 0 Si No.
+#-# #?? jB (s 0) Si No.
+#-# #?? (p (s(s(s 0))) (s(s 0))) T Succ Zero.
+#-# ?? (t (s(s(s 0))) (s(s 0))) T Succ Zero.
+#-# 

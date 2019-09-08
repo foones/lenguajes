@@ -1,0 +1,16 @@
+Morsa:*.w:*.
+Emorsa:Morsa.
+Punto:>MorsaMorsa.
+Raya:>MorsaMorsa.
+Ew:w.
+A:>ww.B:>ww.C:>ww.D:>ww.E:>ww.F:>ww.G:>ww.H:>ww.I:>ww.J:>ww.K:>ww.L:>ww.M:>ww.
+N:>ww.O:>ww.P:>ww.Q:>ww.R:>ww.S:>ww.T:>ww.U:>ww.V:>ww.W:>ww.X:>ww.Y:>ww.Z:>ww.
+j:>Morsa>w*.
+J_end:jEmorsaEw.
+J_a::mMorsa,sw.>(jms)(j(Punto(Raya(m)))(A(s))).
+J_b::mMorsa,sw.>(jms)(j(Raya(Punto(Punto(Punto(m)))))(B(s))).
+J_c::mMorsa,sw.>(jms)(j(Raya(Punto(Raya(Punto(m)))))(C(s))).
+J_d::mMorsa,sw.>(jms)(j(Raya(Punto(Punto(m))))(D(s))).
+J_e::mMorsa,sw.>(jms)(j(Punto(m))(E(s))).
+Main = J_d(Punto(RayaEmorsa))(AEw)(J_aEmorsaEwJ_end).
+?? Main.

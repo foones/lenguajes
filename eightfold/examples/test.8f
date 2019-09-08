@@ -1,0 +1,29 @@
+U=*.
+Bt::a*,b*.>a>ba=:a*,b*,xa.>bx.   # True
+Bf::a*,b*.>a>bb=:a*,b*.>a:yb.y.  # False
+f=:aU.>aa.                       # a -> a
+f2=:aU.>afa.                     # a -> a -> a
+c=:aU.f(fa).                     # ccurcc numeral
+i::aU.fa=:aU,xa.x.               # id
+0:c=:aU.>(fa)ia.                 # zero
+s:fc=:nc,aU,gfa,za.g(nagz).      # succ
+1=s(0).                          # one
+t:f2c=:nc,mc.mc(ncs)0.           # times
+2=:aU,bU,cU.(>(>a>bc)c).         # type of pairs
+
++::aU,bU.>a>b(2ab)
+ =:aU,bU,xa,yb,cU,g(>a>bc).gxy.  # pair constructor
+-1::aU,bU.>(2ab)a                # pair projection
+  =:aU,bU,p(2ab).pa(Bt ab).
+-2::aU,bU.>(2ab)b                # pair projection
+  =:aU,bU,p(2ab).pb(Bf ab).
+
+F:fc
+ =:nc.-2cc(n(2cc)(:p(2cc).+cc(s(-1ccp))(t(s(-1ccp))(-2ccp)))(+cc 0 1)).
+
+T : U.
+Zero : T.
+Succ : > T T.
+
+?? F (s(s(s(s(s 0))))) T Succ Zero.
+

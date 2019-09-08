@@ -16,6 +16,9 @@ Lenguaje de implementación: Haskell. Lenguaje objeto: ASM x86_64 (nasm).
 [Qriollo](qriollo/) 2015 - Lenguaje funcional tipado.
 Lenguaje de implementación: Haskell. Lenguaje objeto: C/Python.
 
+[Eightfold](eightfold/) 2012 - Lenguaje esotérico con tipos dependientes.
+Lenguaje de implementación: Haskell. Interpretado.
+
 [Cratylus](cratylus/) 2012 - Lenguaje esotérico basado en reescritura de polinomios multivariados.
 Lenguaje de implementación: Python. Interpretado.
 

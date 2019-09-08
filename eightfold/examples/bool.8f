@@ -1,0 +1,33 @@
+# Define Bool as the type ":a*.>a>aa", i.e. the function that 
+# takes a type "a", two terms of type "a" and returns the type
+# "a".
+# 
+Bool : :a*.>a>a* = :a*.>a>aa.
+
+# Define True as the term of type Bool that takes
+# a type "a", two terms of type "a" and returns the
+# first one.
+True : Bool = :a*,xa,ya.x.
+
+# Similarly, define False as the term of type Bool
+# that takes a type "a", two terms of type "a" and
+# returns the second one.
+False : Bool = :a*,xa,ya.y.
+
+? True.
+# ! True : Bool.
+
+# Define If as a term that takes a type "a", a boolean
+# and two terms of type "a", returning the first one in
+# case the boolean is True, and the second one otherwise.
+If : :a*.>Bool>a>aa
+   = :a*,bBool.ba.
+
+# Declare a type S with two constants A and B for testing.
+S : *. A : S. B : S.
+
+?? If S True A B.
+# !! If S True A B : S = A.
+
+?? If S False A B.
+# !! If S False A B : S = B.

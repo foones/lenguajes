@@ -1,0 +1,16 @@
+
+Bool : :a*,xa,ya.* = :a*,xa,ya.a.
+
+True : Bool = :a*,xa,ya.x.
+False : Bool = :a*,xa,ya.y.
+
+Int : *.
+0 : Int.
+1 : Int.
+
+?? False Int 0 1.
+
+#Bool : :a*,xa,ya.a.
+#?? Bool.
+
+

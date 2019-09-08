@@ -1,0 +1,204 @@
+
+## Propositions are terms of type Prop
+
+Prop : *.
+
+# Basic connectives
+True : Prop.
+False : Prop.
+Imp : > Prop > Prop Prop.
+Not : > Prop Prop.
+Forall : :a *. > (> a Prop) Prop.
+
+## Derivations of a proposition p : Prop
+## are represented by terms of type (D p)
+
+D : > Prop *.
+
+# True is derivable
+Dtrue : D True.
+
+# Implication
+Impi : :p Prop, q Prop. > (> (D p) (D q)) (D (Imp p q)).
+Impe : :p Prop, q Prop. > (D (Imp p q)) > (D p) (D q).
+
+# Negation
+Noti : :p Prop. > (> (D p) (:q Prop. D q)) (D (Not p)).
+Note : :p Prop. > (D p) > (D (Not p)) (:q Prop. D q).
+
+# Universal quantification
+Foralli : :a *, p (> a Prop). > (:x a. D (p x)) (D (Forall a p)).
+Foralle : :a *, p (> a Prop). > (D (Forall a p)) (:x a. D (p x)).
+
+# Classical rule of double negation
+Dneg : :p Prop. > (D (Not (Not p))) (D p).
+
+##################################################
+
+## Definition of conjunction in terms of negation and implication
+And : > Prop > Prop Prop = :p Prop, q Prop. Not (Imp p (Not q)).
+
+Andi
+  : :p Prop, q Prop. > (D p) > (D q) (D (And p q))
+  = :p Prop, q Prop, D_p (D p), D_q (D q).
+      # D (Not (Imp p (Not q)))
+      Noti (Imp p (Not q))
+           (: D_ipnq (D (Imp p (Not q))).
+               Note q
+                    D_q
+                    (Impe p (Not q) D_ipnq D_p)).
+
+Ande1
+  : :p Prop, q Prop. > (D (And p q)) (D p)
+  = :p Prop, q Prop, D_apq (D (And p q)).
+        # D p
+        Dneg p (
+           # D (Not (Not p))
+           Noti (Not p)
+                (:D_np (D (Not p)).
+                   Note (Imp p (Not q))
+                        # D (Imp p (Not q))
+                        (Impi p (Not q) (:D_p (D p). Note p D_p D_np (Not q)))
+                        D_apq)).
+
+Ande2
+  : :p Prop, q Prop. > (D (And p q)) (D q)
+  = :p Prop, q Prop, D_apq (D (And p q)).
+        # D q
+        Dneg q (
+            # D (Not (Not q))
+            Noti (Not q)
+                 (:D_nq (D (Not q)).
+                     # D r
+                     Note (Imp p (Not q))
+                          (Impi p (Not q) (>(D p)D_nq))
+                          D_apq)).
+
+? AndiTrueTrue Dtrue Dtrue.
+? Ande1TrueTrue (AndiTrueTrue Dtrue Dtrue).
+? Ande2TrueTrue (AndiTrueTrue Dtrue Dtrue).
+
+### Definition of disjunction in terms of conjunction and negation
+
+Or : > Prop > Prop Prop = :p Prop, q Prop. Not (And (Not p) (Not q)).
+
+# Introduction of (p v q) from p
+Ori1
+  : :p Prop, q Prop. > (D p) (D (Or p q))
+  = :p Prop, q Prop, D_p D p.
+      Noti (And (Not p) (Not q))
+           # >(D (And (Not p) (Not q)))(:qProp D q)
+           (: D_anpnq (D (And (Not p) (Not q))).
+              Note p
+                   D_p
+                   (Ande1 (Not p) (Not q) D_anpnq)).
+
+# Introduction of (p v q) from q
+Ori2
+  : :p Prop, q Prop. > (D q) (D (Or p q))
+  = :p Prop, q Prop, D_q D q.
+      Noti (And (Not p) (Not q))
+           # >(D (And (Not p) (Not q)))(:qProp D q)
+           (: D_anpnq (D (And (Not p) (Not q))).
+              Note q
+                   D_q
+                   (Ande2 (Not p) (Not q) D_anpnq)).
+
+# Elimination of (p v q) from (p --> r) and (q --> r)
+Ore
+  : :p Prop, q Prop. > (D (Or p q))
+                     :r Prop. > (> (D p) (D r))
+                              > (> (D q) (D r))
+                              (D r)
+   = :p Prop, q Prop, D_opq (D (Or p q)), r Prop,
+      D_p_r (> (D p) (D r)),
+      D_q_r (> (D q) (D r)).
+          Dneg r
+               # D (Not (Not r))
+               (Noti (Not r)
+                   (:D_nr (D (Not r)).
+                       Note (And (Not p) (Not q))
+                            # D (And (Not p) (Not q))
+                            (Andi (Not p) (Not q)
+                                (Noti p (:D_p (D p). Note r (D_p_r D_p) D_nr))
+                                (Noti q (:D_q (D q). Note r (D_q_r D_q) D_nr)))
+                            D_opq)).
+                
+? Ori1 True False Dtrue.
+
+### Existential quantification in terms of universal quantification and negation
+
+Exists : :a *. > (> a Prop) Prop
+       = :a *, p (> a Prop). Not (Forall a (:x a. Not (p x))).
+
+Existsi
+  : :a *, p (> a Prop), x a. > (D (p x)) (D (Exists a p))
+  = :a *, p (> a Prop), x a, D_px (D (p x)).
+      Noti (Forall a (:x a. Not (p x)))
+           (: D_allnot (D (Forall a (:x a. Not (p x)))).
+               Note (p x)
+                    D_px
+                    (Foralle a (:x a. Not (p x)) D_allnot x)).
+
+Existse
+  : :a *, p (> a Prop). > (D (Exists a p))
+                            :q Prop. > (:c a. > (D (p c)) (D q)) (D q)
+  = :a *, p (> a Prop), D_ex (D (Exists a p)),
+     q Prop, D_pcq (:c a. > (D (p c)) (D q)).
+         Dneg q (
+             Noti (Not q) (: D_nq (D (Not q)).
+                 Note (Forall a (:x a. Not (p x)))
+                      (Foralli a (:x a. Not (p x))
+                          (:x a.
+                              (Noti (p x)
+                                    (: D_px (D (p x)).
+                                        Note q (D_pcq x D_px) D_nq))))
+                      D_ex)).
+
+Iff
+  : :p Prop, q Prop. Prop
+  = :p Prop, q Prop. And (Imp p q) (Imp q p).
+
+### Equality
+
+Eq : :a *, x a, y a. Prop.
+
+Eq_refl  : :a *, x a.           D (Eq a x x).
+Eq_sym   : :a *, x a, y a.      > (D (Eq a x y)) (D (Eq a y x)).
+Eq_trans : :a *, x a, y a, z a. > (D (Eq a x y)) (> (D (Eq a y z)) (D (Eq a x z))).
+
+################################################################################
+
+## Set axioms
+
+Set : *.
+
+In : :x Set, y Set. Prop.
+
+# extensionality
+#   if two sets contain the same elements,
+#   they are equal
+Zf_ext
+  : D (Forall Set (:x Set.
+         Forall Set (:y Set.
+           (Imp (Forall Set (:z Set. Iff (In z x) (In z y)))
+                (Eq Set x y))))).
+
+# regularity
+#   every non-empty set x contains a set y
+#   s.t. x and y are disjoint
+Zf_reg
+  : D (Forall Set (:x Set.
+          Imp (Exists Set (:a Set. In a x))
+              (Exists Set (:y Set.
+                  And (In y x)
+                      (Not (Exists Set (:z Set.
+                               And (In z y)
+                                   (In z x)))))))).
+
+# specification
+#   (filter)
+#Zf_spec
+#  : :Phi (> Set Prop).
+#        D (Forall Set (:z Set.
+              

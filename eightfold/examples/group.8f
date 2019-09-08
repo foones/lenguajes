@@ -1,0 +1,14 @@
+
+# load logic.8f
+
+S   : *.
+Op  : > S > S S.
+Inv : > S S.
+
+G_assoc: :xS,yS,zS. D (~S (Op x (Op y z)) (Op (Op x y) z)).
+
+A : S.
+B : S.
+C : S.
+
+?? G_assoc A B C.
