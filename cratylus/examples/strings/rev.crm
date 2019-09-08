@@ -1,0 +1,70 @@
+# Reverse standard input.
+# Example:
+#     $ echo -n ab | python cratylus.py rev.crm -s 2>/dev/null
+#     ba
+
+# Divmod algorithm
+# input:  Divmod X^n Y^m
+# output: Q^(n div m) R^(n mod m)
+#
+DivmodDm_c^@=>Divmod.DivmodX^@=>Dm__hDm_c^@X^@.Divmod=>Dm__h.Dm__hQ^@=>Dm_z.
+Dm__h=>Dm_z.Dm_zR^@=>Dm_s.Dm_z=>Dm_s.Dm_cDm_s=>Dm_cDm_l.Dm_s=>Dm_r.
+Dm_d^@Dm_l=>Dm_l.Dm_lY^@=>Dm__fDm_d^@Y^@.Dm_l=>Dm__f.Dm__fDm_e^@=>Dm_eDm_f.
+Dm__f=>Dm_eDm_f.Dm_b^@Dm_f=>Dm_f.Dm_d^@Dm_f=>Dm__sDm_b^@Dm_d^@.Dm_f=>Dm__s.
+Dm__s=>Dm_aDm_j.Dm_aDm_b^@Dm_j=>Dm__gDm_g^@Dm_h^@.Dm_a^@Dm_j=>Dm_i.Dm_j=>Dm_i.
+Dm__gDm_h^@=>Dm__gDm_b^@.Dm__gDm_g^@=>Dm_b^@Dm_j.Dm_iDm_k^@=>Dm_i.
+Dm_c^@Dm_i=>Dm__dDm_c^@Dm_k^@.Dm_i=>Dm__d.Dm__dDm_b^@=>Dm__pDm_a^@Dm_b^@.
+Dm__d=>Dm_q.Dm__pDm_a^@Dm_k^@=>Dm__i.Dm__p=>Dm__i.Dm__iDm_a^@=>Dm_q.Dm__i=>Dm_q.
+Dm_kDm_q=>Dm__uDm_k.Dm_q=>Dm_o.Dm__u=>Dm_aDm_t.Dm_aDm_e^@Dm_t=>Dm_g^@Dm_h^@Dm_w.
+Dm_a^@Dm_t=>Dm__l.Dm_t=>Dm__l.Dm_h^@Dm_w=>Dm_e^@Dm_w.Dm_g^@Dm_w=>Dm_e^@Dm_t.
+Dm__l=>Dm_aDm_u.Dm_aDm_d^@Dm_u=>Dm_g^@Dm_h^@Dm_x.Dm_a^@Dm_u=>Dm__n.Dm_u=>Dm__n.
+Dm_h^@Dm_x=>Dm_d^@Dm_x.Dm_g^@Dm_x=>Dm_d^@Dm_u.Dm__n=>Dm_f.Dm_b^@Dm_o=>Dm_o.
+Dm_d^@Dm_o=>Dm__kDm_b^@Dm_d^@.Dm_o=>Dm__k.Dm__kDm_c^@=>Dm__rDm_a^@Dm_c^@.
+Dm__k=>Dm_p.Dm__rDm_a^@Dm_b^@=>Dm__c.Dm__r=>Dm__c.Dm__cDm_a^@=>Dm_p.Dm__c=>Dm_p.
+Dm_bDm_p=>Dm_bDm_m.Dm_p=>Dm__o.Dm__oDm_d^@=>Dm__tDm_a^@Dm_d^@.Dm__o=>Dm_n.
+Dm__tDm_a^@Dm_c^@=>Dm__e.Dm__t=>Dm__e.Dm__eDm_a^@=>Dm_n.Dm__e=>Dm_n.
+Dm_e^@Dm_n=>Dm__mDm_e^@Q^@.Dm_n=>Dm__m.Dm__m=>Dm_s.Dm_mR^@=>Dm_m.
+Dm_c^@Dm_m=>Dm_c^@Dm_rR^@.Dm_m=>Dm_r.Dm_d^@Dm_r=>Dm__a.Dm_r=>Dm__a.
+Dm__aDm_b^@=>Dm_v.Dm__a=>Dm_v.Dm_e^@Dm_v=>Dm__b.Dm_v=>Dm__b.Dm__bDm_c^@=>Dm__j.
+Dm__b=>Dm__j.Dm__jX^@=>Dm_y.Dm__j=>Dm_y.Dm_yY^@=>Dm__q.Dm_y=>Dm__q.Dm__q.
+
+# Multiplication algorithm
+# input:  Mult X^n Y^m
+# output: Z^(n * m)
+#
+Mul_a^@Mult=>Mult.MultX^@=>Mul_a^@Mul_jX^@.Mult=>Mul_j.Mul_d^@Mul_j=>Mul_j.
+Mul_jY^@=>Mul_d^@Mul_vY^@.Mul_j=>Mul_v.Mul_vZ^@=>Mul_o.Mul_v=>Mul_o.
+Mul_aMul_o=>Mul__hMul_a.Mul_o=>Mul__j.Mul__hMul_n^@=>Mul_k.Mul__h=>Mul_k.
+Mul_aMul_k=>Mul__lMul_a.Mul_k=>Mul_f.Mul__l=>Mul_b^2Mul_cMul_z.
+Mul_b^@Mul_z=>Mul__kMul_b^@Mul_e^@Mul_i^@.Mul__kMul_e^@=>Mul__mMul_i^@.
+Mul__mMul_i^@=>Mul__eMul_e^@Mul_i^@.Mul__eMul_a^@=>Mul__iMul_a^@Mul_p^@.
+Mul__e=>Mul__i.Mul__iMul_e^@Mul_p^@=>Mul_g.Mul_e^@Mul_g=>Mul_x.
+Mul_gMul_p^@=>Mul_g.Mul_b^@Mul_g=>Mul_t.Mul_g=>Mul_t.Mul_i^@Mul_t=>Mul_b^@Mul_y.
+Mul_t=>Mul_y.Mul_c^@Mul_y=>Mul_e^@Mul_hMul_p^@.Mul_y=>Mul_h.
+Mul_e^@Mul_h=>Mul_c^@Mul_h.Mul_hMul_p^@=>Mul_c^@Mul_z.Mul_h=>Mul_z.
+Mul_i^@Mul_x=>Mul_x.Mul_a^@Mul_b^@Mul_x=>Mul__d.Mul__dMul_b^@=>Mul_fMul_n^@.
+Mul__dMul_c^@=>Mul_kMul_m^@.Mul_c^@Mul_f=>Mul_f.Mul_fMul_m^@=>Mul_a^@Mul_f.
+Mul_f=>Mul__c.Mul__cMul_n=>Mul__bMul_n.Mul__c=>Mul_q.
+Mul__bMul_d^@=>Mul_d^@Mul_qZ^@.Mul__b=>Mul_q.Mul_q=>Mul_lMul_m.
+Mul_d^@Mul_lMul_m=>Mul_b^@Mul_c^@Mul_r.Mul_lMul_m^@=>Mul__f.Mul_l=>Mul__f.
+Mul_b^@Mul_r=>Mul_d^@Mul_r.Mul_c^@Mul_r=>Mul_d^@Mul_l.Mul__f=>Mul_o.
+Mul__jMul_n^@=>Mul__a.Mul__j=>Mul__a.Mul__aMul_d^@=>Mul_w.Mul__a=>Mul_w.
+Mul_a^@Mul_w=>Mul_s.Mul_w=>Mul_s.Mul_sX^@=>Mul_u.Mul_s=>Mul_u.Mul_uY^@=>Mul__g.
+Mul_u=>Mul__g.Mul__g.
+
+# Input until EOF, accumulate string in X^...
+Reverse  => I.
+I<^@     => MaA^@.
+MaA^256  => Rv.
+MaA^@    => MbB^@MultY^1000.
+Ma       => MbMultY^1000.
+MbZ^@    => MbX^@.
+MbB^@    => IX^@.
+Mb       => I.
+
+# Output X^...
+RvX^@ => DivmodSX^@Y^1000.
+SR^@ => S>^@.
+SQ^@ => RvX^@.
+
+? Reverse.

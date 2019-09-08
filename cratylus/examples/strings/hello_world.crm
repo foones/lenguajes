@@ -1,0 +1,35 @@
+
+# Divmod algorithm
+# input:  Divmod X^n Y^m
+# output: Q^(n div m) R^(n mod m)
+#
+DivmodDm_c^@=>Divmod.DivmodX^@=>Dm__hDm_c^@X^@.Divmod=>Dm__h.Dm__hQ^@=>Dm_z.
+Dm__h=>Dm_z.Dm_zR^@=>Dm_s.Dm_z=>Dm_s.Dm_cDm_s=>Dm_cDm_l.Dm_s=>Dm_r.
+Dm_d^@Dm_l=>Dm_l.Dm_lY^@=>Dm__fDm_d^@Y^@.Dm_l=>Dm__f.Dm__fDm_e^@=>Dm_eDm_f.
+Dm__f=>Dm_eDm_f.Dm_b^@Dm_f=>Dm_f.Dm_d^@Dm_f=>Dm__sDm_b^@Dm_d^@.Dm_f=>Dm__s.
+Dm__s=>Dm_aDm_j.Dm_aDm_b^@Dm_j=>Dm__gDm_g^@Dm_h^@.Dm_a^@Dm_j=>Dm_i.Dm_j=>Dm_i.
+Dm__gDm_h^@=>Dm__gDm_b^@.Dm__gDm_g^@=>Dm_b^@Dm_j.Dm_iDm_k^@=>Dm_i.
+Dm_c^@Dm_i=>Dm__dDm_c^@Dm_k^@.Dm_i=>Dm__d.Dm__dDm_b^@=>Dm__pDm_a^@Dm_b^@.
+Dm__d=>Dm_q.Dm__pDm_a^@Dm_k^@=>Dm__i.Dm__p=>Dm__i.Dm__iDm_a^@=>Dm_q.Dm__i=>Dm_q.
+Dm_kDm_q=>Dm__uDm_k.Dm_q=>Dm_o.Dm__u=>Dm_aDm_t.Dm_aDm_e^@Dm_t=>Dm_g^@Dm_h^@Dm_w.
+Dm_a^@Dm_t=>Dm__l.Dm_t=>Dm__l.Dm_h^@Dm_w=>Dm_e^@Dm_w.Dm_g^@Dm_w=>Dm_e^@Dm_t.
+Dm__l=>Dm_aDm_u.Dm_aDm_d^@Dm_u=>Dm_g^@Dm_h^@Dm_x.Dm_a^@Dm_u=>Dm__n.Dm_u=>Dm__n.
+Dm_h^@Dm_x=>Dm_d^@Dm_x.Dm_g^@Dm_x=>Dm_d^@Dm_u.Dm__n=>Dm_f.Dm_b^@Dm_o=>Dm_o.
+Dm_d^@Dm_o=>Dm__kDm_b^@Dm_d^@.Dm_o=>Dm__k.Dm__kDm_c^@=>Dm__rDm_a^@Dm_c^@.
+Dm__k=>Dm_p.Dm__rDm_a^@Dm_b^@=>Dm__c.Dm__r=>Dm__c.Dm__cDm_a^@=>Dm_p.Dm__c=>Dm_p.
+Dm_bDm_p=>Dm_bDm_m.Dm_p=>Dm__o.Dm__oDm_d^@=>Dm__tDm_a^@Dm_d^@.Dm__o=>Dm_n.
+Dm__tDm_a^@Dm_c^@=>Dm__e.Dm__t=>Dm__e.Dm__eDm_a^@=>Dm_n.Dm__e=>Dm_n.
+Dm_e^@Dm_n=>Dm__mDm_e^@Q^@.Dm_n=>Dm__m.Dm__m=>Dm_s.Dm_mR^@=>Dm_m.
+Dm_c^@Dm_m=>Dm_c^@Dm_rR^@.Dm_m=>Dm_r.Dm_d^@Dm_r=>Dm__a.Dm_r=>Dm__a.
+Dm__aDm_b^@=>Dm_v.Dm__a=>Dm_v.Dm_e^@Dm_v=>Dm__b.Dm_v=>Dm__b.Dm__bDm_c^@=>Dm__j.
+Dm__b=>Dm__j.Dm__jX^@=>Dm_y.Dm__j=>Dm_y.Dm_yY^@=>Dm__q.Dm_y=>Dm__q.Dm__q.
+
+# Output routine
+IX^@ => Divmod X^@ Y^1000 J. 
+I    => >^10.
+JR^@ => J>^@.
+JQ^@ => IX^@.
+J    => I.
+
+# Output an encoded string
+? I X^33100108114111119032111108108101072.

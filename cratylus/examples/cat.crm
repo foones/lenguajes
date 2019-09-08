@@ -1,0 +1,13 @@
+# Simple version of cat in Cratylus^@
+#
+# Usage:
+#
+#    echo Hello world | python cratylus.py -s cat.crm
+#
+# (redirect 2>/dev/null for seeing output only)
+
+I<^@  => X^@.
+X^256 => 1.
+X^@   => I>^@.
+
+? I.

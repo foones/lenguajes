@@ -16,6 +16,9 @@ Lenguaje de implementación: Haskell. Lenguaje objeto: ASM x86_64 (nasm).
 [Qriollo](qriollo/) 2015 - Lenguaje funcional tipado.
 Lenguaje de implementación: Haskell. Lenguaje objeto: C/Python.
 
+[Cratylus](cratylus/) 2012 - Lenguaje esotérico basado en reescritura de polinomios multivariados.
+Lenguaje de implementación: Python. Interpretado.
+
 [Choclo](choclo/) 2007 - Compilador bootstrapping de Lisp.
 Lenguaje de implementación: Common Lisp / Choclo. Lenguaje objeto: C.
 

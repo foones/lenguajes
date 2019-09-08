@@ -1,0 +1,14 @@
+# Read a number in unary from stdin in the form sss...s0
+# Example:
+#
+#    echo ssssssss0 | python cratylus.py -s read_number.crm
+#    ==> X^8
+
+I<^@ => a^@.
+a^115 => IX.
+a^111 => 1.
+a^83  => IX.
+a^79  => 1.
+a^48  => 1.
+
+? I.
