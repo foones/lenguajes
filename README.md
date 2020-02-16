@@ -16,6 +16,9 @@ Lenguaje de implementación: Haskell. Lenguaje objeto: ASM x86_64 (nasm).
 [Qriollo](qriollo/) 2015 - Lenguaje funcional tipado.
 Lenguaje de implementación: Haskell. Lenguaje objeto: C/Python.
 
+[Lumpen](lumpen/) 2014 - Lenguaje funcional estricto no tipado con call/cc.
+Lenguaje de implementación: Haskell. Interpretado.
+
 [Eightfold](eightfold/) 2012 - Lenguaje esotérico con tipos dependientes.
 Lenguaje de implementación: Haskell. Interpretado.
 

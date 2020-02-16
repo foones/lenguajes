@@ -1,0 +1,4 @@
+let yin  = (\c. print(0); c) callcc(\k.k) in
+let yang = (\c. print(1); c) callcc(\k.k) in
+  yin yang
+

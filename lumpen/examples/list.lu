@@ -1,0 +1,4 @@
+let rec cat xs ys = if null xs
+                     then ys
+                     else hd xs : cat (tl xs) ys
+in cat [1, 2, 3] [4, 5, 6]

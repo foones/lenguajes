@@ -1,0 +1,14 @@
+
+let make_generator f = 
+  let context = new () in
+  let body = new () in
+  let yield = (\x. callcc(\k. body := k; !context x)) in
+    body := (\_. f yield) ;
+    \_. callcc(\k. context := k; !body ())
+in let rec squares n yield =
+     yield (n ^ 2);
+     squares (n + 1) yield
+in let rec take n gen =
+     if n == 0 then [] else (gen () : take (n - 1) gen)
+in take 10 (make_generator (squares 0))
+

@@ -1,0 +1,7 @@
+
+let rec map f xs = if null xs
+                    then []
+                    else f (hd xs) : map f (tl xs)
+in
+  map (\x. 2 * x) [1, 2, 3, 4]
+

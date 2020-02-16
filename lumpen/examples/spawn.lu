@@ -1,0 +1,20 @@
+
+let make_generator f = 
+  let context = new () in
+  let body = new () in
+  let yield = (\x. callcc(\k. body := k; !context x)) in
+    body := (\_. f yield) ;
+    \_. callcc(\k. context := k; !body ())
+in
+let spawn = make_generator in
+  let rec cat xs ys = if null xs then ys else hd xs : cat (tl xs) ys in
+  let processes = new [ spawn (\signal. println 1; signal(); println 2; signal()),
+                        spawn (\signal. println 3; signal(); println 4; signal()) ]
+  in
+  let rec round_robin _ = let p = hd !processes in
+                            p ();
+                            processes := cat (tl !processes) [p];
+                            round_robin ()
+  in
+    round_robin ()
+

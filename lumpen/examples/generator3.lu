@@ -1,0 +1,24 @@
+
+let make_generator f = 
+  let context = new () in
+  let body = new () in
+  let yield = (\x. callcc(\k. body := k; !context x)) in
+    body := (\_. f yield) ;
+    \_. callcc(\k. context := k; !body ())
+in
+let Nil = [] in
+let Bin l x r = [x, l, r] in
+let Leaf x = Bin Nil x Nil in
+let root tree = hd tree in
+let left tree = hd (tl tree) in
+let right tree = hd (tl (tl tree)) in
+let rec map f tree =
+     if null tree
+       then Nil
+       else Bin (f (root tree))
+                (map f (left tree))
+                (map f (right tree))
+in let iterate xs = make_generator (\yield. map yield xs)
+in let it = iterate (Bin (Bin (Leaf 3) 2 Nil) 1 (Leaf 4))
+in [it (), it (), it ()]
+

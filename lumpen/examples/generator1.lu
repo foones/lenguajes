@@ -1,0 +1,8 @@
+
+let reader = new () in
+let writer = new () in
+let r = (\x. callcc(\k. reader := k; !writer x)) in
+let w = (\x. callcc(\k. writer := k; !reader x)) in
+  writer := (\_. w 1; w 2);
+  [r (), r ()]
+

@@ -1,0 +1,14 @@
+let choices = new [] in
+let fail = (\_.
+             let c = hd !choices in
+               choices := tl !choices;
+               c ()) in
+let amb = \x y. callcc(\k.
+                  choices := (\_.k y) : !choices;
+                  x) in
+  let a = amb 4 5 in
+  let b = amb 37 9 in
+    if a + b /= 42
+     then fail ()
+     else (a, b)
+

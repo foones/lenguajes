@@ -1,0 +1,6 @@
+let retry = new () in
+let n = callcc(\k. retry := (\_. k 5); 4) in
+  if n % 2 == 0
+   then !retry ()
+   else n
+

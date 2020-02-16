@@ -1,0 +1,5 @@
+let t = (1, 2) in
+let r = new (snd t, fst t) in
+  r := ( *r, *r );
+  *r
+

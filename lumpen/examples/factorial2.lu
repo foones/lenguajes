@@ -1,0 +1,13 @@
+
+let fact = \n.
+  let n = new n in
+  let r = new 1 in
+  let loop = new () in
+    callcc(\k. loop := k);
+    if !n == 1
+      then !r
+      else (r := !r * !n ;
+            n := !n - 1 ;
+            !loop ())
+in
+  fact 5
