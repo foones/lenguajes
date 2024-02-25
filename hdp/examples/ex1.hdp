@@ -1,0 +1,75 @@
+
+---- Unidades
+
+𝟘 : Type
+𝟘 = ∀ X : X
+
+δ𝟘 : ∀ X : 𝟘 → X
+δ𝟘 X f = f X
+
+𝟙 : Type
+𝟙 = ∀ X : X → X
+
+i𝟙 : 𝟙
+i𝟙 X x = x
+
+δ𝟙 : ∀ X : X → 𝟙 → X
+δ𝟙 X x u = u X x
+
+⊤ : Type
+⊤ = ∀ X : (∀ Y : Y → X) → X
+
+i⊤ : ⊤
+i⊤ X f = f 𝟙 i𝟙
+
+---- Proyecciones
+
+π₁ : ∀ A B : (A & B) → A
+π₁ A B p = δ&₁ p (x:x)
+
+π₂ : ∀ A B : (A & B) → B
+π₂ A B p = δ&₂ p (x:x)
+
+---- Naturales
+
+Nat : Type
+Nat = ∀ X : X → !(X → X) → X
+
+zero : Nat
+zero X z f = δ! f (f': z)
+
+suc : Nat → Nat
+suc n X z f = δ! f (f': f' (n X z (!f')))
+
+pred : Nat → Nat
+pred n = π₂ Nat Nat
+            (n (Nat & Nat)
+               (zero, zero)
+               (! (λ p → (suc (π₁ Nat Nat p), π₁ Nat Nat p))))
+
+---- Listas multiplicativas
+
+-- Usamos el hecho de que un mínimo punto fijo µX.A
+-- se puede codificar con cuantificadores de segundo orden como
+--   ∀ X : !(A → X) → X
+-- (cf. Baelde. Least and Greatest Fixed Points in Linear Logic).
+
+List : Type → Type
+List A = ∀ X : !(((A ⊗ X) ⊕ 𝟙) → X) → X
+
+nil : ∀ A : List A
+nil A X f = δ! f (f': f' (inr i𝟙))
+
+cons : ∀ A : A → List A → List A
+cons A x xs X f = δ! f (f': f' (inl (x ⊗ xs X (!f'))))
+
+length : ∀ A : List (!A) → Nat
+length A xs = xs Nat (!(λ p →
+                        δ⊕ p (x: δ⊗ x (y z: δ! y (y': suc z)))
+                             (x: δ𝟙 Nat zero x)))
+
+eval length Nat (cons (!Nat) (!zero)
+                  (cons (!Nat) (!zero)
+                    (cons (!Nat) (!zero)
+                      (nil (!Nat)))))
+

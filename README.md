@@ -1,6 +1,12 @@
 
 Varios lenguajes de programación.
 
+[Mariposa](mariposa/) 2024 - Prototipo de un lenguaje imperativo en el que los programas pueden viajar en el tiempo.
+Lenguaje de implementación: Haskell.
+
+[HDP](hdp/) 2023 - Lenguaje funcional minimalista basado en lógica lineal intuicionista con cuantificación universal de segundo orden.
+Lenguaje de implementación: Haskell.
+
 [Falopa](falopa/) 2019 - Lenguaje tipado con características funcionales y lógicas.
 Lenguaje de implementación: Python. Interpretado.
 
