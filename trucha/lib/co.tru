@@ -1,0 +1,9 @@
+
+data Nat : Type where
+  zero : Nat
+  suc  : Nat → Nat
+
+suma : Nat → Nat → Nat
+suma zero    m = m
+suma (suc n) m = suc (suma n m)
+
