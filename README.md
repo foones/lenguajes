@@ -1,6 +1,8 @@
 
 Varios lenguajes de programación.
 
+[MLTT](mltt/) 2025 - Chequeador de teoría de tipos de Martin-Löf desarrollada con fines pedagógicos. Lenguaje de implementación: Haskell.
+
 [Trucha](trucha/) 2025 - Implementación inconclusa de un subconjunto minimalista de Agda. Lenguaje de implementación: Haskell.
 
 [FOL](fol/) 2024 - Mini-asistente de demostración para deducción natural de lógica de primer orden clásica inspirado en la sintaxis de Mizar. Lenguaje de implementación: Haskell.

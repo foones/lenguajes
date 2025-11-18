@@ -1,0 +1,30 @@
+
+axiom Nat : Type
+
+axiom zero : Nat
+
+axiom suc : Nat -> Nat
+
+axiom ind_Nat : (C : Nat -> Type)
+              -> C zero
+              -> ((n : Nat) -> C n -> C (suc n))
+              -> (n : Nat) -> C n
+
+rewrite (C : Nat -> Type)
+        (z : C zero)
+        (f : (n : Nat) -> C n -> C (suc n))
+     -> ind_Nat C z f zero = z
+
+rewrite (C : Nat -> Type)
+        (z : C zero)
+        (f : (n : Nat) -> C n -> C (suc n))
+        (n : Nat)
+     -> ind_Nat C z f (suc n) = f n (ind_Nat C z f n)
+
+def suma : Nat -> Nat -> Nat
+  = ind_Nat (\ _ -> Nat -> Nat)
+            (\ m -> m)
+            (\ _ r m -> suc (r m))
+
+check suma (suc (suc zero)) (suc zero)
+

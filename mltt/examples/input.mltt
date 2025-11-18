@@ -1,0 +1,70 @@
+
+axiom Nat : Type
+
+axiom zero : Nat
+
+axiom suc : Nat -> Nat
+
+axiom indNat : (C : Nat -> Type)
+             -> C zero
+             -> ((n : Nat) -> C n -> C (suc n))
+             -> (n : Nat) -> C n
+
+rewrite (C : Nat -> Type)
+        (z : C zero)
+        (f : (n : Nat) -> C n -> C (suc n))
+      : indNat C z f zero = z
+
+rewrite (C : Nat -> Type)
+        (z : C zero)
+        (f : (n : Nat) -> C n -> C (suc n))
+        (n : Nat)
+      : indNat C z f (suc n) = f n (indNat C z f n)
+
+def + : Nat -> Nat -> Nat
+  = indNat (\ _ -> Nat -> Nat)
+           (\ m -> m)
+           (\ _ r m -> suc (r m))
+
+--------------------------------------------------------------------------------
+
+axiom Eq : (A : Type) (a b : A) -> Type
+
+axiom refl : (A : Type) (a : A) -> Eq A a a
+
+axiom indEq : (A : Type)
+              (C : (a b : A) (p : Eq A a b) -> Type)
+              (Cr : (a : A) -> C a a (refl A a))
+              (a b : A)
+              (p : Eq A a b)
+            -> C a b p
+
+rewrite (A : Type)
+        (C : (a b : A) (p : Eq A a b) -> Type)
+        (Cr : (a : A) -> C a a (refl A a))
+        (a : A)
+      : indEq A C Cr a a (refl A a) = Cr a
+
+def sym (A : Type)
+  : (a b : A) -> Eq A a b -> Eq A b a
+  = indEq A (\ a b _ -> Eq A b a) (\ a -> refl A a)
+
+def trans (A : Type)
+  : (a b : A)
+    -> Eq A a b
+    -> (c : A) -> Eq A b c -> Eq A a c
+  = indEq A (\ a b p -> (c : A) -> Eq A b c -> Eq A a c) (\ _ _ q -> q) 
+
+def cong (A B : Type) (f : A -> B)
+  : (a1 a2 : A)
+  -> Eq A a1 a2
+  -> Eq B (f a1) (f a2)
+  = indEq A (\ a1 a2 p -> Eq B (f a1) (f a2)) (\ (a : A) -> refl B (f a))
+
+--------------------------------------------------------------------------------
+
+def +-zero-r : (n : Nat) -> Eq Nat (+ n zero) n
+  = indNat (\ n -> Eq Nat (+ n zero) n)
+           (refl Nat zero)
+           (\ n (IH : Eq Nat (+ n zero) n) -> cong Nat Nat suc (+ n zero) n IH)
+

@@ -1,0 +1,59 @@
+
+axiom Nat : Type
+axiom zero : Nat
+axiom suc : Nat -> Nat
+axiom ind_Nat  : (C : Nat -> Type)
+              -> C zero
+              -> ((n : Nat) -> C n -> C (suc n))
+              -> (n : Nat) -> C n
+rewrite (C : Nat -> Type)
+        (z : C zero)
+        (f : (n : Nat) -> C n -> C (suc n))
+      : ind_Nat C z f zero = z
+rewrite (C : Nat -> Type)
+        (z : C zero)
+        (f : (n : Nat) -> C n -> C (suc n))
+        (n : Nat)
+      : ind_Nat C z f (suc n) = f n (ind_Nat C z f n)
+
+def 0 : Nat = zero
+def 1 : Nat = suc 0
+def 2 : Nat = suc 1
+def 3 : Nat = suc 2
+def 4 : Nat = suc 3
+                  
+axiom le : Nat -> Nat -> Type
+axiom le-zero : (n : Nat) -> le zero n
+axiom le-suc  : (n m : Nat) -> le n m -> le (suc n) (suc m)
+axiom ind_le   : (C : (n m : Nat) -> le n m -> Type)
+              -> ((n : Nat)
+                  -> C zero n (le-zero n))
+              -> ((n m : Nat) (p : le n m)
+                  -> C n m p
+                  -> C (suc n) (suc m) (le-suc n m p))
+              -> (n m : Nat) (p : le n m)
+              -> C n m p
+rewrite (C : (n m : Nat) -> le n m -> Type)
+        (Cz : (n : Nat) -> C zero n (le-zero n))
+        (Cs : (n m : Nat) (p : le n m)
+              -> C n m p
+              -> C (suc n) (suc m) (le-suc n m p))
+        (n : Nat)
+      : ind_le C Cz Cs zero n (le-zero n) = Cz n
+rewrite (C : (n m : Nat) -> le n m -> Type)
+        (Cz : (n : Nat) -> C zero n (le-zero n))
+        (Cs : (n m : Nat) (p : le n m)
+              -> C n m p
+              -> C (suc n) (suc m) (le-suc n m p))
+        (n m : Nat) (p : le n m)
+      : ind_le C Cz Cs (suc n) (suc m) (le-suc n m p) = Cs n m p (ind_le C Cz Cs n m p)
+
+def + (n m : Nat) : Nat
+  = ind_Nat (\ _ -> Nat) m (\ _ -> suc) n
+
+def dos-es-menor-que-cuatro : le 2 4
+  = le-suc 1 3 (le-suc 0 2 (le-zero 2))
+
+def le_trans (n1 n2 n3 : Nat) (p : le n1 n2) (q : le n2 n3) : le n1 n3
+  = ?
+
