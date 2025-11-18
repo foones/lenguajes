@@ -1,6 +1,8 @@
 
 Varios lenguajes de programación.
 
+[FOL](fol/) 2024 - Mini-asistente de demostración para deducción natural de lógica de primer orden clásica inspirado en la sintaxis de Mizar. Lenguaje de implementación: Haskell.
+
 [Mariposa](mariposa/) 2024 - Prototipo de un lenguaje imperativo en el que los programas pueden viajar en el tiempo.
 Lenguaje de implementación: Haskell.
 
