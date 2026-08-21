@@ -1,6 +1,8 @@
 
 Varios lenguajes de programación.
 
+[FIA](fia/) 2026 - Demostrador "interactivo" para la Aritmética Intuicionista Finitista ("FIA") basado en un chequeador de tipos bidireccional. Lenguaje de implementación: Haskell.
+
 [MLTT](mltt/) 2025 - Chequeador de teoría de tipos de Martin-Löf desarrollada con fines pedagógicos. Lenguaje de implementación: Haskell.
 
 [Trucha](trucha/) 2025 - Implementación inconclusa de un subconjunto minimalista de Agda. Lenguaje de implementación: Haskell.
