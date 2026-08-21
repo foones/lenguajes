@@ -1,0 +1,1088 @@
+
+--------------------------------------------------------------------------------
+-- Basic properties
+--------------------------------------------------------------------------------
+
+theorem neq_0_S : forall n, not(0 = S(n))
+proof
+  let n, suppose H, contradiction H
+end
+
+theorem neq_S_0 : forall n, not(S(n) = 0)
+proof
+  let n, suppose H, contradiction H
+end
+
+theorem S_inj : forall n m, S(n) = S(m) -> n = m
+proof
+  let n m,
+  suppose H,
+  indeed n = m by H
+end
+
+theorem zero_or_S : forall #n, n = 0 | exists #m, n = S(m)
+proof
+  induction (assume nz _, contradiction nz indeed 0 = 0)
+  let #n, suppose IH, assume _ J, J (take n, indeed S(n) = S(n))
+end
+
+--------------------------------------------------------------------------------
+-- Classical-like reasoning
+--------------------------------------------------------------------------------
+
+-- Double negation introduction for equality
+theorem dnegi : forall n m, n = m -> not(not(n = m)) 
+proof
+  let n m, suppose nm H, H nm
+end
+
+-- Double negation elimination for equality
+theorem dnege : forall #n #m, not(not(n = m)) -> n = m
+proof
+  induction
+    (induction
+      (suppose _, indeed 0 = 0)
+      (let #m, suppose _ A, contradiction (A (neq_0_S [m]))))
+    let #n, suppose ihn,
+    induction
+      (suppose A, contradiction (A (neq_S_0 [n])))
+      let #m, suppose ihm A,
+      indeed S(n) = S(m)
+          by ihn [m] suppose B,
+                     contradiction A suppose e,
+                     contradiction B indeed n = m by e
+end
+
+-- Double negation elimination for equality (successor variant)
+theorem dnege_x1S : forall #n #m, not(not(S(n) = m)) -> S(n) = m
+proof
+  induction (dnege[1])
+    let #n, suppose ihn,
+    induction
+      (suppose A, contradiction (A (neq_S_0 [S(n)])))
+      let #m, suppose ihm A,
+      indeed S(S(n)) = S(m)
+          by ihn [m] suppose B,
+                     contradiction A suppose e,
+                     contradiction B indeed S(n) = m by e
+end
+
+--------------------------------------------------------------------------------
+-- Addition
+--------------------------------------------------------------------------------
+
+theorem add_assoc : forall #n m p, (n + m) + p = n + (m + p)
+proof
+  induction (let m p, indeed (0 + m) + p = 0 + (m + p))
+  let #n, suppose ih, let m p,
+  indeed
+    (S(n) + m) + p
+  = S((n + m) + p)
+  = S(n + (m + p)) by ih[m][p]
+  = S(n) + (m + p)
+end
+
+theorem add_assoc_x1S : forall #n m p, (S(n) + m) + p = S(n) + (m + p)
+proof
+  induction (let m p, indeed (1 + m) + p = 1 + (m + p) by add_assoc[1][m][p])
+  let #n, suppose ih, let m p,
+  indeed
+    (S(S(n)) + m) + p
+  = S((S(n) + m) + p)
+  = S(S(n) + (m + p)) by ih[m][p]
+  = S(S(n)) + (m + p)
+end
+
+theorem add_assoc_x1add : forall #n1 #n2 m p, ((n1 + n2) + m) + p = (n1 + n2) + (m + p)
+proof
+  induction
+  (let #n2 m p,
+   indeed
+     ((0 + n2) + m) + p
+   = (n2 + m) + p
+   = n2 + (m + p) by add_assoc[n2][m][p]
+   = (0 + n2) + (m + p))
+  let #n1, suppose ih, let #n2 m p,
+  indeed
+    ((S(n1) + n2) + m) + p
+  = S(((n1 + n2) + m) + p)
+  = S((n1 + n2) + (m + p)) by ih[n2][m][p]
+  = (S(n1) + n2) + (m + p)
+end
+
+theorem add_0_r : forall #n, n + 0 = n
+proof
+  induction (indeed 0 + 0 = 0)
+  let #n, suppose ih,
+  indeed
+    S(n) + 0
+  = S(n + 0)
+  = S(n) by ih
+end
+
+theorem add_S_r : forall #n m, n + S(m) = S(n + m)
+proof
+  induction (let m, indeed 0 + S(m) = S(0 + m))
+  let #n, suppose ih, let m,
+  indeed
+    S(n) + S(m)
+  = S(n + S(m))
+  = S(S(n + m)) by ih[m]
+  = S(S(n) + m)
+end
+
+theorem add_comm : forall #n #m, n + m = m + n
+proof
+  induction (let #m, indeed 0 + m = m = m + 0 by add_0_r[m])
+  let #n, suppose ih, let #m,
+  indeed
+    S(n) + m
+  = S(n + m)
+  = S(m + n) by ih[m]
+  = m + S(n) by add_S_r[m][n]
+end
+
+theorem add_comm_x1add : forall #n1 #n2 #m, (n1 + n2) + m = m + (n1 + n2)
+proof
+  induction
+    (let #n2 #m,
+     indeed
+       (0 + n2) + m
+     = n2 + m
+     = m + n2 by add_comm[n2][m]
+     = m + (0 + n2))
+  let #n1, suppose ih, let #n2 #m,
+  indeed
+    (S(n1) + n2) + m
+  = S(n1 + n2) + m
+  = S((n1 + n2) + m)
+  = S(m + (n1 + n2)) by ih[n2][m]
+  = m + S(n1 + n2) by add_S_r[m][n1 + n2]
+  = m + (S(n1) + n2)
+end
+
+theorem add_comm_ext_left : forall #n #m p, n + (m + p) = m + (n + p)
+proof
+  let #n #m p,
+  indeed
+    n + (m + p)
+  = (n + m) + p  by add_assoc[n][m][p]
+  = (m + n) + p  by add_comm[n][m]
+  = m + (n + p)  by add_assoc[m][n][p]
+end
+
+theorem add_comm_ext_left_x1add : forall #n1 #n2 #m p, (n1 + n2) + (m + p) = m + ((n1 + n2) + p)
+proof
+  let #n1 #n2 #m p,
+  indeed
+    (n1 + n2) + (m + p)
+  = ((n1 + n2) + m) + p by add_assoc_x1add[n1][n2][m][p]
+  = (m + (n1 + n2)) + p by add_comm_x1add[n1][n2][m]
+  = m + ((n1 + n2) + p) by add_assoc[m][n1 + n2][p]
+end
+
+theorem add_comm_ext_right : forall #n #m #p, (n + m) + p = (n + p) + m
+proof
+  let #n #m #p,
+  indeed
+    (n + m) + p
+  = n + (m + p)  by add_assoc[n][m][p]
+  = n + (p + m)  by add_comm[m][p]
+  = (n + p) + m  by add_assoc[n][p][m]
+end
+
+theorem add_cancel_0_r : forall #n k, n + k = 0 -> n = 0
+proof
+  induction (let k, suppose _, indeed 0 = 0)
+  let #n, suppose _, let k, suppose H,
+  contradiction (indeed S(n + k) = S(n) + k = 0 by H)
+end
+
+theorem add_cancel_0_r_x1S : forall #n k, S(n) + k = 0 -> S(n) = 0
+proof
+  induction (add_cancel_0_r[1])
+  let #n, suppose _, let k, suppose H,
+  contradiction (indeed S(S(n) + k) = S(S(n)) + k = 0 by H)
+end
+
+theorem add_cancel_l : forall #n m p, n + m = n + p -> m = p
+proof
+  induction
+    (let m p, suppose eq_m_p,
+     indeed
+       m
+     = 0 + m
+     = 0 + p by eq_m_p
+     = p)
+  let #n, suppose ih, let m p, suppose eq_nm_np,
+  indeed m = p by ih[m][p]
+  indeed n + m = n + p by
+  indeed
+    S(n + m)
+  = S(n) + m
+  = S(n) + p by eq_nm_np
+  = S(n + p)
+end
+
+theorem add_cancel_r : forall #n #m #p, n + m = p + m -> n = p
+proof
+  let #n #m #p, suppose eq_nm_pm,
+  indeed n = p by add_cancel_l[m][n][p]
+  indeed
+    m + n
+  = n + m by add_comm[m][n]
+  = p + m by eq_nm_pm
+  = m + p by add_comm[m][p]
+end
+
+--------------------------------------------------------------------------------
+-- Some impossibilities
+--------------------------------------------------------------------------------
+
+theorem eq_n_Sn_impossible : forall #n, not(n = S(n))
+proof
+  induction (suppose eq_0_1, contradiction eq_0_1)
+  let #n, suppose ih, suppose eq_Sn_SSn,
+  ih indeed n = S(n) by eq_Sn_SSn
+end
+
+theorem eq_n_Snk_impossible : forall #n k, not(n = S(n + k))
+proof
+  induction (let k, suppose eq_0_Sk, contradiction eq_0_Sk)
+  let #n, suppose ih, let k, suppose eq_Sn_SSnk,
+  ih[k]
+  indeed
+    n
+  = S(n) + k by eq_Sn_SSnk
+  = S(n + k)
+end
+
+theorem eq_n_Snk1k2_impossible : forall #n k1 k2, not(n = S((n + k1) + k2))
+proof
+  induction (let k1 k2, suppose eq_0_Sk1k2, contradiction eq_0_Sk1k2)
+  let #n, suppose ih, let k1 k2, suppose eq_Sn_SSnk1k2,
+  ih[k1][k2]
+  indeed
+    n
+  = (S(n) + k1) + k2 by eq_Sn_SSnk1k2
+  = S((n + k1) + k2)
+end
+
+--------------------------------------------------------------------------------
+-- Multiplication
+--------------------------------------------------------------------------------
+
+theorem mul_1_l : forall #n, 1 * n = n
+proof
+  let #n, indeed 1 * n = n + 0 = n by add_0_r[n]
+end
+
+theorem mul_1_r : forall #n, n * 1 = n
+proof
+  induction (indeed 0 * 1 = 0)
+  let #n, suppose ih,
+  indeed
+    S(n) * 1
+  = 1 + n * 1
+  = 1 + n      by ih
+  = S(n)
+end
+
+theorem mul_0_r : forall #n, n * 0 = 0
+proof
+  induction (indeed 0 * 0 = 0)
+  let #n, suppose ih,
+  indeed
+    S(n) * 0
+  = 0 + n * 0
+  = n * 0
+  = 0 by ih
+end
+
+theorem mul_S_r : forall #n #m, n * S(m) = n + n * m
+proof
+  induction (let #m, indeed 0 * S(m) = 0 + 0 * m)
+  let #n, suppose ih, let #m,
+  indeed
+    S(n) * S(m)
+  = S(m) + n * S(m)
+  = S(m + n * S(m))
+  = S(m + (n + n * m)) by ih[m]
+  = S(n + (m + n * m)) by add_comm_ext_left[m][n][n * m]
+  = S(n) + (m + n * m)
+  = S(n) + S(n) * m
+end
+
+theorem mul_S_r_x2add : forall #n #m1 #m2, n * S(m1 + m2) = n + n * (m1 + m2)
+proof
+  induction (let #m1 #m2, indeed 0 * S(m1 + m2) = 0 + 0 * (m1 + m2))
+  let #n, suppose ih, let #m1 #m2,
+  indeed
+    S(n) * S(m1 + m2)
+  = S(m1 + m2) + n * S(m1 + m2)
+  = S((m1 + m2) + n * S(m1 + m2))
+  = S((m1 + m2) + (n + n * (m1 + m2))) by ih[m1][m2]
+  = S(n + ((m1 + m2) + n * (m1 + m2))) by add_comm_ext_left_x1add[m1][m2][n][n * (m1 + m2)]
+  = S(n) + ((m1 + m2) + n * (m1 + m2))
+  = S(n) + S(n) * (m1 + m2)
+end
+
+theorem mul_distr_l : forall #n #m #p, n * (m + p) = n * m + n * p
+proof
+  claim flipped : forall #m #n #p, n * (m + p) = n * m + n * p
+  proof
+    induction
+    (let #n #p,
+     indeed
+       n * (0 + p)
+     = n * p
+     = 0 + n * p
+     = n * 0 + n * p by mul_0_r[n])
+    let #m, suppose ih, let #n #p,
+    indeed
+      n * (S(m) + p)
+    = n * S(m + p)
+    = n + n * (m + p)     by mul_S_r_x2add[n][m][p]
+    = n + (n * m + n * p) by ih[n][p]
+    = (n + n * m) + n * p by add_assoc[n][n * m][n * p]
+    = n * S(m) + n * p    by mul_S_r[n][m]
+  end
+  let #n #m, flipped[m][n]
+end
+
+theorem mul_distr_r : forall #n m #p, (n + m) * p = n * p + m * p
+proof
+  induction (let m #p, indeed (0 + m) * p = m * p = 0 * p + m * p)
+  let #n, suppose ih, let m #p,
+  indeed
+    (S(n) + m) * p
+  = S(n + m) * p
+  = p + (n + m) * p
+  = p + (n * p + m * p) by ih[m][p]
+  = (p + n * p) + m * p by add_assoc[p][n * p][m * p]
+  = S(n) * p + m * p
+end
+
+theorem mul_assoc : forall #n #m #p, (n * m) * p = n * (m * p)
+proof
+  induction (let #m #p, indeed (0 * m) * p = 0 * (m * p))
+  let #n, suppose ih, let #m #p,
+  indeed
+    (S(n) * m) * p
+  = (m + n * m) * p
+  = (m * p) + (n * m) * p by mul_distr_r[m][n * m][p]
+  = (m * p) + n * (m * p) by ih[m][p]
+  = S(n) * (m * p)
+end
+
+theorem mul_comm : forall #n #m, n * m = m * n
+proof
+  induction (let #m, indeed 0 * m = 0 = m * 0 by mul_0_r[m])
+  let #n, suppose ih, let #m,
+  indeed
+    S(n) * m
+  = m + n * m
+  = m + m * n by ih[m]
+  = m * S(n)  by mul_S_r[m][n]
+end
+
+theorem mul_cancel_0r : forall #n #p, not(n = 0) -> 0 = p * n -> 0 = p
+proof
+  induction (let #p, suppose neq_n_0 eq_0_pn, contradiction neq_n_0 indeed 0 = 0)
+  let #n, suppose ih, let #p, suppose neq_n_0 eq_0pSn,
+  indeed 0 = p by
+  indeed p = 0 by
+  add_cancel_0_r[p][p * n]
+  indeed
+    p + p * n
+  = p * S(n) by mul_S_r[p][n]
+  = 0        by eq_0pSn
+end
+
+theorem mul_cancel_r : forall #m #p #n, not(n = 0) -> m * n = p * n -> m = p
+proof
+  induction
+    (let #p #n, suppose neq_n_0 eq_mn_pn,
+     mul_cancel_0r[n][p] neq_n_0 indeed 0 = 0 * n = p * n by eq_mn_pn)
+  let #m, suppose ih,
+  induction
+    (let #n, suppose neq_n_0 eq_Smn_0n,
+      dnege_x1S[m][0] suppose neq_Sm_0,
+      cases zero_or_S[n]
+      case zero_n, contradiction neq_n_0 zero_n
+      case nonzero_n,
+        consider #n' st eq_n_Sn' by nonzero_n,
+        contradiction indeed
+            S(n' + m * n)
+          = S(n') + m * n
+          = n + m * n      by eq_n_Sn'
+          = S(m) * n
+          = 0 * n          by eq_Smn_0n
+          = 0)
+  let #p, suppose ihp, let #n, suppose neq_n_0 eq_Smn_Spn,
+  indeed S(m) = S(p) by ih[p][n] neq_n_0
+  indeed m * n = p * n by add_cancel_l[n][m * n][p * n]
+  indeed n + m * n
+       = S(m) * n
+       = S(p) * n   by eq_Smn_Spn
+       = n + p * n
+end
+
+theorem mul_cancel_l : forall #m #p #n, not(n = 0) -> n * m = n * p -> m = p
+proof
+  let #m #p #n, suppose neq_n_0 eq_nm_np,
+  mul_cancel_r[m][p][n] neq_n_0
+  indeed m * n
+       = n * m by mul_comm[m][n]
+       = n * p by eq_nm_np
+       = p * n by mul_comm[p][n]
+end
+
+--------------------------------------------------------------------------------
+-- Non-strict order (<=)
+--------------------------------------------------------------------------------
+
+-- Note:
+--   if defined as: leq(n, m) := not(forall k, not(k + n = m))
+--   it does not seem possible to show transitivity.
+prop leq(n, m) := exists k, n + k = m
+
+theorem leq_0_n : forall n, leq(0, n)
+proof
+  let n, take n, indeed 0 + n = n
+end
+
+theorem leq_S_0_impossible : forall n, not(leq(S(n), 0))
+proof
+  let n, suppose leq_Sn_0,
+  consider k st eq_Snk_0 by leq_Sn_0,
+  contradiction indeed
+    0 = S(n) + k by eq_Snk_0
+      = S(n + k)
+end
+
+theorem leq_cong : forall n1 m1 n2 m2, n1 = n2 -> m1 = m2 -> leq(n1, m1) -> leq(n2, m2)
+proof
+  let n1 m1 n2 m2, suppose eq_n1_n2 eq_m1_m2 leq_n1_m1,
+  consider k st eq_n1k_m1 by leq_n1_m1,
+  take k,
+  indeed n2 + k
+       = n1 + k by eq_n1_n2
+       = m1     by eq_n1k_m1
+       = m2     by eq_m1_m2
+end
+
+theorem leq_cong_right : forall n m1 m2, m1 = m2 -> leq(n, m1) -> leq(n, m2)
+proof
+  let n m1 m2, suppose eq_m1_m2 leq_n_m1,
+  consider k st eq_nk_m1 by leq_n_m1,
+  take k,
+  indeed n + k
+       = m1     by eq_nk_m1
+       = m2     by eq_m1_m2
+end
+
+theorem leq_refl : forall #n, leq(n, n)
+proof
+  let #n, take 0, indeed n + 0 = n by add_0_r[n]
+end
+
+theorem leq_refl' : forall #n m, n = m -> leq(n, m)
+proof
+  let #n m, suppose eq_n_m,
+  take 0,
+  indeed
+    n + 0
+  = n by add_0_r[n]
+  = m by eq_n_m
+end
+
+theorem leq_trans : forall #n m p, leq(n, m) -> leq(m, p) -> leq(n, p)
+proof
+  let #n m p, suppose leq_n_m leq_m_p,
+  consider k1 st k1nm by leq_n_m,
+  consider k2 st k2mp by leq_m_p,
+  take k1 + k2,
+  indeed
+    n + (k1 + k2)
+  = (n + k1) + k2 by add_assoc[n][k1][k2]
+  = m + k2        by k1nm
+  = p             by k2mp
+end
+
+theorem leq_0_is_0 : forall #n, leq(n, 0) -> n = 0
+proof
+  let #n, suppose leq_n_0 : leq(n, 0),
+  dnege[n][0] suppose neq_n_0 : not(n = 0),
+  consider k st eq_nk_0 : n + k = 0 by leq_n_0,
+  neq_n_0 (add_cancel_0_r[n][k] eq_nk_0)
+end
+
+theorem leq_0_is_0_x1S : forall #n, leq(S(n), 0) -> S(n) = 0
+proof
+  let #n, suppose leq_Sn_0 : leq(S(n), 0),
+  dnege_x1S[n][0] suppose neq_Sn_0 : not(S(n) = 0),
+  consider k st eq_Snk_0 : S(n) + k = 0 by leq_Sn_0,
+  neq_Sn_0 (add_cancel_0_r_x1S[n][k] eq_Snk_0)
+end
+
+theorem leq_S : forall n m, leq(n, m) -> leq(S(n), S(m))
+proof
+  let n m, suppose leq_n_m,
+  consider k st H by leq_n_m,
+  take k,
+  indeed S(n) + k = S(n + k) = S(m) by H
+end
+
+theorem leq_pred : forall n m, leq(S(n), S(m)) -> leq(n, m)
+proof
+  let n m, suppose leq_Sn_Sm,
+  consider k st H by leq_Sn_Sm,
+  take k,
+  indeed n + k = m
+      by indeed S(n + k) = S(n) + k = S(m)
+      by H
+end
+
+theorem leq_antisym : forall #n #m, leq(n, m) -> leq(m, n) -> n = m
+proof
+  induction (let #m, suppose _ leq_m_0, indeed 0 = m by leq_0_is_0[m] leq_m_0)
+  let #n, suppose ihn,
+  induction (suppose Sn0 _, leq_0_is_0_x1S[n] Sn0)
+  let #m, suppose _ leq_Sn_Sm leq_Sm_Sn,
+  indeed S(n) = S(m)
+  by ihn[m] (leq_pred[n][m] leq_Sn_Sm)
+            (leq_pred[m][n] leq_Sm_Sn)
+end
+
+theorem leq_total : forall #n #m, leq(n, m) | leq(m, n)
+proof
+  induction (let #m, assume f _, f (leq_0_n[m]))
+  let #n, suppose ih,
+  induction (assume _ g, g (leq_0_n[S(n)]))
+  let #m, suppose ihm,
+  assume gt_Sn_Sm gt_Sm_Sn,
+  cases ihm
+  case leq_Sn_m,
+    consider k st eq_Snk_m by leq_Sn_m,
+    gt_Sn_Sm take S(k),
+    indeed S(n) + S(k)
+         = S(n + S(k))
+         = S(S(n + k)) by add_S_r[n][k]
+         = S(S(n) + k)
+         = S(m)        by eq_Snk_m
+  case leq_m_Sn,
+    consider k st eq_mk_Sn by leq_m_Sn,
+    cases ih[m]
+    case leq_n_m, gt_Sn_Sm (leq_S[n][m] leq_n_m)
+    case leq_m_n, gt_Sm_Sn (leq_S[m][n] leq_m_n)
+end
+
+-- Note:
+--   The right version of this theorem
+--     leq_monot_add_r : forall #n n' #m, leq(n, n') -> leq(n + m, n' + m)
+--   does not seem to hold for the symbolic "leq" order,
+--   but it holds for the finitistic "leqF" order
+--   (see leqF_monot_add_r and leq_monot_add below).
+--
+theorem leq_monot_add_l : forall #n n' #m, leq(n, n') -> leq(m + n, m + n')
+proof
+  let #n n' #m, suppose leq_n_n',
+  consider k st eq_nk_n' by leq_n_n',
+  take k,
+  indeed
+    (m + n) + k
+  = m + (n + k) by add_assoc[m][n][k]
+  = m + n'      by eq_nk_n'
+end
+
+-- Note:
+--   The left version of this theorem
+--     leq_monot_mul_l : forall #n n' #m, leq(n, n') -> leq(m * n, m * n')
+--   does not seem to hold for the symbolic "leq" order,
+--   it only holds in a very weak sense, see leqF_monot_mul_r in the next section.
+theorem leq_monot_mul_r : forall #n n' #m, leq(n, n') -> leq(n * m, n' * m)
+proof
+  let #n n' #m, suppose leq_n_n',
+  consider k st eq_nk_n'k by leq_n_n',
+  take k * m,
+  indeed
+    n * m + k * m
+  = (n + k) * m    by mul_distr_r[n][k][m]
+  = n' * m         by eq_nk_n'k
+end
+
+--------------------------------------------------------------------------------
+-- Finitistic non-strict order (<=F)
+--------------------------------------------------------------------------------
+
+prop leqF(n, m) := exists #k, n + k = m
+
+theorem leqF_imp_leq : forall n m, leqF(n, m) -> leq(n, m)
+proof
+  let n m, suppose leqF_n_m,
+  consider #k st eq_nk_m by leqF_n_m,
+  take k,
+  eq_nk_m
+end
+
+theorem leq_imp_leqF : forall #n #m, leq(n, m) -> leqF(n, m)
+proof
+  induction (let #m, suppose leq_n_m, take m, indeed 0 + m = m)
+  let #n, suppose ih, let #m, suppose leq_Sn_m,
+  cases zero_or_S[m]
+  case m_zero,
+    contradiction
+      leq_S_0_impossible[n]
+      (leq_cong_right[S(n)][m][0] m_zero leq_Sn_m)
+  case m_nonzero,
+    consider #m' st eq_m_Sm' by m_nonzero,
+    consider #k st eq_nk_m'
+          by ih[m']
+             (leq_pred[n][m'] (leq_cong_right[S(n)][m][S(m')] eq_m_Sm' leq_Sn_m)),
+    take k,
+    indeed
+        S(n) + k
+      = S(n + k)
+      = S(m')    by eq_nk_m'
+      = m        by eq_m_Sm'
+end
+
+theorem leqF_refl : forall #n, leq(n, n)
+proof
+  let #n, take 0, indeed n + 0 = n by add_0_r[n]
+end
+
+theorem leqF_S : forall n m, leqF(n, m) -> leqF(S(n), S(m))
+proof
+  let n m, suppose leqF_n_m,
+  consider #k st H by leqF_n_m,
+  take k,
+  indeed S(n) + k = S(n + k) = S(m) by H
+end
+
+theorem leqF_pred : forall n m, leqF(S(n), S(m)) -> leqF(n, m)
+proof
+  let n m, suppose leqF_Sn_Sm,
+  consider #k st H by leqF_Sn_Sm,
+  take k,
+  indeed n + k = m by
+  indeed S(n + k) = S(n) + k = S(m) by H
+end
+
+theorem leqF_monot_add_l : forall #n n' #m, leqF(n, n') -> leqF(m + n, m + n')
+proof
+  let #n n' #m, suppose leqF_n_n',
+  consider #k st eq_nk_n' by leqF_n_n',
+  take k,
+  indeed
+    (m + n) + k
+  = m + (n + k) by add_assoc[m][n][k]
+  = m + n'      by eq_nk_n'
+end
+
+theorem leqF_monot_add_r : forall #n n' #m, leqF(n, n') -> leqF(n + m, n' + m)
+proof
+  let #n n' #m, suppose leqF_n_n',
+  consider #k st eq_nk_n' by leqF_n_n',
+  take k,
+  indeed
+    (n + m) + k
+  = (n + k) + m by add_comm_ext_right[n][m][k]
+  = n' + m      by eq_nk_n'
+end
+
+-- The previous lemma allows us to recover the corresponding result for the
+-- symbolic order, which we could not prove directly in terms of leq.
+theorem leq_monot_add_r : forall #n #n' #m, leq(n, n') -> leq(n + m, n' + m)
+proof
+  let #n #n' #m, suppose leq_n_n',
+  have leqF_n_n'   by leq_imp_leqF[n][n'] leq_n_n',
+  have leqF_nm_n'm by leqF_monot_add_r[n][n'][m] leqF_n_n',
+  leqF_imp_leq[n + m][n' + m] leqF_nm_n'm
+end
+
+-- Monotony for left multiplication only seems to hold in this weak version (leqF=>leq).
+-- At least we do not know how to prove a stronger version (either leqF=>leqF or leq=>leq).
+-- Monotony for right multiplication in the symbolic case
+-- has been proved in leq_monot_mul_r in the previous section.
+theorem leqF_monot_mul_l : forall #n n' #m, leqF(n, n') -> leq(m * n, m * n')
+proof
+  let #n n' #m, suppose leqF_n_n',
+  consider #k st eq_nk_n' by leqF_n_n',
+  take m * k,
+  indeed
+    m * n + m * k
+  = m * (n + k)   by mul_distr_l[m][n][k]
+  = m * n'        by eq_nk_n'
+end
+
+--------------------------------------------------------------------------------
+-- Strict order (<)
+--------------------------------------------------------------------------------
+
+prop lt(n, m) := leq(S(n), m)
+
+theorem lt_irrefl : forall #n, not(lt(n, n))
+proof
+  let #n, suppose lt_n_n,
+  consider k st eq_Snk_n by lt_n_n,
+  eq_n_Snk_impossible[n][k]
+  indeed
+    n
+  = S(n) + k by eq_Snk_n
+  = S(n + k)
+end
+
+theorem lt_pred : forall n m, lt(S(n), S(m)) -> lt(n, m)
+proof
+  let n m, suppose lt_Sn_Sm,
+  consider k st eq_SSnk_Sm by lt_Sn_Sm,
+  take k,
+  indeed S(n) + k = m by
+  indeed S(S(n) + k) = S(S(n)) + k = S(m) by eq_SSnk_Sm
+end
+
+theorem lt_cong : forall n1 m1 n2 m2, n1 = n2 -> m1 = m2 -> lt(n1, m1) -> lt(n2, m2)
+proof
+  let n1 m1 n2 m2, suppose eq_n1_n2 eq_m1_m2,
+  suppose lt_n1_m1,
+  leq_cong[S(n1)][m1][S(n2)][m2]
+    (indeed S(n1) = S(n2) by eq_n1_n2)
+    eq_m1_m2
+    lt_n1_m1
+end
+
+theorem lt_cong_left : forall n1 n2 m, n1 = n2 -> lt(n1, m) -> lt(n2, m)
+proof
+  let n1 n2 m, suppose eq_n1_n2,
+  lt_cong[n1][m][n2][m] eq_n1_n2 (indeed m = m)
+end
+
+theorem lt_n_0_impossible : forall n, not(lt(n, 0))
+proof
+  let n, suppose lt_n_0,
+  consider k st eq_Snk_0 by lt_n_0,
+  contradiction eq_Snk_0
+end
+
+theorem lt_imp_leq : forall #n m, lt(n, m) -> leq(n, m)
+proof
+  let #n m, suppose lt_n_m,
+  consider k st eq_Snk_m by lt_n_m,
+  take S(k),
+  indeed
+    n + S(k)
+  = S(n + k)  by add_S_r[n][k]
+  = S(n) + k
+  = m         by eq_Snk_m
+end
+
+theorem lt_imp_neq : forall #n m, lt(n, m) -> not(n = m)
+proof
+  let #n m, suppose lt_n_m eq_n_m,
+  consider k st eq_Snk_m by lt_n_m,
+  eq_n_Snk_impossible[n][k]
+  indeed n
+       = m         by eq_n_m
+       = S(n) + k  by eq_Snk_m
+       = S(n + k)
+end
+
+-- We need to assume leqF.
+theorem leqF_neq_imp_lt : forall #n m, leqF(n, m) -> not(n = m) -> lt(n, m)
+proof
+  let #n m, suppose leq_n_m neq_n_m, 
+  consider #k st eq_nk_m by leq_n_m,
+  cases zero_or_S[k]
+  case zero_k,
+    contradiction neq_n_m
+    indeed n
+         = n + 0  by add_0_r[n]
+         = n + k  by zero_k
+         = m      by eq_nk_m
+  case nonzero_k,
+    consider #k' st eq_k_Sk' by nonzero_k,
+    take k',
+    indeed S(n) + k'
+         = S(n + k')
+         = n + S(k') by add_S_r[n][k']
+         = n + k     by eq_k_Sk'
+         = m         by eq_nk_m
+end
+
+theorem not_lt_0_is_0 : forall #n, not(lt(0, n)) -> n = 0
+proof
+  let #n, suppose not_lt_0_n,
+  dnege[n][0] suppose neq_n_0,
+  cases zero_or_S[n]
+  case n_zero,
+    neq_n_0 n_zero
+  case n_nonzero,
+    consider #n' st eq_n_Sn' by n_nonzero,
+    not_lt_0_n take n',
+    indeed 1 + n'
+         = S(n')
+         = n     by eq_n_Sn'
+end
+
+theorem not_lt_S : forall n m, not(lt(n, m)) -> not(lt(S(n), S(m)))
+proof
+  let n m, suppose not_lt_n_m lt_Sn_Sm,
+  consider k st eq_Snk_Sm by lt_Sn_Sm,
+  not_lt_n_m take k,
+  indeed S(n) + k = m by
+  indeed S(S(n) + k) = S(S(n)) + k = S(m) by eq_Snk_Sm
+end
+
+theorem not_lt_imp_geq : forall #n #m, not(lt(n, m)) -> leq(m, n)
+proof
+  induction
+    (let #m, suppose not_lt_n_m,
+     take 0,
+     indeed m + 0
+          = 0 + 0 by (not_lt_0_is_0[m] not_lt_n_m)
+          = 0)
+  let #n, suppose ih, let #m, suppose not_lt_Sn_m,
+  cases zero_or_S[m]
+  case m_zero,
+    take S(n),
+    indeed m + S(n)
+         = 0 + S(n) by m_zero
+         = S(n)
+  case m_nonzero,
+    consider #m' st eq_m_Sm' by m_nonzero,
+    consider k st eq_m'k_n by (
+          show leq(m', n),
+          ih[m']
+          suppose lt_n_m',
+          consider p st eq_Snp_m' by lt_n_m',
+          not_lt_Sn_m take p,
+          indeed S(S(n)) + p
+               = S(S(n + p))
+               = S(m') by (indeed S(n + p) = S(n) + p = m' by eq_Snp_m')
+               = m     by eq_m_Sm'
+        ),
+    take k,
+    indeed m + k
+         = S(m') + k by eq_m_Sm'
+         = S(m' + k)
+         = S(n)      by eq_m'k_n
+end
+
+theorem lt_imp_not_geq : forall #n m, lt(n, m) -> not(leq(m, n))
+proof
+  let #n m, suppose lt_n_m leq_m_n,
+  consider k1 st eq_Snk_m by lt_n_m,
+  consider k2 st eq_mk'_n by leq_m_n,
+  eq_n_Snk1k2_impossible[n][k1][k2]
+  indeed
+    n
+  = m + k2           by eq_mk'_n
+  = (S(n) + k1) + k2 by eq_Snk_m
+  = S((n + k1) + k2)
+end
+
+theorem trichotomy : forall #n #m, lt(n, m) | n = m | lt(m, n)
+proof
+  let #n #m, assume not_lt_n_m neq_n_m not_lt_m_n,
+  have leq_n_m by not_lt_imp_geq[m][n] not_lt_m_n,
+  have leq_m_n by not_lt_imp_geq[n][m] not_lt_n_m,
+  neq_n_m (leq_antisym[n][m] leq_n_m leq_m_n)
+end
+
+theorem lt_or_geq : forall #n #m, lt(n, m) | leq(m, n)
+proof
+  let #n #m,
+  cases trichotomy[n][m]
+  case lt_n_m,
+    assume nlt_n_m _,
+    nlt_n_m lt_n_m
+  case eq_n_m,
+    assume _ nleq_n_m,
+    nleq_n_m (leq_refl'[m][n] indeed m = n by eq_n_m)
+  case lt_m_n,
+    assume _ nleq_n_m,
+    nleq_n_m (lt_imp_leq[m][n] lt_m_n)
+end
+
+--------------------------------------------------------------------------------
+-- Division algorithm
+--------------------------------------------------------------------------------
+
+prop divmod(n, d, q, r) := (n = q * d + r) & lt(r, d)
+
+theorem divmod_existence :
+          forall #bound,
+          forall #n #d, lt(n, bound) -> not(d = 0) ->
+          exists q #r, divmod(n, d, q, r)
+proof
+  induction (let #n #d, suppose lt_n_0, contradiction lt_n_0_impossible[n] lt_n_0)
+  let #bound, suppose ih, let #n #d, suppose lt_n_bound neq_d_0,
+  cases lt_or_geq[n][d]
+  case lt_n_d,
+    take 0 n,
+    then indeed n = 0 + n = 0 * d + n
+    also lt_n_d
+  case leq_d_n,
+    have leqF_d_n by leq_imp_leqF[d][n] leq_d_n,
+    consider #n' st eq_dn'_n by leqF_d_n,
+    claim lt_n'_bound : lt(n', bound)
+    proof
+      consider k st eq_nk_Sbound by lt_n_bound,
+      cases zero_or_S[d]
+      case d_zero,
+        contradiction neq_d_0 d_zero
+      case d_nonzero,
+        consider #d' st eq_Sd'_d by d_nonzero,
+        take d' + k,
+        indeed
+          S(n') + d' + k
+        = S(n' + d' + k)
+        = S(d' + n' + k)    by add_comm_ext_left[n'][d'][k]
+        = S((d' + n') + k)  by add_assoc[d'][n'][k]
+        = (S(d') + n') + k
+        = (d + n') + k      by eq_Sd'_d
+        = n + k             by eq_dn'_n
+        = bound by
+          indeed S(n + k) = S(n) + k = S(bound) by eq_nk_Sbound
+    end
+    consider q' #r st D : divmod(n', d, q', r)
+         by ih[n'][d]
+              lt_n'_bound
+              neq_d_0,
+    have eq_n'_q'dr lt_r_d by D,
+    take S(q') r,
+    then indeed
+           n
+         = d + n'           by eq_dn'_n
+         = d + (q' * d + r) by eq_n'_q'dr
+         = (d + q' * d) + r by add_assoc[d][q' * d][r]
+         = S(q') * d + r
+    also lt_r_d
+end
+
+theorem divmod_uniqueness :
+          forall #bound,
+          forall #n #d, lt(n, bound) -> not(d = 0) ->
+          forall #q1 #r1 #q2 #r2,
+             divmod(n, d, q1, r1)
+          -> divmod(n, d, q2, r2)
+          -> q1 = q2 & r1 = r2
+proof
+  induction (let #n #d, suppose lt_n_0, contradiction lt_n_0_impossible[n] lt_n_0)
+  let #bound, suppose ih, let #n #d, suppose lt_n_bound neq_d_0,
+  let #q1 #r1 #q2 #r2,
+  suppose D1 : divmod(n, d, q1, r1), 
+  have eq_n_q1dr1 lt_r1_d by D1,
+  suppose D2 : divmod(n, d, q2, r2), 
+  have eq_n_q2dr2 lt_r2_d by D2,
+  cases lt_or_geq[n][d]
+  case lt_n_d,
+    claim quotient_must_be_0 : forall #q #r, n = q * d + r -> q = 0
+    proof
+      let #q #r, suppose eq_n_qdr,
+      dnege[q][0] suppose neq_q_0,
+      cases zero_or_S[q]
+      case q_zero,
+        neq_q_0 q_zero
+      case q_nonzero,
+        consider #q' st eq_q_Sq' by q_nonzero,
+        lt_imp_not_geq[n][d] lt_n_d
+        take q' * d + r,
+        indeed
+          d + (q' * d + r)
+        = (d + q' * d) + r  by add_assoc[d][q' * d][r]
+        = S(q') * d + r
+        = q * d + r         by eq_q_Sq'
+        = n                 by eq_n_qdr
+    end
+    have eq_q1_0 by quotient_must_be_0[q1][r1] eq_n_q1dr1,
+    have eq_q2_0 by quotient_must_be_0[q2][r2] eq_n_q2dr2,
+    then indeed q1
+              = 0  by eq_q1_0
+              = q2 by eq_q2_0
+    also indeed r1
+              = 0 * d + r1
+              = q1 * d + r1 by eq_q1_0
+              = n           by eq_n_q1dr1
+              = q2 * d + r2 by eq_n_q2dr2
+              = 0 * d + r2  by eq_q2_0
+              = r2
+  case leq_d_n,
+    have leqF_d_n by leq_imp_leqF[d][n] leq_d_n,
+    consider #n' st eq_dn'_n by leqF_d_n,
+
+    claim ih_condition : forall #q #r, n = q * d + r -> lt(r, d) ->
+                         exists #q', q = S(q') & n' = q' * d + r
+    proof
+      let #q #r, suppose eq_n_qdr lt_r_d,
+      claim q_must_be_S : exists #q', q = S(q')
+      proof
+          cases zero_or_S[q]
+          case q_zero,
+            have eq_n_r : n = r
+              by indeed n =(by eq_n_qdr) q * d + r =(by q_zero) 0 * d + r = r,
+            contradiction
+              lt_imp_not_geq[r][d] lt_r_d
+              take n', indeed d + n' =(by eq_dn'_n) n =(by eq_n_r) r
+          case q_nonzero,
+            q_nonzero
+      end
+      consider #q' st eq_q_Sq' by q_must_be_S,
+      take q',
+      then eq_q_Sq'
+      also show n' = q' * d + r,
+      add_cancel_l[d][n'][q' * d + r]
+      indeed d + n'
+           = n                 by eq_dn'_n
+           = q * d + r         by eq_n_qdr
+           = S(q') * d + r     by eq_q_Sq'
+           = (d + q' * d) + r
+           = d + (q' * d + r)  by add_assoc[d][q' * d][r]
+    end
+    consider #q1' st ih_condition_q1 : q1 = S(q1') & n' = q1' * d + r1
+                  by ih_condition[q1][r1] eq_n_q1dr1 lt_r1_d,
+    have eq_q1_Sq1' eq_n'_q1'dr1 by ih_condition_q1,
+    consider #q2' st ih_condition_q2 : q2 = S(q2') & n' = q2' * d + r2
+                  by ih_condition[q2][r2] eq_n_q2dr2 lt_r2_d,
+    have eq_q2_Sq2' eq_n'_q2'dr2 by ih_condition_q2,
+
+    claim lt_n'_bound : lt(n', bound)
+    proof
+      consider k st eq_nk_Sbound by lt_n_bound,
+      cases zero_or_S[d]
+      case d_zero,
+        contradiction neq_d_0 d_zero
+      case d_nonzero,
+        consider #d' st eq_Sd'_d by d_nonzero,
+        take d' + k,
+        indeed
+          S(n') + d' + k
+        = S(n' + d' + k)
+        = S(d' + n' + k)    by add_comm_ext_left[n'][d'][k]
+        = S((d' + n') + k)  by add_assoc[d'][n'][k]
+        = (S(d') + n') + k
+        = (d + n') + k      by eq_Sd'_d
+        = n + k             by eq_dn'_n
+        = bound by
+          indeed S(n + k) = S(n) + k = S(bound) by eq_nk_Sbound
+    end
+
+    claim ih_consequence : q1' = q2' & r1 = r2
+    proof
+      ih[n'][d]
+        lt_n'_bound
+        neq_d_0
+        [q1'] [r1] [q2'] [r2]
+        (then eq_n'_q1'dr1 also lt_r1_d)
+        (then eq_n'_q2'dr2 also lt_r2_d)
+    end
+    have eq_q1'_q2' eq_r1_r2 by ih_consequence,
+    then indeed q1
+              = S(q1') by eq_q1_Sq1'
+              = S(q2') by eq_q1'_q2'
+              = q2     by eq_q2_Sq2'
+    also eq_r1_r2
+end
+
