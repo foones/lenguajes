@@ -10,7 +10,7 @@ The logic is a variant of Peano Arithmetic in which there are two kinds of unive
 - Symbolic universal quantifier: `forall n, P(n)`
 - Finitistic universal quantifier: `forall #n, P(n)`
 
-The introduction and elimination rules for the **symbolic** universal quantifier are the usual introduction and universal rules for the universal quantifier in first-order logic. Note that this does **not** allow to prove `forall n, P(n)` by induction.
+The introduction and elimination rules for the **symbolic** universal quantifier are the usual introduction and elimination rules for the universal quantifier in first-order logic. Note that this does **not** allow to prove `forall n, P(n)` by induction.
 
 The introduction rules for the **finitistic** universal quantifier include the usual introduction rule, as well as the induction principle `P(0) -> (forall #n, P(n) -> P(S(n))) -> forall #n, P(n)`. However, the elimination rule only allows to instantiate a universal formula in a **concrete** numeral `S(S(...S(0)))`, or perhaps in a variable `n` bound by another finitistic universal quantifier.
 
@@ -46,7 +46,7 @@ A program consists of a sequence of declarations.
 Currently there are three forms of declarations:
 
 - Declaration of a defined function symbol: `fun f(n1, ..., nK) := <term>`.
-  Here n1, ..., nK are term variables.
+  Here `n1`, ..., `nK` are term variables.
   Definitions of function symbols cannot be recursive; they are just syntactic abbreviations ("macros").
 - Declaration of a defined propositional symbol:
     `prop p(n1, ..., nK, X1, ..., Xm) := <form>`
@@ -145,9 +145,9 @@ Proofs (`<proof>`) are constructed inductively from the following grammar:
   The ones with parentheses may be convenient for one-liners, e.g. `n =(by p) n' =(by q) n''`.
 
 - Induction on natural numbers:
-
-      `induction <proof1> <proof2>`
-
+  ```
+      induction <proof1> <proof2>
+  ```
    Here `<proof1>` is the proof of the base case; it must prove `P(0)`.
    And `<proof2>` is the proof of the induction step; it must prove
        `forall #n, P(n) -> P(S(n))`
@@ -202,7 +202,7 @@ Proofs (`<proof>`) are constructed inductively from the following grammar:
     ...
     case Hn : <form_n>, <proof_n>
   ```
-  The annotations ": <form>" are optional.
+  The annotations `: <form>` are optional.
 
 - Existential introduction: `take <term>, <proof>`
   proves either `exists n, A` (symbolic) or `exists #n, A`  (finitistic).
@@ -273,13 +273,13 @@ Proofs (`<proof>`) are constructed inductively from the following grammar:
 
   - Two exceptions to the rules above are provided to ease
     interactive theorem proving of equalities:
-    - If the user writes "indeed ?hole"
+    - If the user writes `indeed ?hole`
       the hole is taken to be an equality proof rather than a term.
-    - If the user writes "indeed X = Y by ?hole"
+    - If the user writes `indeed X = Y by ?hole`
       the hole is technically speaking in a synthesis position,
-      because the justification may not prove X = Y
-      (e.g. it may prove any equation whose closure includes X = Y, such as S(X) = S(Y)).
-      However, in this case the checker displays X = Y
+      because the justification may not prove `X = Y`
+      (e.g. it may prove any equation whose closure includes `X = Y`, such as `S(X) = S(Y)`).
+      However, in this case the checker displays `X = Y`
       as the proof obligation. 
 
   - If there are many proof holes in the file, the checker displays
